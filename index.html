@@ -3,6 +3,85 @@
 <head>
   <meta charset="UTF-8" />
   <title>YOLO Taxi</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f9;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      background-color: #ffffff;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      padding: 30px;
+      width: 100%;
+      max-width: 600px;
+      text-align: center;
+    }
+
+    h2 {
+      color: #4a90e2;
+      font-size: 2em;
+      margin-bottom: 20px;
+    }
+
+    p {
+      color: #777;
+      font-size: 1.1em;
+      margin-top: 10px;
+    }
+
+    label {
+      font-size: 1.2em;
+      color: #333;
+      margin-bottom: 5px;
+      display: block;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 1em;
+      color: #333;
+      box-sizing: border-box;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #4a90e2;
+    }
+
+    button {
+      background-color: #4a90e2;
+      color: white;
+      font-size: 1.2em;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    button:hover {
+      background-color: #357ab7;
+    }
+
+    .resultaat {
+      margin-top: 20px;
+      font-size: 1.3em;
+      font-weight: bold;
+      color: #2d2d2d;
+    }
+  </style>
   <script>
     async function berekenRit() {
       const ophalen = document.getElementById("ophaaladres").value;
@@ -60,12 +139,15 @@
   </script>
 </head>
 <body>
-  <h2>YOLO Taxi</h2>
-  <label>Ophaaladres:</label><br />
-  <input id="ophaaladres" type="text" placeholder="Bijv. Laan op Zuid 2, Rotterdam"><br />
-  <label>Afzetadres:</label><br />
-  <input id="afzetadres" type="text" placeholder="Bijv. Coolsingel 25, Rotterdam"><br /><br />
-  <button onclick="berekenRit()">Bereken prijs</button>
-  <p id="resultaat"></p>
+  <div class="container">
+    <h2>YOLO Taxi</h2>
+    <p>Bereken eenvoudig de prijs voor jouw rit.</p>
+    <label for="ophaaladres">Ophaaladres:</label>
+    <input id="ophaaladres" type="text" placeholder="Vul het ophaaladres in" /><br />
+    <label for="afzetadres">Afzetadres:</label>
+    <input id="afzetadres" type="text" placeholder="Vul het afzetadres in" /><br /><br />
+    <button onclick="berekenRit()">Bereken prijs</button>
+    <p id="resultaat" class="resultaat"></p>
+  </div>
 </body>
 </html>
