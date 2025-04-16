@@ -2,153 +2,44 @@
 <html lang="nl">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>FA Taxi Calculator</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 20px;
-      background: #f5f5f5;
-    }
-    h2 {
-      text-align: center;
-    }
-    input, button {
-      width: 100%;
-      padding: 10px;
-      margin: 10px 0;
-      font-size: 16px;
-    }
-    .result {
-      margin-top: 20px;
-      font-size: 18px;
-      font-weight: bold;
-    }
-    img.logo {
-      display: block;
-      max-width: 200px;
-      margin: 0 auto 20px;
-    }
-  </style>
-</head>
-<body>
-  <img class="logo" src="https://i.imgur.com/SdJ6AYY.png" alt="FA Taxi Logo" />
-
-  <h2>FA Taxi - Ritprijs Berekenen</h2>
-
-  <label>Ophaaladres:</label>
-  <input type="text" id="ophaaladres" placeholder="Bijv. Laan van Zuid 2, Rotterdam" />
-
-  <label>Bestemmingsadres:</label>
-  <input type="text" id="bestemming" placeholder="Bijv. Coolsingel 25, Rotterdam" />
-
-  <button onclick="berekenRit()">Toon Ritprijs</button>
-
-  <div class="result" id="result">Prijs wordt hier getoond...</div>
-
+  <title>FA Taxi Prijs Calculator</title>
   <script>
-    const apiKey = "5b3ce3597851110001cf6248b59dc263cab24bdabda48748cd9122b3";
-
-    async function getCoordinates(adres) {
-      const response = await fetch(`https://api.openrouteservice.org/geocode/search?api_key=${apiKey}&text=${encodeURIComponent(adres)}`);
-      const data = await response.json();
-      if (!data.features || data.features.length === 0) throw new Error("Geen coördinaten gevonden.");
-      return data.features[0].geometry.coordinates;
-    }
-
-    async function getRoute(start, end) {
-      const body = { coordinates: [start, end] };
-
-      const response = await fetch("https://api.openrouteservice.org/v2/directions/driving-car", {
-        method: "POST",
-        headers: {
-          "Authorization": apiKey,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(body)
-      });
-
-      if (!response.ok) throw new Error("Route ophalen mislukt.");
-
-      const data = await response.json();
-      const afstandKm = data.routes[0].summary.distance / 1000;
-      const duurMin = data.routes[0].summary.duration / 60;
-      return { afstandKm, duurMin };
-    }
-
     async function berekenRit() {
-      document.getElementById("result").innerText = "Bezig met berekenen...";
+      const ophalen = document.getElementById("ophaaladres").value;
+      const afzetten = document.getElementById("afzetadres").value;
 
-      const ophaaladres = document.getElementById("ophaaladres").value;
-      const bestemmingsadres = document.getElementById("bestemming").value;
-
-      if (!ophaaladres || !bestemmingsadres) {
+      if (!ophalen || !afzetten) {
         alert("Vul beide adressen in.");
         return;
       }
 
-      try {
-        const ophaalCoord = await getCoordinates(ophaaladres);
-        const bestemmingCoord = await getCoordinates(bestemmingsadres);
-
-        navigator.geolocation.getCurrentPosition(async (positie) => {
-          const standplaats = [positie.coords.longitude, positie.coords.latitude];
-
-          const aanrij = await getRoute(standplaats, ophaalCoord);
-          const rit = await getRoute(ophaalCoord, bestemmingCoord);
-
-          const starttarief = 3.00;
-          const ritKmPrijs = 2.00;
-          const ritMinPrijs = 0.50;
-          const aanrijKmPrijs = 0.35;
-          const aanrijMinPrijs = 0.10;
-
-          const totaal = starttarief +
-            (rit.afstandKm * ritKmPrijs) +
-            (rit.duurMin * ritMinPrijs) +
-            (aanrij.afstandKm * aanrijKmPrijs) +
-            (aanrij.duurMin * aanrijMinPrijs);
-
-          const prijs = totaal.toFixed(2).replace(".", ",");
-
-          document.getElementById("result").innerHTML = `
-            Rit van <b>${ophaaladres}</b> naar <b>${bestemmingsadres}</b><br>
-            Totale prijs: <b>€${prijs}</b>
-          `;
-
-        }, async (error) => {
-          // Fallback locatie: centrum Rotterdam
-          const standplaats = [4.47917, 51.9225];
-
-          const aanrij = await getRoute(standplaats, ophaalCoord);
-          const rit = await getRoute(ophaalCoord, bestemmingCoord);
-
-          const starttarief = 3.00;
-          const ritKmPrijs = 2.00;
-          const ritMinPrijs = 0.50;
-          const aanrijKmPrijs = 0.35;
-          const aanrijMinPrijs = 0.10;
-
-          const totaal = starttarief +
-            (rit.afstandKm * ritKmPrijs) +
-            (rit.duurMin * ritMinPrijs) +
-            (aanrij.afstandKm * aanrijKmPrijs) +
-            (aanrij.duurMin * aanrijMinPrijs);
-
-          const prijs = totaal.toFixed(2).replace(".", ",");
-
-          document.getElementById("result").innerHTML = `
-            Rit van <b>${ophaaladres}</b> naar <b>${bestemmingsadres}</b><br>
-            <i>Let op: live locatie werd niet herkend. Berekening vanaf centrum Rotterdam.</i><br>
-            Totale prijs: <b>€${prijs}</b>
-          `;
-        });
-
-      } catch (err) {
-        console.error(err);
-        document.getElementById("result").innerText = "Er is iets misgegaan bij het berekenen. Controleer de adressen of probeer opnieuw.";
+      const response = await fetch(`https://api.openrouteservice.org/v2/directions/driving-car?api_key=5b3ce3597851110001cf6248b59dc263cab24bdabda48748cd9122b3&start=${encodeURIComponent(ophalen)}&end=${encodeURIComponent(afzetten)}`);
+      
+      if (!response.ok) {
+        alert("Kon route niet ophalen. Probeer een ander adres.");
+        return;
       }
+
+      const data = await response.json();
+      const afstandKm = data.features[0].properties.summary.distance / 1000;
+      const duurMin = data.features[0].properties.summary.duration / 60;
+
+      // Basis tarief van €3,00 toevoegen
+      const basisTarief = 3.00;
+
+      // Rittarief (afhankelijk van de afstand en duur)
+      const prijs = basisTarief + (afstandKm * 2.00) + (duurMin * 0.50);
+      document.getElementById("resultaat").innerText = `Geschatte prijs: €${prijs.toFixed(2)} (${afstandKm.toFixed(1)} km, ${duurMin.toFixed(0)} min)`;
     }
   </script>
+</head>
+<body>
+  <h2>FA Taxi Ritprijs Calculator</h2>
+  <label>Ophaaladres:</label><br />
+  <input id="ophaaladres" type="text" placeholder="Bijv. Laan op Zuid 2, Rotterdam"><br />
+  <label>Afzetadres:</label><br />
+  <input id="afzetadres" type="text" placeholder="Bijv. Coolsingel 25, Rotterdam"><br /><br />
+  <button onclick="berekenRit()">Bereken prijs</button>
+  <p id="resultaat"></p>
 </body>
 </html>
