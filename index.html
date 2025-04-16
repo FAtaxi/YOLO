@@ -32,7 +32,7 @@
   </style>
 </head>
 <body>
-  <img class="logo" src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/77/Taxi_picto.svg/1024px-Taxi_picto.svg.png" alt="FA Taxi Logo" />
+  <img class="logo" src="https://i.imgur.com/SdJ6AYY.png" alt="FA Taxi Logo" />
 
   <h2>FA Taxi - Ritprijs Berekenen</h2>
 
@@ -97,7 +97,6 @@
           const aanrij = await getRoute(standplaats, ophaalCoord);
           const rit = await getRoute(ophaalCoord, bestemmingCoord);
 
-          // Tarieven
           const starttarief = 3.00;
           const ritKmPrijs = 2.00;
           const ritMinPrijs = 0.50;
@@ -116,9 +115,35 @@
             Rit van <b>${ophaaladres}</b> naar <b>${bestemmingsadres}</b><br>
             Totale prijs: <b>€${prijs}</b>
           `;
-        }, (error) => {
-          document.getElementById("result").innerText = "Locatie ophalen mislukt. Sta locatiegebruik toe.";
+
+        }, async (error) => {
+          // Fallback locatie: centrum Rotterdam
+          const standplaats = [4.47917, 51.9225];
+
+          const aanrij = await getRoute(standplaats, ophaalCoord);
+          const rit = await getRoute(ophaalCoord, bestemmingCoord);
+
+          const starttarief = 3.00;
+          const ritKmPrijs = 2.00;
+          const ritMinPrijs = 0.50;
+          const aanrijKmPrijs = 0.35;
+          const aanrijMinPrijs = 0.10;
+
+          const totaal = starttarief +
+            (rit.afstandKm * ritKmPrijs) +
+            (rit.duurMin * ritMinPrijs) +
+            (aanrij.afstandKm * aanrijKmPrijs) +
+            (aanrij.duurMin * aanrijMinPrijs);
+
+          const prijs = totaal.toFixed(2).replace(".", ",");
+
+          document.getElementById("result").innerHTML = `
+            Rit van <b>${ophaaladres}</b> naar <b>${bestemmingsadres}</b><br>
+            <i>Let op: live locatie werd niet herkend. Berekening vanaf centrum Rotterdam.</i><br>
+            Totale prijs: <b>€${prijs}</b>
+          `;
         });
+
       } catch (err) {
         console.error(err);
         document.getElementById("result").innerText = "Er is iets misgegaan bij het berekenen. Controleer de adressen of probeer opnieuw.";
