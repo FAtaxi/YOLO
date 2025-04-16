@@ -32,7 +32,8 @@
   </style>
 </head>
 <body>
-  <img class="logo" src="https://chat.openai.com/cdn-cgi/imagedelivery/09p6kFdC5XcFkeh2cyZG1w/152613AF-25D4-4BDA-9753-FF51DC336591/public" alt="FA Taxi Logo" />
+  <img class="logo" src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/77/Taxi_picto.svg/1024px-Taxi_picto.svg.png" alt="FA Taxi Logo" />
+
   <h2>FA Taxi - Ritprijs Berekenen</h2>
 
   <label>Ophaaladres:</label>
@@ -46,4 +47,83 @@
   <div class="result" id="result">Prijs wordt hier getoond...</div>
 
   <script>
-    const apiKey = "5b3ce3597851110001cf6248b59dc263cab24bdabda48748
+    const apiKey = "5b3ce3597851110001cf6248b59dc263cab24bdabda48748cd9122b3";
+
+    async function getCoordinates(adres) {
+      const response = await fetch(`https://api.openrouteservice.org/geocode/search?api_key=${apiKey}&text=${encodeURIComponent(adres)}`);
+      const data = await response.json();
+      if (!data.features || data.features.length === 0) throw new Error("Geen coördinaten gevonden.");
+      return data.features[0].geometry.coordinates;
+    }
+
+    async function getRoute(start, end) {
+      const body = { coordinates: [start, end] };
+
+      const response = await fetch("https://api.openrouteservice.org/v2/directions/driving-car", {
+        method: "POST",
+        headers: {
+          "Authorization": apiKey,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(body)
+      });
+
+      if (!response.ok) throw new Error("Route ophalen mislukt.");
+
+      const data = await response.json();
+      const afstandKm = data.routes[0].summary.distance / 1000;
+      const duurMin = data.routes[0].summary.duration / 60;
+      return { afstandKm, duurMin };
+    }
+
+    async function berekenRit() {
+      document.getElementById("result").innerText = "Bezig met berekenen...";
+
+      const ophaaladres = document.getElementById("ophaaladres").value;
+      const bestemmingsadres = document.getElementById("bestemming").value;
+
+      if (!ophaaladres || !bestemmingsadres) {
+        alert("Vul beide adressen in.");
+        return;
+      }
+
+      try {
+        const ophaalCoord = await getCoordinates(ophaaladres);
+        const bestemmingCoord = await getCoordinates(bestemmingsadres);
+
+        navigator.geolocation.getCurrentPosition(async (positie) => {
+          const standplaats = [positie.coords.longitude, positie.coords.latitude];
+
+          const aanrij = await getRoute(standplaats, ophaalCoord);
+          const rit = await getRoute(ophaalCoord, bestemmingCoord);
+
+          // Tarieven
+          const starttarief = 3.00;
+          const ritKmPrijs = 2.00;
+          const ritMinPrijs = 0.50;
+          const aanrijKmPrijs = 0.35;
+          const aanrijMinPrijs = 0.10;
+
+          const totaal = starttarief +
+            (rit.afstandKm * ritKmPrijs) +
+            (rit.duurMin * ritMinPrijs) +
+            (aanrij.afstandKm * aanrijKmPrijs) +
+            (aanrij.duurMin * aanrijMinPrijs);
+
+          const prijs = totaal.toFixed(2).replace(".", ",");
+
+          document.getElementById("result").innerHTML = `
+            Rit van <b>${ophaaladres}</b> naar <b>${bestemmingsadres}</b><br>
+            Totale prijs: <b>€${prijs}</b>
+          `;
+        }, (error) => {
+          document.getElementById("result").innerText = "Locatie ophalen mislukt. Sta locatiegebruik toe.";
+        });
+      } catch (err) {
+        console.error(err);
+        document.getElementById("result").innerText = "Er is iets misgegaan bij het berekenen. Controleer de adressen of probeer opnieuw.";
+      }
+    }
+  </script>
+</body>
+</html>
