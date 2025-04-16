@@ -5,87 +5,64 @@
   <title>YOLO Taxi</title>
   <script>
     async function berekenRit() {
+      const ophalen = document.getElementById("ophaaladres").value;
       const afzetten = document.getElementById("afzetadres").value;
 
-      if (!afzetten) {
-        alert("Vul het afzetadres in.");
+      if (!ophalen || !afzetten) {
+        alert("Vul beide adressen in.");
         return;
       }
 
-      // Verkrijg de live locatie van de gebruiker
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          async function(position) {
-            console.log("Locatie succesvol opgehaald", position);
-            const ophalen = `${position.coords.latitude},${position.coords.longitude}`;
+      // Geocodeer het ophaaladres
+      const geocodeUrlOphalen = `https://api.openrouteservice.org/geocode/search?api_key=5b3ce3597851110001cf6248b59dc263cab24bdabda48748cd9122b3&text=${encodeURIComponent(ophalen)}`;
+      const geocodeOphalenResponse = await fetch(geocodeUrlOphalen);
+      if (!geocodeOphalenResponse.ok) {
+        alert("Ophaaladres kan niet worden gegeocodeerd.");
+        return;
+      }
+      const geocodeOphalenData = await geocodeOphalenResponse.json();
+      const ophalenCoords = geocodeOphalenData.features[0].geometry.coordinates;
 
-            // Toon de opgehaalde locatie voor debugging
-            console.log("Ophaal locatie:", ophalen);
+      // Geocodeer het afzetadres
+      const geocodeUrlAfzetten = `https://api.openrouteservice.org/geocode/search?api_key=5b3ce3597851110001cf6248b59dc263cab24bdabda48748cd9122b3&text=${encodeURIComponent(afzetten)}`;
+      const geocodeAfzettenResponse = await fetch(geocodeUrlAfzetten);
+      if (!geocodeAfzettenResponse.ok) {
+        alert("Afzetadres kan niet worden gegeocodeerd.");
+        return;
+      }
+      const geocodeAfzettenData = await geocodeAfzettenResponse.json();
+      const afzettenCoords = geocodeAfzettenData.features[0].geometry.coordinates;
 
-            // Geocodeer het afzetadres
-            const geocodeUrlAfzetten = `https://api.openrouteservice.org/geocode/search?api_key=5b3ce3597851110001cf6248b59dc263cab24bdabda48748cd9122b3&text=${encodeURIComponent(afzetten)}`;
-            const geocodeAfzettenResponse = await fetch(geocodeUrlAfzetten);
-            if (!geocodeAfzettenResponse.ok) {
-              alert("Afzetadres kan niet worden gegeocodeerd.");
-              return;
-            }
-            const geocodeAfzettenData = await geocodeAfzettenResponse.json();
-            const afzettenCoords = geocodeAfzettenData.features[0].geometry.coordinates;
+      // Bereken de route met de coördinaten
+      const directionsUrl = `https://api.openrouteservice.org/v2/directions/driving-car?api_key=5b3ce3597851110001cf6248b59dc263cab24bdabda48748cd9122b3&start=${ophalenCoords[0]},${ophalenCoords[1]}&end=${afzettenCoords[0]},${afzettenCoords[1]}`;
 
-            console.log("Afzetcoördinaten:", afzettenCoords);
+      const directionsResponse = await fetch(directionsUrl);
+      if (!directionsResponse.ok) {
+        alert("Kon route niet ophalen.");
+        return;
+      }
 
-            // Bereken de route met de coördinaten
-            const directionsUrl = `https://api.openrouteservice.org/v2/directions/driving-car?api_key=5b3ce3597851110001cf6248b59dc263cab24bdabda48748cd9122b3&start=${ophalen}&end=${afzettenCoords[0]},${afzettenCoords[1]}`;
-            console.log("Route URL:", directionsUrl); // Controleer de URL voor debugging
+      const directionsData = await directionsResponse.json();
+      if (directionsData.features && directionsData.features[0]) {
+        const afstandKm = directionsData.features[0].properties.summary.distance / 1000;
+        const duurMin = directionsData.features[0].properties.summary.duration / 60;
 
-            const directionsResponse = await fetch(directionsUrl);
-            if (!directionsResponse.ok) {
-              alert("Kon route niet ophalen.");
-              return;
-            }
+        // Basis tarief van €3,00 toevoegen
+        const basisTarief = 3.00;
 
-            const directionsData = await directionsResponse.json();
-            console.log("Routegegevens:", directionsData);
-
-            if (directionsData.features && directionsData.features[0]) {
-              const afstandKm = directionsData.features[0].properties.summary.distance / 1000;
-              const duurMin = directionsData.features[0].properties.summary.duration / 60;
-
-              // Basis tarief van €3,00 toevoegen
-              const basisTarief = 3.00;
-
-              // Rittarief (afhankelijk van de afstand en duur)
-              const prijs = basisTarief + (afstandKm * 2.00) + (duurMin * 0.50);
-              document.getElementById("resultaat").innerText = `Geschatte prijs: €${prijs.toFixed(2)} (${afstandKm.toFixed(1)} km, ${duurMin.toFixed(0)} min)`;
-            } else {
-              alert("Er zijn geen routegegevens beschikbaar.");
-            }
-          },
-          function(error) {
-            switch(error.code) {
-              case error.PERMISSION_DENIED:
-                alert("Je hebt de locatie-toegang geweigerd.");
-                break;
-              case error.POSITION_UNAVAILABLE:
-                alert("De locatie is niet beschikbaar.");
-                break;
-              case error.TIMEOUT:
-                alert("De locatie-aanvraag is tijdoverschreden.");
-                break;
-              case error.UNKNOWN_ERROR:
-                alert("Er is een onbekende fout opgetreden bij het ophalen van je locatie.");
-                break;
-            }
-          }
-        );
+        // Rittarief (afhankelijk van de afstand en duur)
+        const prijs = basisTarief + (afstandKm * 2.00) + (duurMin * 0.50);
+        document.getElementById("resultaat").innerText = `Geschatte prijs: €${prijs.toFixed(2)} (${afstandKm.toFixed(1)} km, ${duurMin.toFixed(0)} min)`;
       } else {
-        alert("Geolocatie wordt niet ondersteund door deze browser.");
+        alert("Er zijn geen routegegevens beschikbaar.");
       }
     }
   </script>
 </head>
 <body>
   <h2>YOLO Taxi</h2>
+  <label>Ophaaladres:</label><br />
+  <input id="ophaaladres" type="text" placeholder="Bijv. Laan op Zuid 2, Rotterdam"><br />
   <label>Afzetadres:</label><br />
   <input id="afzetadres" type="text" placeholder="Bijv. Coolsingel 25, Rotterdam"><br /><br />
   <button onclick="berekenRit()">Bereken prijs</button>
