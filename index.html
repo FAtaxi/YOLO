@@ -19,6 +19,10 @@
             console.log("Locatie succesvol opgehaald", position);
             const ophalen = `${position.coords.latitude},${position.coords.longitude}`;
 
+            // Toon de opgehaalde locatie voor debugging
+            console.log("Ophaal locatie:", ophalen);
+
+            // Geocodeer het afzetadres
             const geocodeUrlAfzetten = `https://api.openrouteservice.org/geocode/search?api_key=5b3ce3597851110001cf6248b59dc263cab24bdabda48748cd9122b3&text=${encodeURIComponent(afzetten)}`;
             const geocodeAfzettenResponse = await fetch(geocodeUrlAfzetten);
             if (!geocodeAfzettenResponse.ok) {
@@ -28,25 +32,34 @@
             const geocodeAfzettenData = await geocodeAfzettenResponse.json();
             const afzettenCoords = geocodeAfzettenData.features[0].geometry.coordinates;
 
+            console.log("Afzetcoördinaten:", afzettenCoords);
+
             // Bereken de route met de coördinaten
             const directionsUrl = `https://api.openrouteservice.org/v2/directions/driving-car?api_key=5b3ce3597851110001cf6248b59dc263cab24bdabda48748cd9122b3&start=${ophalen}&end=${afzettenCoords[0]},${afzettenCoords[1]}`;
-            const directionsResponse = await fetch(directionsUrl);
+            console.log("Route URL:", directionsUrl); // Controleer de URL voor debugging
 
+            const directionsResponse = await fetch(directionsUrl);
             if (!directionsResponse.ok) {
               alert("Kon route niet ophalen.");
               return;
             }
 
             const directionsData = await directionsResponse.json();
-            const afstandKm = directionsData.features[0].properties.summary.distance / 1000;
-            const duurMin = directionsData.features[0].properties.summary.duration / 60;
+            console.log("Routegegevens:", directionsData);
 
-            // Basis tarief van €3,00 toevoegen
-            const basisTarief = 3.00;
+            if (directionsData.features && directionsData.features[0]) {
+              const afstandKm = directionsData.features[0].properties.summary.distance / 1000;
+              const duurMin = directionsData.features[0].properties.summary.duration / 60;
 
-            // Rittarief (afhankelijk van de afstand en duur)
-            const prijs = basisTarief + (afstandKm * 2.00) + (duurMin * 0.50);
-            document.getElementById("resultaat").innerText = `Geschatte prijs: €${prijs.toFixed(2)} (${afstandKm.toFixed(1)} km, ${duurMin.toFixed(0)} min)`;
+              // Basis tarief van €3,00 toevoegen
+              const basisTarief = 3.00;
+
+              // Rittarief (afhankelijk van de afstand en duur)
+              const prijs = basisTarief + (afstandKm * 2.00) + (duurMin * 0.50);
+              document.getElementById("resultaat").innerText = `Geschatte prijs: €${prijs.toFixed(2)} (${afstandKm.toFixed(1)} km, ${duurMin.toFixed(0)} min)`;
+            } else {
+              alert("Er zijn geen routegegevens beschikbaar.");
+            }
           },
           function(error) {
             switch(error.code) {
