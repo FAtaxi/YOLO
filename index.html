@@ -130,7 +130,7 @@
         const basisTarief = 3.00;
 
         // Rittarief (afhankelijk van de afstand en duur)
-        const prijs = basisTarief + (afstandKm * 2.00) + (duurMin * 0.50);
+        const prijs = basisTarief + (afstandKm * 2.50) + (duurMin * 0.60);
         document.getElementById("resultaat").innerText = `Geschatte prijs: €${prijs.toFixed(2)} (${afstandKm.toFixed(1)} km, ${duurMin.toFixed(0)} min)`;
       } else {
         alert("Er zijn geen routegegevens beschikbaar.");
