@@ -25,7 +25,7 @@
       border-radius: 10px;
       box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
     }
-    input, button, label, select {
+    input, button, label, select, textarea {
       display: block;
       width: 100%;
       margin: 0.5rem 0;
@@ -34,7 +34,7 @@
       border-radius: 5px;
       font-size: 1rem;
     }
-    input, select {
+    input, select, textarea {
       background: #222;
       color: #fff;
     }
@@ -65,13 +65,13 @@
       margin-left: 1rem;
       background: red;
       color: white;
-      font-size: 0.9rem; /* Smaller button */
+      font-size: 0.9rem;
       padding: 0.5rem 1rem;
     }
     .tussenstop-btn-container {
       display: flex;
       justify-content: space-between;
-      margin-top: 1rem;
+      align-items: center;
     }
     #plus-btn {
       font-size: 1.5rem;
@@ -83,7 +83,12 @@
       border: none;
       cursor: pointer;
     }
+    #planRitContainer {
+      display: none;
+      margin-top: 1rem;
+    }
   </style>
+  <script src="https://unpkg.com/places.js@1.19.0"></script>
 </head>
 <body>
   <h1>FA Taxi Service</h1>
@@ -92,11 +97,20 @@
     <input type="text" id="ophaaladres" placeholder="Bijv. Stationsplein 1, Amsterdam">
     <button onclick="gebruikLocatie()">📌 Haal mijn locatie op</button>
 
+    <div class="tussenstop-btn-container">
+      <label for="tussenstop">📍 Voeg tussenstop toe:</label>
+      <button id="plus-btn" onclick="addTussenstop()">+</button>
+    </div>
+    <div class="tussenstop-container" id="tussenstop-container"></div>
+
     <label for="afzetadres">📍 Afzetadres</label>
     <input type="text" id="afzetadres" placeholder="Bijv. Damrak 50, Amsterdam">
 
-    <label for="tijdstip">🕒 Gewenst tijdstip (optioneel)</label>
-    <input type="datetime-local" id="tijdstip">
+    <button onclick="document.getElementById('planRitContainer').style.display='block'">📅 Geplande rit</button>
+    <div id="planRitContainer">
+      <label for="tijdstip">🕒 Gewenst tijdstip</label>
+      <input type="datetime-local" id="tijdstip">
+    </div>
 
     <label for="betaalmethode">💳 Kies een betaalmethode</label>
     <select id="betaalmethode">
@@ -112,12 +126,6 @@
     <label for="opmerkingen">💬 Opmerkingen (optioneel)</label>
     <textarea id="opmerkingen" rows="4" placeholder="Bijv. speciale verzoeken"></textarea>
 
-    <div class="tussenstop-btn-container">
-      <label for="tussenstop">📍 Voeg tussenstop toe:</label>
-      <button id="plus-btn" onclick="addTussenstop()">+</button>
-    </div>
-    <div class="tussenstop-container" id="tussenstop-container"></div>
-
     <button onclick="toggleSpoed()" id="spoedBtn">🚨 Voeg €10 spoedrit toe</button>
     <input type="checkbox" id="akkoord"> Ik ga akkoord met de annuleringskosten van €10,-
     <button onclick="berekenRit()">🚖 Bereken ritprijs</button>
@@ -131,8 +139,13 @@
 
   <script>
     let spoedToeslag = 0;
-    const weatherApiKey = "9d1afafb80f94518850212856252004";
     let tussenstops = [];
+
+    const placesAutocomplete = places({
+      appId: 'plG0M8L1PCVX', // tijdelijke demo id
+      apiKey: '14e1f607efcc1c2c207b06e2198e3a3d', // tijdelijke demo key
+      container: document.querySelector('#afzetadres')
+    });
 
     function toggleSpoed() {
       spoedToeslag = spoedToeslag === 0 ? 10 : 0;
@@ -148,117 +161,15 @@
           <input type="text" id="tussenstop${stopNummer}" placeholder="Adres van de tussenstop">
           <button type="button" onclick="removeTussenstop(${stopNummer})">-</button>
         `;
-        // Place the new stop input between the ophaal and afzet fields
-        const tussenstopContainer = document.getElementById('tussenstop-container');
-        tussenstopContainer.insertBefore(container, tussenstopContainer.lastChild);
+        document.getElementById('tussenstop-container').appendChild(container);
         tussenstops.push(`tussenstop${stopNummer}`);
       }
     }
 
     function removeTussenstop(num) {
-      document.querySelector(`#tussenstop${num}`).remove();
+      const el = document.getElementById(`tussenstop${num}`).parentElement;
+      el.remove();
       tussenstops = tussenstops.filter(stop => stop !== `tussenstop${num}`);
-    }
-
-    async function getCoordinates(adres) {
-      const url = `https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(adres)}&key=22f9046cc2b242a3a5f08cfabc005f78`;
-      const res = await fetch(url);
-      const data = await res.json();
-      if (data.results.length === 0) throw new Error("Geen locatie gevonden.");
-      const { lat, lng } = data.results[0].geometry;
-      return [lng, lat];
-    }
-
-    async function getWeer(lat, lon) {
-      try {
-        const url = `https://api.weatherapi.com/v1/current.json?key=${weatherApiKey}&q=${lat},${lon}`;
-        const res = await fetch(url);
-        const data = await res.json();
-        return data.current?.condition?.text || "";
-      } catch {
-        return "";
-      }
-    }
-
-    function bepaalDrukteToeslag() {
-      const u = new Date().getHours();
-      const d = new Date().getDay();
-      if ((u >= 7 && u <= 9) || (u >= 16 && u <= 18)) return 1.2;
-      if (d === 0 || d === 6) return 1.15;
-      return 1;
-    }
-
-    function bepaalNachttoeslag() {
-      const u = new Date().getHours();
-      return (u >= 23 || u < 7) ? 1.5 : 1;
-    }
-
-    function berekenRitprijs(afstand, duur, weer) {
-      let basis = 0;
-      if (afstand <= 3) basis = 12;
-      else if (afstand <= 4) basis = 13.5;
-      else if (afstand <= 5) basis = 15;
-      else if (afstand <= 6) basis = 17.5;
-      else if (afstand <= 7) basis = 19;
-      else if (afstand <= 8) basis = 21.5;
-      else if (afstand <= 9) basis = 23.5;
-      else basis = 2.5 + (afstand * 1.5) + (duur * 0.50);
-
-      let toeslag = 1;
-
-      // Weersomstandigheden toeslagen
-      if (weer.toLowerCase().includes("patchy rain")) toeslag *= 1.05;
-      else if (weer.toLowerCase().includes("light rain")) toeslag *= 1.10;
-      else if (weer.toLowerCase().includes("moderate rain")) toeslag *= 1.15;
-      else if (weer.toLowerCase().includes("heavy rain")) toeslag *= 1.20;
-      else if (weer.toLowerCase().includes("torrential rain")) toeslag *= 1.25;
-      else if (weer.toLowerCase().includes("thunderstorm")) toeslag *= 1.25;
-      else if (weer.toLowerCase().includes("snow")) toeslag *= 1.25;
-
-      toeslag *= bepaalDrukteToeslag();
-      toeslag *= bepaalNachttoeslag();
-
-      return basis * toeslag + spoedToeslag;
-    }
-
-    async function berekenRit() {
-      const ophalen = document.getElementById("ophaaladres").value;
-      const afzetten = document.getElementById("afzetadres").value;
-
-      if (!ophalen || !afzetten) return alert("Vul zowel een ophaal- als afzetadres in.");
-
-      const ophaalCoord = await getCoordinates(ophalen);
-      const afzetCoord = await getCoordinates(afzetten);
-
-      let tussenstopCoordinaten = [];
-      for (let i = 0; i < tussenstops.length; i++) {
-        const tussenstopAdres = document.getElementById(tussenstops[i]).value;
-        if (tussenstopAdres) {
-          const tussenstopCoord = await getCoordinates(tussenstopAdres);
-          tussenstopCoordinaten.push(tussenstopCoord);
-        }
-      }
-
-      const afstand = 10; // Moet dynamisch berekend worden
-      const duur = 15; // Moet dynamisch berekend worden
-
-      const weer = await getWeer(ophaalCoord[1], ophaalCoord[0]);
-
-      const ritprijs = berekenRitprijs(afstand, duur, weer);
-      document.getElementById("resultaat").innerText = `Ritprijs: €${ritprijs.toFixed(2)}`;
-    }
-
-    function gebruikLocatie() {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(async (position) => {
-          const lat = position.coords.latitude;
-          const lon = position.coords.longitude;
-          const locatie = await getCoordinates(`${lat},${lon}`);
-          document.getElementById("ophaaladres").value = locatie;
-        });
-      } else {
-        alert("Geolocatie wordt niet ondersteund door deze browser.");
-      }
     }
   </script>
 </body>
