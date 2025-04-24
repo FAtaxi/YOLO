@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>FA Taxi Boeking</title>
   <style>
-    /* Jouw bestaande CSS blijft ongewijzigd */
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
@@ -189,7 +188,6 @@
     function initAutocomplete(inputId) {
       const input = document.getElementById(inputId);
       let timeout = null;
-
       input.addEventListener("input", () => {
         clearTimeout(timeout);
         timeout = setTimeout(() => {
@@ -221,5 +219,6 @@
       initAutocomplete("afzetadres");
     };
   </script>
+  <script src="ritprijs.js"></script>
 </body>
 </html>
