@@ -51,6 +51,21 @@
       border-radius: 5px;
       margin-top: 1rem;
     }
+    .tussenstop-container {
+      margin-top: 1rem;
+    }
+    .tussenstop-item {
+      display: flex;
+      align-items: center;
+    }
+    .tussenstop-item input {
+      flex: 1;
+    }
+    .tussenstop-item button {
+      margin-left: 1rem;
+      background: red;
+      color: white;
+    }
   </style>
 </head>
 <body>
@@ -80,14 +95,13 @@
     <label for="opmerkingen">💬 Opmerkingen (optioneel)</label>
     <textarea id="opmerkingen" rows="4" placeholder="Bijv. speciale verzoeken"></textarea>
 
-    <label for="tussenstop1">📍 Tussenstop 1 (optioneel)</label>
-    <input type="text" id="tussenstop1" placeholder="Adres van de tussenstop">
-    
-    <label for="tussenstop2">📍 Tussenstop 2 (optioneel)</label>
-    <input type="text" id="tussenstop2" placeholder="Adres van de tussenstop">
-    
-    <label for="tussenstop3">📍 Tussenstop 3 (optioneel)</label>
-    <input type="text" id="tussenstop3" placeholder="Adres van de tussenstop">
+    <div class="tussenstop-container">
+      <label for="tussenstop">📍 Voeg tussenstop toe:</label>
+      <div class="tussenstop-item" id="tussenstop1-container">
+        <input type="text" id="tussenstop1" placeholder="Adres van de tussenstop">
+        <button type="button" onclick="addTussenstop()">+</button>
+      </div>
+    </div>
 
     <button onclick="toggleSpoed()" id="spoedBtn">🚨 Voeg €10 spoedrit toe</button>
     <input type="checkbox" id="akkoord"> Ik ga akkoord met de annuleringskosten van €10,-
@@ -103,21 +117,30 @@
   <script>
     let spoedToeslag = 0;
     const weatherApiKey = "9d1afafb80f94518850212856252004";
+    let tussenstops = [];
 
     function toggleSpoed() {
       spoedToeslag = spoedToeslag === 0 ? 10 : 0;
       document.getElementById('spoedBtn').innerText = spoedToeslag === 0 ? "🚨 Voeg €10 spoedrit toe" : "✅ Spoedrit toegevoegd (€10)";
     }
 
-    async function gebruikLocatie() {
-      if (!navigator.geolocation) return alert("Locatie niet ondersteund.");
-      navigator.geolocation.getCurrentPosition(async pos => {
-        const lat = pos.coords.latitude, lon = pos.coords.longitude;
-        const url = `https://api.opencagedata.com/geocode/v1/json?q=${lat}+${lon}&key=22f9046cc2b242a3a5f08cfabc005f78`;
-        const res = await fetch(url);
-        const data = await res.json();
-        document.getElementById("ophaaladres").value = data.results[0].formatted;
-      });
+    function addTussenstop() {
+      if (tussenstops.length < 3) {
+        const stopNummer = tussenstops.length + 1;
+        const container = document.createElement('div');
+        container.classList.add('tussenstop-item');
+        container.innerHTML = `
+          <input type="text" id="tussenstop${stopNummer}" placeholder="Adres van de tussenstop">
+          <button type="button" onclick="removeTussenstop(${stopNummer})">-</button>
+        `;
+        document.querySelector('.tussenstop-container').appendChild(container);
+        tussenstops.push(`tussenstop${stopNummer}`);
+      }
+    }
+
+    function removeTussenstop(num) {
+      document.querySelector(`#tussenstop${num}-container`).remove();
+      tussenstops = tussenstops.filter(stop => stop !== `tussenstop${num}`);
     }
 
     async function getCoordinates(adres) {
@@ -167,13 +190,13 @@
       let toeslag = 1;
 
       // Weersomstandigheden toeslagen
-      if (weer.toLowerCase().includes("patchy rain")) toeslag *= 1.05; // 5% toeslag bij patchy rain
-      else if (weer.toLowerCase().includes("light rain")) toeslag *= 1.10; // 10% toeslag bij lichte regen
-      else if (weer.toLowerCase().includes("moderate rain")) toeslag *= 1.15; // 15% toeslag bij matige regen
-      else if (weer.toLowerCase().includes("heavy rain")) toeslag *= 1.20; // 20% toeslag bij zware regen
-      else if (weer.toLowerCase().includes("torrential rain")) toeslag *= 1.25; // 25% toeslag bij extreme regen
-      else if (weer.toLowerCase().includes("thunderstorm")) toeslag *= 1.25; // 25% toeslag bij onweer
-      else if (weer.toLowerCase().includes("snow")) toeslag *= 1.25; // 25% toeslag bij sneeuw
+      if (weer.toLowerCase().includes("patchy rain")) toeslag *= 1.05;
+      else if (weer.toLowerCase().includes("light rain")) toeslag *= 1.10;
+      else if (weer.toLowerCase().includes("moderate rain")) toeslag *= 1.15;
+      else if (weer.toLowerCase().includes("heavy rain")) toeslag *= 1.20;
+      else if (weer.toLowerCase().includes("torrential rain")) toeslag *= 1.25;
+      else if (weer.toLowerCase().includes("thunderstorm")) toeslag *= 1.25;
+      else if (weer.toLowerCase().includes("snow")) toeslag *= 1.25;
 
       toeslag *= bepaalDrukteToeslag();
       toeslag *= bepaalNachttoeslag();
@@ -184,54 +207,30 @@
     async function berekenRit() {
       const ophalen = document.getElementById("ophaaladres").value;
       const afzetten = document.getElementById("afzetadres").value;
-      const tijd = document.getElementById("tijdstip").value;
-      const betaalmethode = document.getElementById("betaalmethode").value;
-      const huisdieren = document.getElementById("huisdieren").checked;
-      const opmerkingen = document.getElementById("opmerkingen").value;
-      
-      // Voeg tussenstops toe
       const tussenstop1 = document.getElementById("tussenstop1").value;
-      const tussenstop2 = document.getElementById("tussenstop2").value;
-      const tussenstop3 = document.getElementById("tussenstop3").value;
-      const tussenstops = [tussenstop1, tussenstop2, tussenstop3].filter(Boolean);
 
-      if (!ophalen || !afzetten) return alert("Vul beide adressen in.");
-      if (!document.getElementById("akkoord").checked) return alert("Ga akkoord met de annuleringskosten.");
-      
-      try {
-        let coordOphalen = await getCoordinates(ophalen);
-        let coordAfzetten = await getCoordinates(afzetten);
+      if (!ophalen || !afzetten) return alert("Vul zowel een ophaal- als afzetadres in.");
 
-        // Voeg tussenstops toe aan de route
-        for (let stop of tussenstops) {
-          let coordsStop = await getCoordinates(stop);
-          coordAfzetten.push(coordsStop);
+      const ophaalCoord = await getCoordinates(ophalen);
+      const afzetCoord = await getCoordinates(afzetten);
+
+      let tussenstopCoordinaten = [];
+      for (let i = 0; i < tussenstops.length; i++) {
+        const tussenstopAdres = document.getElementById(tussenstops[i]).value;
+        if (tussenstopAdres) {
+          const tussenstopCoord = await getCoordinates(tussenstopAdres);
+          tussenstopCoordinaten.push(tussenstopCoord);
         }
-
-        const routeURL = `https://api.openrouteservice.org/v2/directions/driving-car?api_key=5b3ce3597851110001cf6248b59dc263cab24bdabda48748cd9122b3&start=${coordOphalen[0]},${coordOphalen[1]}&end=${coordAfzetten[0]},${coordAfzetten[1]}`;
-        const res = await fetch(routeURL);
-        const data = await res.json();
-
-        const afstandKm = data.features[0].properties.summary.distance / 1000;
-        const duurMin = data.features[0].properties.summary.duration / 60;
-        const weer = await getWeer(coordOphalen[1], coordOphalen[0]);
-
-        const ritprijs = berekenRitprijs(afstandKm, duurMin, weer);
-
-        const resultText = `🚖 Ritprijs: €${ritprijs.toFixed(2)}\nAfstand: ${afstandKm.toFixed(1)} km\nDuur: ${duurMin.toFixed(0)} min\n💳 Betaalmethode: ${betaalmethode}\n\n📌 Annuleringskosten: €10 (niet inbegrepen)`;
-        document.getElementById("resultaat").innerText = resultText;
-
-        const tijdInfo = tijd ? `🕒 Gewenst tijdstip: ${tijd}` : "";
-        const huisdierenInfo = huisdieren ? "🐾 Huisdieren meegenomen." : "";
-        const bericht = `📲 Nieuw ritverzoek\n📍 Ophaaladres: ${ophalen}\n📍 Afzetadres: ${afzetten}\n${huisdierenInfo}\n${tijdInfo}\n${resultText}\n\n${opmerkingen}`;
-
-        const urlWhatsApp = `https://wa.me/?text=${encodeURIComponent(bericht)}`;
-        document.getElementById("whatsappKnop").href = urlWhatsApp;
-        document.getElementById("whatsappKnop").style.display = "block";
-
-      } catch (error) {
-        alert("Er is iets mis gegaan bij het berekenen van de rit. Probeer het later opnieuw.");
       }
+
+      const coords = [ophaalCoord, ...tussenstopCoordinaten, afzetCoord];
+
+      const weather = await getWeer(ophaalCoord[1], ophaalCoord[0]);
+      const afstand = await getAfstand(coords);
+
+      const prijs = berekenRitprijs(afstand, 10, weather);
+
+      document.getElementById("resultaat").innerText = `Afstand: ${afstand} km\nWeer: ${weather}\nRitprijs: €${prijs.toFixed(2)}`;
     }
   </script>
 </body>
