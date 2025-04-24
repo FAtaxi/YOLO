@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="nl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>FA Taxi Boeking</title>
   <style>
+    /* Jouw bestaande CSS blijft ongewijzigd */
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
@@ -88,7 +89,6 @@
       margin-top: 1rem;
     }
   </style>
-  <script src="https://unpkg.com/places.js@1.19.0"></script>
 </head>
 <body>
   <h1>FA Taxi Service</h1>
@@ -141,12 +141,6 @@
     let spoedToeslag = 0;
     let tussenstops = [];
 
-    const placesAutocomplete = places({
-      appId: 'plG0M8L1PCVX', // tijdelijke demo id
-      apiKey: '14e1f607efcc1c2c207b06e2198e3a3d', // tijdelijke demo key
-      container: document.querySelector('#afzetadres')
-    });
-
     function toggleSpoed() {
       spoedToeslag = spoedToeslag === 0 ? 10 : 0;
       document.getElementById('spoedBtn').innerText = spoedToeslag === 0 ? "🚨 Voeg €10 spoedrit toe" : "✅ Spoedrit toegevoegd (€10)";
@@ -157,12 +151,14 @@
         const stopNummer = tussenstops.length + 1;
         const container = document.createElement('div');
         container.classList.add('tussenstop-item');
+        const inputId = `tussenstop${stopNummer}`;
         container.innerHTML = `
-          <input type="text" id="tussenstop${stopNummer}" placeholder="Adres van de tussenstop">
+          <input type="text" id="${inputId}" placeholder="Adres van de tussenstop">
           <button type="button" onclick="removeTussenstop(${stopNummer})">-</button>
         `;
         document.getElementById('tussenstop-container').appendChild(container);
-        tussenstops.push(`tussenstop${stopNummer}`);
+        initAutocomplete(inputId);
+        tussenstops.push(inputId);
       }
     }
 
@@ -171,6 +167,59 @@
       el.remove();
       tussenstops = tussenstops.filter(stop => stop !== `tussenstop${num}`);
     }
+
+    function gebruikLocatie() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(pos => {
+          const lat = pos.coords.latitude;
+          const lon = pos.coords.longitude;
+          fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`)
+            .then(response => response.json())
+            .then(data => {
+              document.getElementById('ophaaladres').value = data.display_name;
+            });
+        }, () => {
+          alert("Locatie ophalen mislukt.");
+        });
+      } else {
+        alert("Geolocatie wordt niet ondersteund door deze browser.");
+      }
+    }
+
+    function initAutocomplete(inputId) {
+      const input = document.getElementById(inputId);
+      let timeout = null;
+
+      input.addEventListener("input", () => {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => {
+          const query = input.value;
+          if (query.length < 3) return;
+          fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`)
+            .then(response => response.json())
+            .then(data => {
+              const datalistId = inputId + "_suggestions";
+              let datalist = document.getElementById(datalistId);
+              if (!datalist) {
+                datalist = document.createElement("datalist");
+                datalist.id = datalistId;
+                input.setAttribute("list", datalistId);
+                document.body.appendChild(datalist);
+              }
+              datalist.innerHTML = "";
+              data.slice(0, 5).forEach(item => {
+                const option = document.createElement("option");
+                option.value = item.display_name;
+                datalist.appendChild(option);
+              });
+            });
+        }, 300);
+      });
+    }
+
+    window.onload = () => {
+      initAutocomplete("afzetadres");
+    };
   </script>
 </body>
 </html>
