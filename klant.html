@@ -136,89 +136,134 @@
     </a>
   </div>
 
-  <script>
-    let spoedToeslag = 0;
-    let tussenstops = [];
+<script>
+let spoedToeslag = 0;
+let tussenstops = [];
 
-    function toggleSpoed() {
-      spoedToeslag = spoedToeslag === 0 ? 10 : 0;
-      document.getElementById('spoedBtn').innerText = spoedToeslag === 0 ? "🚨 Voeg €10 spoedrit toe" : "✅ Spoedrit toegevoegd (€10)";
-    }
+function toggleSpoed() {
+  spoedToeslag = spoedToeslag === 0 ? 10 : 0;
+  document.getElementById('spoedBtn').innerText = spoedToeslag === 0 ? "🚨 Voeg €10 spoedrit toe" : "✅ Spoedrit toegevoegd (€10)";
+}
 
-    function addTussenstop() {
-      if (tussenstops.length < 3) {
-        const stopNummer = tussenstops.length + 1;
-        const container = document.createElement('div');
-        container.classList.add('tussenstop-item');
-        const inputId = `tussenstop${stopNummer}`;
-        container.innerHTML = `
-          <input type="text" id="${inputId}" placeholder="Adres van de tussenstop">
-          <button type="button" onclick="removeTussenstop(${stopNummer})">-</button>
-        `;
-        document.getElementById('tussenstop-container').appendChild(container);
-        initAutocomplete(inputId);
-        tussenstops.push(inputId);
-      }
-    }
+function addTussenstop() {
+  if (tussenstops.length < 3) {
+    const stopNummer = tussenstops.length + 1;
+    const container = document.createElement('div');
+    container.classList.add('tussenstop-item');
+    const inputId = `tussenstop${stopNummer}`;
+    container.innerHTML = `
+      <input type="text" id="${inputId}" placeholder="Adres van de tussenstop">
+      <button type="button" onclick="removeTussenstop(${stopNummer})">-</button>
+    `;
+    document.getElementById('tussenstop-container').appendChild(container);
+    initAutocomplete(inputId);
+    tussenstops.push(inputId);
+  }
+}
 
-    function removeTussenstop(num) {
-      const el = document.getElementById(`tussenstop${num}`).parentElement;
-      el.remove();
-      tussenstops = tussenstops.filter(stop => stop !== `tussenstop${num}`);
-    }
+function removeTussenstop(num) {
+  const el = document.getElementById(`tussenstop${num}`).parentElement;
+  el.remove();
+  tussenstops = tussenstops.filter(stop => stop !== `tussenstop${num}`);
+}
 
-    function gebruikLocatie() {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(pos => {
-          const lat = pos.coords.latitude;
-          const lon = pos.coords.longitude;
-          fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`)
-            .then(response => response.json())
-            .then(data => {
-              document.getElementById('ophaaladres').value = data.display_name;
-            });
-        }, () => {
-          alert("Locatie ophalen mislukt.");
+function gebruikLocatie() {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(pos => {
+      const lat = pos.coords.latitude;
+      const lon = pos.coords.longitude;
+      fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`)
+        .then(response => response.json())
+        .then(data => {
+          document.getElementById('ophaaladres').value = data.display_name;
         });
-      } else {
-        alert("Geolocatie wordt niet ondersteund door deze browser.");
-      }
-    }
+    }, () => {
+      alert("Locatie ophalen mislukt.");
+    });
+  } else {
+    alert("Geolocatie wordt niet ondersteund door deze browser.");
+  }
+}
 
-    function initAutocomplete(inputId) {
-      const input = document.getElementById(inputId);
-      let timeout = null;
-      input.addEventListener("input", () => {
-        clearTimeout(timeout);
-        timeout = setTimeout(() => {
-          const query = input.value;
-          if (query.length < 3) return;
-          fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`)
-            .then(response => response.json())
-            .then(data => {
-              const datalistId = inputId + "_suggestions";
-              let datalist = document.getElementById(datalistId);
-              if (!datalist) {
-                datalist = document.createElement("datalist");
-                datalist.id = datalistId;
-                input.setAttribute("list", datalistId);
-                document.body.appendChild(datalist);
-              }
-              datalist.innerHTML = "";
-              data.slice(0, 5).forEach(item => {
-                const option = document.createElement("option");
-                option.value = item.display_name;
-                datalist.appendChild(option);
-              });
-            });
-        }, 300);
-      });
-    }
+function initAutocomplete(inputId) {
+  const input = document.getElementById(inputId);
+  let timeout = null;
+  input.addEventListener("input", () => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => {
+      const query = input.value;
+      if (query.length < 3) return;
+      fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`)
+        .then(response => response.json())
+        .then(data => {
+          const datalistId = inputId + "_suggestions";
+          let datalist = document.getElementById(datalistId);
+          if (!datalist) {
+            datalist = document.createElement("datalist");
+            datalist.id = datalistId;
+            input.setAttribute("list", datalistId);
+            document.body.appendChild(datalist);
+          }
+          datalist.innerHTML = "";
+          data.slice(0, 5).forEach(item => {
+            const option = document.createElement("option");
+            option.value = item.display_name;
+            datalist.appendChild(option);
+          });
+        });
+    }, 300);
+  });
+}
 
-    window.onload = () => {
-      initAutocomplete("afzetadres");
-    };
-  </script>
-  <script src="ritprijs.js"></script>
+async function berekenRit() {
+  const afstandKm = 2; // voorbeeld
+  const tijdMinuten = 5; // voorbeeld
+  const weerData = await fetch(`https://api.weatherapi.com/v1/current.json?key=9d1afafb80f94518850212856252004&q=Amsterdam`)
+    .then(res => res.json());
+
+  const weer = weerData.current.condition.text.toLowerCase();
+  let toeslag = 1;
+
+  // Weersomstandigheden
+  if (weer.includes("patchy rain")) toeslag *= 1.05;
+  else if (weer.includes("light rain")) toeslag *= 1.10;
+  else if (weer.includes("moderate rain")) toeslag *= 1.15;
+  else if (weer.includes("heavy rain")) toeslag *= 1.20;
+  else if (weer.includes("torrential rain")) toeslag *= 1.25;
+  else if (weer.includes("thunderstorm") || weer.includes("snow")) toeslag *= 1.25;
+
+  const nu = new Date();
+  const uur = nu.getHours();
+  const dag = nu.getDay();
+
+  // Nacht (22:00–06:00)
+  if (uur >= 22 || uur < 6) toeslag *= 1.15;
+
+  // Weekend (zaterdag = 6, zondag = 0)
+  if (dag === 0 || dag === 6) toeslag *= 1.10;
+
+  // Drukte (07:00–09:00 en 16:00–18:00)
+  if ((uur >= 7 && uur < 9) || (uur >= 16 && uur < 18)) toeslag *= 1.10;
+
+  // Tariefberekening met vaste zones
+  let prijs = 0;
+  if (afstandKm <= 3) prijs = 10;
+  else if (afstandKm <= 4) prijs = 12.5;
+  else if (afstandKm <= 5) prijs = 14;
+  else if (afstandKm <= 6) prijs = 16;
+  else if (afstandKm <= 7) prijs = 18;
+  else if (afstandKm <= 8) prijs = 20;
+  else if (afstandKm <= 9) prijs = 25;
+  else prijs = 2.5 + afstandKm * 2 + tijdMinuten * 0.5;
+
+  prijs *= toeslag;
+  prijs += spoedToeslag;
+
+  prijs = Math.round(prijs * 100) / 100;
+
+  const resultaat = `🚖 Ritprijs: €${prijs}\n📏 Afstand: ${afstandKm} km\n⏱️ Duur: ${tijdMinuten} minuten${spoedToeslag > 0 ? `\n🚨 Spoedtoeslag: €${spoedToeslag}` : ''}`;
+  document.getElementById("resultaat").innerText = resultaat;
+}
+</script>
 </body>
 </html>
