@@ -93,7 +93,8 @@
   <h1>FA Taxi Service</h1>
   <div class="container">
     <label for="ophaaladres">📍 Ophaaladres</label>
-    <input type="text" id="ophaaladres" placeholder="Bijv. Stationsplein 1, Amsterdam">
+    <input type="text" id="ophaaladres" list="ophaal_suggestions" placeholder="Bijv. Stationsplein 1, Amsterdam">
+    <datalist id="ophaal_suggestions"></datalist>
     <button onclick="gebruikLocatie()">📌 Haal mijn locatie op</button>
 
     <div class="tussenstop-btn-container">
@@ -103,7 +104,8 @@
     <div class="tussenstop-container" id="tussenstop-container"></div>
 
     <label for="afzetadres">📍 Afzetadres</label>
-    <input type="text" id="afzetadres" placeholder="Bijv. Damrak 50, Amsterdam">
+    <input type="text" id="afzetadres" list="afzet_suggestions" placeholder="Bijv. Damrak 50, Amsterdam">
+    <datalist id="afzet_suggestions"></datalist>
 
     <button onclick="document.getElementById('planRitContainer').style.display='block'">📅 Geplande rit</button>
     <div id="planRitContainer">
@@ -137,73 +139,61 @@
   </div>
 
 <script>
-let spoedToeslag = 0;
-let tussenstops = [];
+  const orsApiKey = "5b3ce3597851110001cf6248b59dc263cab24bdabda48748cd9122b3";
+  const weatherApiKey = "9d1afafb80f94518850212856252004";
+  let spoedToeslag = 0;
+  let tussenstops = [];
 
-function toggleSpoed() {
-  spoedToeslag = spoedToeslag === 0 ? 10 : 0;
-  document.getElementById('spoedBtn').innerText = spoedToeslag === 0 ? "🚨 Voeg €10 spoedrit toe" : "✅ Spoedrit toegevoegd (€10)";
-}
-
-function addTussenstop() {
-  if (tussenstops.length < 3) {
-    const stopNummer = tussenstops.length + 1;
-    const container = document.createElement('div');
-    container.classList.add('tussenstop-item');
-    const inputId = `tussenstop${stopNummer}`;
-    container.innerHTML = `
-      <input type="text" id="${inputId}" placeholder="Adres van de tussenstop">
-      <button type="button" onclick="removeTussenstop(${stopNummer})">-</button>
-    `;
-    document.getElementById('tussenstop-container').appendChild(container);
-    initAutocomplete(inputId);
-    tussenstops.push(inputId);
+  function gebruikLocatie() {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(pos => {
+        const lat = pos.coords.latitude;
+        const lon = pos.coords.longitude;
+        fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`)
+          .then(response => response.json())
+          .then(data => {
+            document.getElementById('ophaaladres').value = data.display_name;
+          });
+      }, () => {
+        alert("Locatie ophalen mislukt.");
+      });
+    }
   }
-}
 
-function removeTussenstop(num) {
-  const el = document.getElementById(`tussenstop${num}`).parentElement;
-  el.remove();
-  tussenstops = tussenstops.filter(stop => stop !== `tussenstop${num}`);
-}
+  function addTussenstop() {
+    if (tussenstops.length < 3) {
+      const stopNummer = tussenstops.length + 1;
+      const inputId = `tussenstop${stopNummer}`;
+      const datalistId = inputId + "_suggestions";
 
-function gebruikLocatie() {
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(pos => {
-      const lat = pos.coords.latitude;
-      const lon = pos.coords.longitude;
-      fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`)
-        .then(response => response.json())
-        .then(data => {
-          document.getElementById('ophaaladres').value = data.display_name;
-        });
-    }, () => {
-      alert("Locatie ophalen mislukt.");
-    });
-  } else {
-    alert("Geolocatie wordt niet ondersteund door deze browser.");
+      const container = document.createElement('div');
+      container.classList.add('tussenstop-item');
+      container.innerHTML = `
+        <input type="text" id="${inputId}" list="${datalistId}" placeholder="Adres van de tussenstop">
+        <datalist id="${datalistId}"></datalist>
+        <button type="button" onclick="removeTussenstop('${inputId}')">-</button>
+      `;
+      document.getElementById('tussenstop-container').appendChild(container);
+      initAutocomplete(inputId, datalistId);
+      tussenstops.push(inputId);
+    }
   }
-}
 
-function initAutocomplete(inputId) {
-  const input = document.getElementById(inputId);
-  let timeout = null;
-  input.addEventListener("input", () => {
-    clearTimeout(timeout);
-    timeout = setTimeout(() => {
+  function removeTussenstop(id) {
+    const el = document.getElementById(id).parentElement;
+    el.remove();
+    tussenstops = tussenstops.filter(stop => stop !== id);
+  }
+
+  function initAutocomplete(inputId, datalistId) {
+    const input = document.getElementById(inputId);
+    input.addEventListener("input", () => {
       const query = input.value;
       if (query.length < 3) return;
       fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`)
         .then(response => response.json())
         .then(data => {
-          const datalistId = inputId + "_suggestions";
-          let datalist = document.getElementById(datalistId);
-          if (!datalist) {
-            datalist = document.createElement("datalist");
-            datalist.id = datalistId;
-            input.setAttribute("list", datalistId);
-            document.body.appendChild(datalist);
-          }
+          const datalist = document.getElementById(datalistId);
           datalist.innerHTML = "";
           data.slice(0, 5).forEach(item => {
             const option = document.createElement("option");
@@ -211,59 +201,97 @@ function initAutocomplete(inputId) {
             datalist.appendChild(option);
           });
         });
-    }, 300);
-  });
-}
+    });
+  }
 
-async function berekenRit() {
-  const afstandKm = 2; // voorbeeld
-  const tijdMinuten = 5; // voorbeeld
-  const weerData = await fetch(`https://api.weatherapi.com/v1/current.json?key=9d1afafb80f94518850212856252004&q=Amsterdam`)
-    .then(res => res.json());
+  function toggleSpoed() {
+    spoedToeslag = spoedToeslag === 0 ? 10 : 0;
+    document.getElementById('spoedBtn').innerText = spoedToeslag === 0 ? "🚨 Voeg €10 spoedrit toe" : "✅ Spoedrit toegevoegd (€10)";
+  }
 
-  const weer = weerData.current.condition.text.toLowerCase();
-  let toeslag = 1;
+  async function berekenRit() {
+    const ophaal = document.getElementById("ophaaladres").value;
+    const afzet = document.getElementById("afzetadres").value;
+    const waypoints = [ophaal, ...tussenstops.map(id => document.getElementById(id).value), afzet];
 
-  // Weersomstandigheden
-  if (weer.includes("patchy rain")) toeslag *= 1.05;
-  else if (weer.includes("light rain")) toeslag *= 1.10;
-  else if (weer.includes("moderate rain")) toeslag *= 1.15;
-  else if (weer.includes("heavy rain")) toeslag *= 1.20;
-  else if (weer.includes("torrential rain")) toeslag *= 1.25;
-  else if (weer.includes("thunderstorm") || weer.includes("snow")) toeslag *= 1.25;
+    // Coördinaten ophalen
+    const coords = await Promise.all(waypoints.map(loc =>
+      fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(loc)}`)
+        .then(res => res.json())
+        .then(data => [parseFloat(data[0].lon), parseFloat(data[0].lat)])
+    ));
 
-  const nu = new Date();
-  const uur = nu.getHours();
-  const dag = nu.getDay();
+    // Route berekenen via ORS
+    const body = {
+      coordinates: coords,
+      instructions: false
+    };
 
-  // Nacht (22:00–06:00)
-  if (uur >= 22 || uur < 6) toeslag *= 1.15;
+    const response = await fetch("https://api.openrouteservice.org/v2/directions/driving-car", {
+      method: "POST",
+      headers: {
+        "Authorization": orsApiKey,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(body)
+    });
+    const data = await response.json();
+    const afstandKm = data.routes[0].summary.distance / 1000;
+    const tijdMin = data.routes[0].summary.duration / 60;
 
-  // Weekend (zaterdag = 6, zondag = 0)
-  if (dag === 0 || dag === 6) toeslag *= 1.10;
+    // Weer ophalen
+    const { lat, lon } = { lat: coords[0][1], lon: coords[0][0] };
+    const weerRes = await fetch(`https://api.weatherapi.com/v1/current.json?key=${weatherApiKey}&q=${lat},${lon}`);
+    const weerData = await weerRes.json();
+    const weer = weerData.current.condition.text;
 
-  // Drukte (07:00–09:00 en 16:00–18:00)
-  if ((uur >= 7 && uur < 9) || (uur >= 16 && uur < 18)) toeslag *= 1.10;
+    // Tarief berekenen
+    let prijs = 0;
+    if (afstandKm <= 3) prijs = 10;
+    else if (afstandKm <= 4) prijs = 12.5;
+    else if (afstandKm <= 5) prijs = 14;
+    else if (afstandKm <= 6) prijs = 16;
+    else if (afstandKm <= 7) prijs = 18;
+    else if (afstandKm <= 8) prijs = 20;
+    else if (afstandKm <= 9) prijs = 25;
+    else prijs = 2.5 + (afstandKm * 2) + (tijdMin * 0.5);
 
-  // Tariefberekening met vaste zones
-  let prijs = 0;
-  if (afstandKm <= 3) prijs = 10;
-  else if (afstandKm <= 4) prijs = 12.5;
-  else if (afstandKm <= 5) prijs = 14;
-  else if (afstandKm <= 6) prijs = 16;
-  else if (afstandKm <= 7) prijs = 18;
-  else if (afstandKm <= 8) prijs = 20;
-  else if (afstandKm <= 9) prijs = 25;
-  else prijs = 2.5 + afstandKm * 2 + tijdMinuten * 0.5;
+    // Dynamische toeslagen
+    let toeslag = 1;
+    const now = new Date();
+    const uur = now.getHours();
+    const dag = now.getDay();
 
-  prijs *= toeslag;
-  prijs += spoedToeslag;
+    // Drukte (17–19u)
+    if (uur >= 17 && uur <= 19) toeslag *= 1.10;
+    // Weekend
+    if (dag === 6 || dag === 0) toeslag *= 1.10;
+    // Nacht (22–06u)
+    if (uur >= 22 || uur < 6) toeslag *= 1.15;
 
-  prijs = Math.round(prijs * 100) / 100;
+    // Weer
+    const weerL = weer.toLowerCase();
+    if (weerL.includes("patchy rain")) toeslag *= 1.05;
+    else if (weerL.includes("light rain")) toeslag *= 1.10;
+    else if (weerL.includes("moderate rain")) toeslag *= 1.15;
+    else if (weerL.includes("heavy rain")) toeslag *= 1.20;
+    else if (weerL.includes("torrential rain")) toeslag *= 1.25;
+    else if (weerL.includes("thunderstorm")) toeslag *= 1.25;
+    else if (weerL.includes("snow")) toeslag *= 1.25;
 
-  const resultaat = `🚖 Ritprijs: €${prijs}\n📏 Afstand: ${afstandKm} km\n⏱️ Duur: ${tijdMinuten} minuten${spoedToeslag > 0 ? `\n🚨 Spoedtoeslag: €${spoedToeslag}` : ''}`;
-  document.getElementById("resultaat").innerText = resultaat;
-}
+    const totaal = (prijs * toeslag + spoedToeslag).toFixed(2);
+
+    document.getElementById("resultaat").innerText =
+      `📍 Afstand: ${afstandKm.toFixed(1)} km\n⏱️ Duur: ${tijdMin.toFixed(0)} minuten\n💶 Ritprijs: €${totaal}`;
+
+    document.getElementById("whatsappKnop").href = `https://wa.me/?text=Boeking FA Taxi:%0AAdres: ${ophaal} → ${afzet}%0AAfstand: ${afstandKm.toFixed(1)} km%0ADuur: ${tijdMin.toFixed(0)} min%0APrijs: €${totaal}`;
+    document.getElementById("whatsappKnop").style.display = "block";
+  }
+
+  window.onload = () => {
+    initAutocomplete("ophaaladres", "ophaal_suggestions");
+    initAutocomplete("afzetadres", "afzet_suggestions");
+  };
 </script>
 </body>
 </html>
