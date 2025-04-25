@@ -235,63 +235,34 @@
       },
       body: JSON.stringify(body)
     });
-    const data = await response.json();
-    const afstandKm = data.routes[0].summary.distance / 1000;
-    const tijdMin = data.routes[0].summary.duration / 60;
+    const routeData = await response.json();
+    const afstandKm = routeData.features[0].properties.segments[0].distance / 1000;
+    const tijdMin = routeData.features[0].properties.segments[0].duration / 60;
 
-    // Weer ophalen
-    const { lat, lon } = { lat: coords[0][1], lon: coords[0][0] };
-    const weerRes = await fetch(`https://api.weatherapi.com/v1/current.json?key=${weatherApiKey}&q=${lat},${lon}`);
-    const weerData = await weerRes.json();
-    const weer = weerData.current.condition.text;
-
-    // Tarief berekenen
-    let prijs = 0;
-    if (afstandKm <= 3) prijs = 10;
-    else if (afstandKm <= 4) prijs = 12.5;
-    else if (afstandKm <= 5) prijs = 14;
-    else if (afstandKm <= 6) prijs = 16;
-    else if (afstandKm <= 7) prijs = 18;
-    else if (afstandKm <= 8) prijs = 20;
-    else if (afstandKm <= 9) prijs = 25;
-    else prijs = 2.5 + (afstandKm * 2) + (tijdMin * 0.5);
+    // Basisprijs berekenen
+    let prijsZonderToeslag = 0;
+    if (afstandKm <= 3) prijsZonderToeslag = 10;
+    else if (afstandKm <= 4) prijsZonderToeslag = 12.5;
+    else if (afstandKm <= 5) prijsZonderToeslag = 14;
+    else if (afstandKm <= 6) prijsZonderToeslag = 16;
+    else if (afstandKm <= 7) prijsZonderToeslag = 18;
+    else if (afstandKm <= 8) prijsZonderToeslag = 20;
+    else if (afstandKm <= 9) prijsZonderToeslag = 25;
+    else prijsZonderToeslag = 2.5 + (afstandKm * 2) + (tijdMin * 0.5);
 
     // Dynamische toeslagen
-    let toeslag = 1;
-    const now = new Date();
-    const uur = now.getHours();
-    const dag = now.getDay();
+    let toeslagFactor = 1;
+    const weatherData = await fetch(`https://api.weatherapi.com/v1/current.json?key=${weatherApiKey}&q=${afzet}`).then(res => res.json());
+    const isRainy = weatherData.current.condition.text.includes("rain");
+    if (isRainy) toeslagFactor = 1.2; // Regen toeslag
 
-    // Drukte (17–19u)
-    if (uur >= 17 && uur <= 19) toeslag *= 1.10;
-    // Weekend
-    if (dag === 6 || dag === 0) toeslag *= 1.10;
-    // Nacht (22–06u)
-    if (uur >= 22 || uur < 6) toeslag *= 1.15;
+    const totaal = (prijsZonderToeslag * toeslagFactor + spoedToeslag).toFixed(2);
 
-    // Weer
-    const weerL = weer.toLowerCase();
-    if (weerL.includes("patchy rain")) toeslag *= 1.05;
-    else if (weerL.includes("light rain")) toeslag *= 1.10;
-    else if (weerL.includes("moderate rain")) toeslag *= 1.15;
-    else if (weerL.includes("heavy rain")) toeslag *= 1.20;
-    else if (weerL.includes("torrential rain")) toeslag *= 1.25;
-    else if (weerL.includes("thunderstorm")) toeslag *= 1.25;
-    else if (weerL.includes("snow")) toeslag *= 1.25;
-
-    const totaal = (prijs * toeslag + spoedToeslag).toFixed(2);
-
-    document.getElementById("resultaat").innerText =
-      `📍 Afstand: ${afstandKm.toFixed(1)} km\n⏱️ Duur: ${tijdMin.toFixed(0)} minuten\n💶 Ritprijs: €${totaal}`;
-
-    document.getElementById("whatsappKnop").href = `https://wa.me/?text=Boeking FA Taxi:%0AAdres: ${ophaal} → ${afzet}%0AAfstand: ${afstandKm.toFixed(1)} km%0ADuur: ${tijdMin.toFixed(0)} min%0APrijs: €${totaal}`;
+    // Resultaten weergeven
+    document.getElementById("resultaat").innerText = `Ritprijs: €${totaal} (afhankelijk van weersomstandigheden)`;
     document.getElementById("whatsappKnop").style.display = "block";
+    document.getElementById("whatsappKnop").href = `https://wa.me/31647972301?text=Ik wil een rit boeken van ${ophaal} naar ${afzet} met een prijs van €${totaal}`;
   }
-
-  window.onload = () => {
-    initAutocomplete("ophaaladres", "ophaal_suggestions");
-    initAutocomplete("afzetadres", "afzet_suggestions");
-  };
 </script>
 </body>
 </html>
