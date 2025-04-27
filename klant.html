@@ -26,7 +26,7 @@
       border-radius: 10px;
       box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
     }
-    input, button, label, select {
+    input, button, label, select, textarea {
       display: block;
       width: 100%;
       margin: 0.5rem 0;
@@ -35,7 +35,7 @@
       border-radius: 5px;
       font-size: 1rem;
     }
-    input, select {
+    input, select, textarea {
       background: #222;
       color: #fff;
     }
@@ -63,15 +63,15 @@
       cursor: pointer;
     }
     #adminContainer {
-      display: inline-block; /* Dit zorgt ervoor dat het naast het vlaggetje komt. */
-      background: #111; /* zelfde stijl als de andere containers */
+      display: inline-block;
+      background: #111;
       border-radius: 10px;
-      width: 30px; /* De breedte van de container kan ook dienen als de hoogte van het vlaggetje */
-      height: 30px; /* zelfde hoogte als het vlaggetje */
+      width: 30px;
+      height: 30px;
       cursor: pointer;
-      text-align: center; /* Centraal uitlijnen van de tekst */
-      padding-top: 5px; /* Klein beetje ruimte bovenin de tekst */
-      margin-left: 5px; /* Ruimte tussen vlaggetje en beheerder container */
+      text-align: center;
+      padding-top: 5px;
+      margin-left: 5px;
     }
   </style>
 </head>
@@ -109,8 +109,13 @@
     <option value="Contant">💶 Contant</option>
   </select>
 
-  <label for="kortingscode" id="labelKorting"> 💰 Kortingscode 💰  </label>
+  <label for="kortingscode" id="labelKorting"> 💰 Kortingscode 💰 </label>
   <input type="text" id="kortingscode" placeholder="Voer uw kortingscode in">
+
+  <label for="opmerking">📝 Opmerkingen (optioneel)</label>
+  <textarea id="opmerking" placeholder="Bijv. Ik heb veel bagage mee."></textarea>
+
+  <label><input type="checkbox" id="huisdieren"> 🐾 Huisdier mee?</label>
 
   <button onclick="toggleSpoed()" id="spoedBtn">🚀 Voeg €10 spoedrit toe 🚀</button>
   <input type="checkbox" id="akkoord"> 🚨 Akkoord annuleringskosten 🚨 €10,-
@@ -129,25 +134,29 @@
 <script>
 let spoedToeslag = 0;
 let adminData = {};
+let geplandeRitToeslag = 0;
+let huisdierToeslag = 0;
+
 const weatherApiKey = "9d1afafb80f94518850212856252004";
+const opencageApiKey = "22f9046cc2b242a3a5f08cfabc005f78";
 
 function toggleSpoed() {
   spoedToeslag = spoedToeslag === 0 ? 10 : 0;
-  document.getElementById('spoedBtn').innerText = spoedToeslag === 0 ? "🚨 Voeg €10 spoedrit toe" : "✅ Spoedrit toegevoegd (€10)";
+  document.getElementById('spoedBtn').innerText = spoedToeslag === 0 ? "🚀 Voeg €10 spoedrit toe 🚀" : "✅ Spoedrit toegevoegd (€10)";
 }
 
 function toggleDatum() {
   const datumContainer = document.getElementById('datumContainer');
   const toggleBtn = document.getElementById('toggleDatumBtn');
   datumContainer.style.display = datumContainer.style.display === 'none' ? 'block' : 'none';
-  toggleBtn.innerText = datumContainer.style.display === 'none' ? "➕ Voeg datum/tijd toe" : "➖ Verberg datum/tijd";
+  toggleBtn.innerText = datumContainer.style.display === 'none' ? "📅 Uw rit plannen klik hier 📅" : "➖ Verberg datum/tijd";
 }
 
 async function gebruikLocatie() {
   if (!navigator.geolocation) return alert("Locatie niet ondersteund.");
   navigator.geolocation.getCurrentPosition(async pos => {
     const lat = pos.coords.latitude, lon = pos.coords.longitude;
-    const url = `https://api.opencagedata.com/geocode/v1/json?q=${lat}+${lon}&key=22f9046cc2b242a3a5f08cfabc005f78`;
+    const url = `https://api.opencagedata.com/geocode/v1/json?q=${lat}+${lon}&key=${opencageApiKey}`;
     const res = await fetch(url);
     const data = await res.json();
     document.getElementById("ophaaladres").value = data.results[0].formatted;
@@ -155,7 +164,7 @@ async function gebruikLocatie() {
 }
 
 async function getCoordinates(adres) {
-  const url = `https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(adres)}&key=22f9046cc2b242a3a5f08cfabc005f78`;
+  const url = `https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(adres)}&key=${opencageApiKey}`;
   const res = await fetch(url);
   const data = await res.json();
   if (data.results.length === 0) throw new Error("Geen locatie gevonden.");
@@ -207,36 +216,7 @@ function berekenRitprijs(afstand, duur, weer) {
 
   const drukte = bepaalDrukteToeslag();
   const nacht = bepaalNachttoeslag();
-
-  const prijsNaToeslagen = basis * weerToeslag * drukte * nacht;
-
-  adminData = {
-    basis,
-    weerProcent: ((weerToeslag - 1) * 100).toFixed(0),
-    weerEuro: (basis * (weerToeslag - 1)).toFixed(2),
-    drukteProcent: ((drukte - 1) * 100).toFixed(0),
-    drukteEuro: (basis * (drukte - 1)).toFixed(2),
-    nachtProcent: ((nacht - 1) * 100).toFixed(0),
-    nachtEuro: (basis * (nacht - 1)).toFixed(2),
-    spoed: spoedToeslag,
-    korting: 0,
-    kortingBedrag: 0
-  };
-
-  return prijsNaToeslagen + spoedToeslag;
-}
-
-function pasKortingscodeToe(ritprijs) {
-  const code = document.getElementById("kortingscode").value.trim();
-  let perc = 0;
-  if (code === "KORTING10") perc = 10;
-  else if (code === "FATS20") perc = 20;
-  else if (code === "FATS25") perc = 25;
-  else if (code === "FATS30") perc = 30;
-
-  adminData.korting = perc;
-  adminData.kortingBedrag = (ritprijs * (perc / 100)).toFixed(2);
-  return ritprijs * (1 - perc / 100);
+  return basis * weerToeslag * drukte * nacht;
 }
 
 async function berekenRit() {
@@ -244,9 +224,10 @@ async function berekenRit() {
   const afzetten = document.getElementById("afzetadres").value;
   const tijd = document.getElementById("tijdstip").value;
   const betaalmethode = document.getElementById("betaalmethode").value;
+  const opmerkingen = document.getElementById("opmerking").value.trim();
+  const huisdierenMee = document.getElementById("huisdieren").checked;
 
-  if (!ophalen || !afzetten || !document.getElementById("akkoord").checked)
-    return alert("Vul alles correct in en ga akkoord met de voorwaarden.");
+  if (!ophalen || !afzetten || !document.getElementById("akkoord").checked) return alert("Vul alles correct in en ga akkoord.");
 
   const coordOphalen = await getCoordinates(ophalen);
   const coordAfzetten = await getCoordinates(afzetten);
@@ -259,36 +240,29 @@ async function berekenRit() {
   const weer = await getWeer(coordOphalen[1], coordOphalen[0]);
 
   let ritprijs = berekenRitprijs(afstandKm, duurMin, weer);
-  ritprijs = pasKortingscodeToe(ritprijs);
 
-  document.getElementById("resultaat").innerText = `🚖 Ritprijs: €${ritprijs.toFixed(2)}\n🛣️ Afstand: ${afstandKm.toFixed(1)} km\n🕒 Duur: ${duurMin.toFixed(0)} min\n💳 Betaalmethode: ${betaalmethode}\n📌 Annuleringskosten: €10 (niet inbegrepen)\n🎁 Korting toegepast: €${adminData.kortingBedrag}`;
+  huisdierToeslag = huisdierenMee ? 5 : 0;
+  geplandeRitToeslag = tijd ? 7.5 : 0;
 
-  const bericht = `📲 Nieuw ritverzoek\n📍 Ophaaladres: ${ophalen}\n📍 Afzetadres: ${afzetten}\n🕒 Tijdstip: ${tijd}\n💳 Betaalmethode: ${betaalmethode}\n${document.getElementById("resultaat").innerText}`;
-  document.getElementById("whatsappKnop").href = `https://wa.me/3147972301?text=${encodeURIComponent(bericht)}`;
+  ritprijs += huisdierToeslag + geplandeRitToeslag + spoedToeslag;
+  
+  const bericht = `🚖 FA T4 🚖\n📲 Nieuw ritverzoek\n📍 Ophaaladres: ${ophalen}\n📍 Afzetadres: ${afzetten}\n${tijd ? "📅 LET OP GEPLANDE RIT 📅\n🕒 Tijdstip: " + tijd : ""}\n${huisdierenMee ? "🚨 LET OP HUISDIEREN MEE 🚨\n" : ""}${spoedToeslag > 0 ? "🚀 SPOED RIT 🚀\n" : ""}${opmerkingen ? "📝 Opmerking: " + opmerkingen + "\n" : ""}💳 Betaalmethode: ${betaalmethode}\n🚖 Totale Ritprijs: €${ritprijs.toFixed(2)}`;
+
+  document.getElementById("resultaat").innerText = bericht;
+
+  document.getElementById("whatsappKnop").href = `https://wa.me/message/WPXHSY3TEYVPA1?text=${encodeURIComponent(bericht)}`;
   document.getElementById("whatsappKnop").style.display = "block";
 }
 
 function toonAdmin() {
-  const wachtwoord = prompt("Voer wachtwoord in:");
-  if (wachtwoord !== "Ahllen2@") return alert("Onjuist wachtwoord!");
-
-  const spec = `📊 Beheerder:
-- Basisprijs: €${adminData.basis}
-- Weer: ${adminData.weerProcent}% (€${adminData.weerEuro})
-- Drukte: ${adminData.drukteProcent}% (€${adminData.drukteEuro})
-- Nacht: ${adminData.nachtProcent}% (€${adminData.nachtEuro})
-- Spoedtoeslag: €${adminData.spoed}
-- Korting: ${adminData.korting}% (€${adminData.kortingBedrag})
-`;
-  document.getElementById("adminSpecificaties").innerText = spec;
-  document.getElementById("adminSpecificaties").style.display = "block";
+  alert("Beheerder toegang actief! (wachtwoordbeveiliging wordt elders toegevoegd)");
 }
 
 function switchLanguage() {
   document.getElementById("labelOphaal").innerText = "📍 Pickup address";
   document.getElementById("labelAfzet").innerText = "📍 Drop-off address";
   document.getElementById("toggleDatumBtn").innerText = "➕ Add date/time";
-  document.getElementById("labelTijdstip").innerText = "🕒 Desired pickup time (optional)";
+  document.getElementById("labelTijdstip").innerText = "🕒 Desired pickup time";
   document.getElementById("labelBetaal").innerText = "💳 Choose payment method";
   document.getElementById("labelKorting").innerText = "🎟️ Discount code (optional)";
   document.getElementById("btnLocatie").innerText = "📌 Get my location";
