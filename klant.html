@@ -480,7 +480,8 @@ async function berekenRit() {
     spoedInfo = "🚨 SPOEDRIT - PRIORITEIT 🚨\n";
   }
 
-  document.getElementById("resultaat").innerText = `${spoedInfo}🚖 Ritprijs: €${ritprijs.toFixed(2)}\n🛣️ Afstand: ${afstandKm.toFixed(1)} km\n🕒 Duur: ${duurMin.toFixed(0)} min\n💳 Betaalmethode: ${betaalmethode}\n📌 Annuleringskosten: €10 (niet inbegrepen)\n🎁 Korting toegepast: €${adminData.kortingBedrag}\n${adminData.geplandeRit}\n${adminData.huisdieren}`;
+  const tijdstipWeergave = tijd ? tijd : 'On-Demand';
+  document.getElementById("resultaat").innerText = `${spoedInfo}🚖 Ritprijs: €${ritprijs.toFixed(2)}\n🛣️ Afstand: ${afstandKm.toFixed(1)} km\n🕒 Duur: ${duurMin.toFixed(0)} min\n🕒 Tijdstip: ${tijdstipWeergave}\n💳 Betaalmethode: ${betaalmethode}\n📌 Annuleringskosten: €10 (niet inbegrepen)\n🎁 Korting toegepast: €${adminData.kortingBedrag}\n${adminData.geplandeRit}\n${adminData.huisdieren}`;
 
   // Voeg spoedrit informatie toe aan WhatsApp bericht voor chauffeur
   let spoedBericht = "";
@@ -488,7 +489,7 @@ async function berekenRit() {
     spoedBericht = "🚨🚨🚨 SPOEDRIT - PRIORITEIT AUB DIRECT AFHANDELEN 🚨🚨🚨\n";
   }
 
-  const bericht = `${spoedBericht}🚖 FA TAXI SERVICE 4 Personen 🚖\n📲 Nieuw ritverzoek\n📍 Ophaaladres: ${ophalen}\n📍 Afzetadres: ${afzetten}\n🕒 Tijdstip: ${tijd}\n💳 Betaalmethode: ${betaalmethode}\n${opmerkingen ? '✏️ Opmerkingen: ' + opmerkingen + '\n' : ''}${document.getElementById("resultaat").innerText}`;
+  const bericht = `${spoedBericht}🚖 FA TAXI SERVICE 4 Personen 🚖\n📲 Nieuw ritverzoek\n📍 Ophaaladres: ${ophalen}\n📍 Afzetadres: ${afzetten}\n🕒 Tijdstip: ${tijdstipWeergave}\n💳 Betaalmethode: ${betaalmethode}\n${opmerkingen ? '✏️ Opmerkingen: ' + opmerkingen + '\n' : ''}${document.getElementById("resultaat").innerText}`;
   document.getElementById("whatsappKnop").href = `https://wa.me/message/WPXHSY3TEYVPA1?text=${encodeURIComponent(bericht)}`;
   document.getElementById("whatsappKnop").style.display = "block";
 
