@@ -190,27 +190,86 @@
 
 <!-- Bewegende G-Wagon met rook bovenaan -->
 <div class="taxi-move">
-  <svg class="gwagen-svg" viewBox="0 0 140 60" width="120" height="55" style="position:absolute; left:0; top:0; z-index:2;">
-  <!-- Engelse taxi body -->
-  <rect x="15" y="28" width="90" height="20" rx="12" fill="#FFD600" stroke="#333" stroke-width="2"/>
-  <rect x="85" y="18" width="25" height="20" rx="7" fill="#FFD600" stroke="#333" stroke-width="2"/>
-  <!-- Motorkap -->
-  <rect x="10" y="33" width="20" height="13" rx="6" fill="#FFD600" stroke="#333" stroke-width="2"/>
-  <!-- Taxi bordje -->
-  <ellipse cx="98" cy="18" rx="8" ry="3" fill="#fff200" stroke="#333" stroke-width="1"/>
-  <rect x="93" y="13" width="10" height="6" rx="2" fill="#fff200" stroke="#333" stroke-width="1"/>
-  <!-- Ramen -->
-  <rect x="90" y="22" width="10" height="10" rx="2" fill="#B3E5FC" stroke="#333" stroke-width="1"/>
-  <rect x="102" y="22" width="7" height="10" rx="2" fill="#B3E5FC" stroke="#333" stroke-width="1"/>
-  <rect x="30" y="32" width="40" height="10" rx="3" fill="#B3E5FC" stroke="#333" stroke-width="1"/>
-  <!-- Wielen -->
-  <ellipse cx="30" cy="50" rx="8" ry="8" fill="#222" stroke="#444" stroke-width="2"/>
-  <ellipse cx="100" cy="50" rx="8" ry="8" fill="#222" stroke="#444" stroke-width="2"/>
-  <!-- Koplampen -->
-  <ellipse cx="18" cy="40" rx="2.5" ry="2" fill="#fff" stroke="#ccc" stroke-width="1"/>
-  <ellipse cx="28" cy="40" rx="2.5" ry="2" fill="#fff" stroke="#ccc" stroke-width="1"/>
+  <svg class="gwagen-svg" viewBox="0 0 160 70" width="140" height="65" style="position:absolute; left:0; top:0; z-index:2;">
+  <!-- Schaduw onder de taxi -->
+  <ellipse cx="80" cy="66" rx="50" ry="7" fill="#000" opacity="0.25"/>
+  <!-- Body (3D effect) -->
+  <rect x="22" y="34" width="100" height="22" rx="10" fill="url(#taxiBodyGradient)" stroke="#222" stroke-width="2"/>
+  <defs>
+    <linearGradient id="taxiBodyGradient" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#fffde4"/>
+      <stop offset="30%" stop-color="#ffe066"/>
+      <stop offset="100%" stop-color="#FFD600"/>
+    </linearGradient>
+    <radialGradient id="windowReflection" cx="50%" cy="40%" r="80%">
+      <stop offset="0%" stop-color="#fff" stop-opacity="0.6"/>
+      <stop offset="60%" stop-color="#B3E5FC" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#B3E5FC"/>
+    </radialGradient>
+    <radialGradient id="chrome" cx="50%" cy="50%" r="70%">
+      <stop offset="0%" stop-color="#eee"/>
+      <stop offset="100%" stop-color="#888"/>
+    </radialGradient>
+    <radialGradient id="headlight" cx="50%" cy="50%" r="70%">
+      <stop offset="0%" stop-color="#fffbe6" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#fffbe6" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="wheel" cx="50%" cy="50%" r="70%">
+      <stop offset="0%" stop-color="#444"/>
+      <stop offset="100%" stop-color="#111"/>
+    </radialGradient>
+  </defs>
+  <!-- Motorkap (3D) -->
+  <rect x="12" y="39" width="25" height="15" rx="7" fill="url(#taxiBodyGradient)" stroke="#222" stroke-width="2"/>
+  <!-- Dak -->
+  <rect x="55" y="22" width="45" height="17" rx="5" fill="url(#taxiBodyGradient)" stroke="#222" stroke-width="2"/>
+  <!-- Ramen met reflectie -->
+  <rect x="60" y="26" width="13" height="10" rx="2" fill="url(#windowReflection)" stroke="#333" stroke-width="1"/>
+  <rect x="76" y="26" width="13" height="10" rx="2" fill="url(#windowReflection)" stroke="#333" stroke-width="1"/>
+  <!-- Chrome details -->
+  <rect x="30" y="48" width="80" height="4" rx="2" fill="url(#chrome)"/>
+  <!-- TAXI bordje met glow -->
+  <g>
+    <rect x="85" y="14" width="20" height="9" rx="2" fill="#222" stroke="#FFD600" stroke-width="1.5"/>
+    <text x="95" y="21" font-size="7" font-family="Arial" fill="#FFD600" font-weight="bold" text-anchor="middle" filter="url(#taxiGlow)">TAXI</text>
+    <filter id="taxiGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="2" result="glow"/>
+      <feMerge>
+        <feMergeNode in="glow"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </g>
+  <!-- Koplampen met gloed -->
+  <g>
+    <ellipse cx="18" cy="45" rx="3.5" ry="3" fill="#fff" stroke="#ccc" stroke-width="1"/>
+    <ellipse cx="18" cy="45" rx="12" ry="6" fill="url(#headlight)" opacity="0.6"/>
+    <ellipse cx="30" cy="45" rx="3.5" ry="3" fill="#fff" stroke="#ccc" stroke-width="1"/>
+    <ellipse cx="30" cy="45" rx="12" ry="6" fill="url(#headlight)" opacity="0.6"/>
+  </g>
+  <!-- Wielen met animatie -->
+  <g>
+    <ellipse id="wheel1" cx="38" cy="60" rx="8" ry="8" fill="url(#wheel)" stroke="#666" stroke-width="2"/>
+    <ellipse id="wheel2" cx="110" cy="60" rx="8" ry="8" fill="url(#wheel)" stroke="#666" stroke-width="2"/>
+    <g id="wheelSpokes1">
+      <rect x="37.5" y="52" width="1" height="16" fill="#eee" transform="rotate(0 38 60)">
+        <animateTransform attributeName="transform" type="rotate" from="0 38 60" to="360 38 60" dur="0.8s" repeatCount="indefinite"/>
+      </rect>
+      <rect x="38" y="59.5" width="8" height="1" fill="#eee" transform="rotate(0 38 60)">
+        <animateTransform attributeName="transform" type="rotate" from="0 38 60" to="360 38 60" dur="0.8s" repeatCount="indefinite"/>
+      </rect>
+    </g>
+    <g id="wheelSpokes2">
+      <rect x="109.5" y="52" width="1" height="16" fill="#eee" transform="rotate(0 110 60)">
+        <animateTransform attributeName="transform" type="rotate" from="0 110 60" to="360 110 60" dur="0.8s" repeatCount="indefinite"/>
+      </rect>
+      <rect x="110" y="59.5" width="8" height="1" fill="#eee" transform="rotate(0 110 60)">
+        <animateTransform attributeName="transform" type="rotate" from="0 110 60" to="360 110 60" dur="0.8s" repeatCount="indefinite"/>
+      </rect>
+    </g>
+  </g>
   <!-- Grill -->
-  <rect x="13" y="40" width="3" height="6" rx="1" fill="#555"/>
+  <rect x="15" y="48" width="6" height="8" rx="2" fill="#555"/>
 </svg>
   <!-- Rookpluimpjes -->
   <svg class="smoke smoke1" viewBox="0 0 30 20" width="30" height="20" style="position:absolute; left:0; top:35px; z-index:1;">
@@ -261,7 +320,7 @@
   
   <button onclick="toggleSpoed()" id="spoedBtn">🚀 Voeg €10 spoedrit toe 🚀</button>
 
-  <button onclick="toggleAkkoord()" id="akkoordBtn">🚨 Ga akkoord met annuleringskosten €10,- 🚨</button>
+  <button onclick="toggleAkkoord()" id="akkoordBtn">🚨 Akkoord annuleringskosten €10,- 🚨</button>
 <input type="hidden" id="akkoord" value="0">
 
   <button onclick="berekenRit()" id="btnBereken">🚖 Bereken ritprijs 🚖</button>
@@ -519,12 +578,12 @@ function toggleHuisdier() {
   const input = document.getElementById('huisdieren');
   if (input.value === "0") {
     input.value = "1";
-    btn.innerText = "✅ Huisdier toegevoegd (€5,-)";
+    btn.innerText = "✅ Huisdier toegevoegd €5,-";
     btn.style.background = "gold";
     btn.style.color = "black";
   } else {
     input.value = "0";
-    btn.innerText = "🐶 Voeg huisdier toe (€5,-) 🐶";
+    btn.innerText = "🐶 Voeg huisdier toe €5,- 🐶";
     btn.style.background = "";
     btn.style.color = "";
   }
@@ -535,12 +594,12 @@ function toggleAkkoord() {
   const input = document.getElementById('akkoord');
   if (input.value === "0") {
     input.value = "1";
-    btn.innerText = "✅ Akkoord met annuleringskosten (€10,-)";
+    btn.innerText = "✅ Akkoord met annuleringskosten €10,-";
     btn.style.background = "gold";
     btn.style.color = "black";
   } else {
     input.value = "0";
-    btn.innerText = "🚨 Ga akkoord met annuleringskosten (€10,-) 🚨";
+    btn.innerText = "🚨 Ga akkoord met annuleringskosten €10,- 🚨";
     btn.style.background = "";
     btn.style.color = "";
   }
