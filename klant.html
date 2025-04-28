@@ -245,6 +245,62 @@ body::before {
   background: #444;
 }
 @media (max-width: 600px) {
+  html, body {
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  body {
+    min-height: 100vh;
+    background: #111;
+    padding: 0.2rem 0 0.7rem 0;
+    overflow-x: hidden;
+  }
+  .container {
+    max-width: 100vw;
+    margin: 0.7rem 0.1rem;
+    border-radius: 11px;
+    padding: 1.1rem 0.15rem 1.8rem 0.15rem;
+    box-sizing: border-box;
+  }
+  h1 {
+    font-size: 1.55rem;
+    margin: 1.1rem 0 1.2rem 0;
+    text-align: center;
+    color: gold;
+    font-weight: 900;
+    letter-spacing: 1px;
+    text-shadow: 0 2px 12px rgba(255,215,0,0.08), 0 1px 4px #000;
+  }
+  input, select, textarea {
+    font-size: 1.12rem;
+    padding: 1.05rem 0.9rem;
+    border-radius: 10px;
+    margin-bottom: 0.9rem;
+  }
+  button {
+    font-size: 1.17rem;
+    padding: 1.2rem 0.9rem;
+    border-radius: 12px;
+    margin-bottom: 1.1rem;
+    width: 100%;
+    box-shadow: 0 3px 12px rgba(255,215,0,0.09);
+  }
+  .taxi-animation-container {
+    height: 60px;
+    margin-bottom: 1.2rem;
+  }
+  .adres-suggesties {
+    font-size: 1.08rem;
+    z-index: 1000;
+    left: 0;
+    right: 0;
+    top: 100%;
+    border-radius: 0 0 13px 13px;
+    max-width: 100vw;
+  }
+}
   html {
     font-size: 15px;
   }
@@ -467,9 +523,14 @@ body::before {
     height: 72px !important;
   }
   h1 {
-    font-size: 1.18rem;
-    margin: 0.4rem 0 0.4rem 0;
-  }
+  font-size: 2.2rem;
+  margin: 1.2rem 0 1.3rem 0;
+  letter-spacing: 1px;
+  font-weight: 900;
+  text-align: center;
+  color: gold;
+  text-shadow: 0 2px 12px rgba(255,215,0,0.08), 0 1px 4px #000;
+}
   label, select, input, textarea, button {
     font-size: 0.97rem !important;
   }
@@ -884,7 +945,10 @@ async function zoekAdresSuggesties(inputElem, suggestieDivId) {
       suggestieDiv.classList.remove('active');
       return;
     }
-    suggestieDiv.innerHTML = data.results.map(r => `<div class='adres-suggestie-item' onclick="kiesAdresSuggestie('${inputElem.id}', '${suggestieDivId}', '${r.formatted.replace(/'/g, "&#39;")}' )">${r.formatted}</div>`).join('');
+    // Toon eerst alleen Nederlandse adressen
+    let nlResults = data.results.filter(r => r.components && r.components.country_code === 'nl');
+    let shownResults = nlResults.length > 0 ? nlResults : data.results;
+    suggestieDiv.innerHTML = shownResults.map(r => `<div class='adres-suggestie-item' onclick="kiesAdresSuggestie('${inputElem.id}', '${suggestieDivId}', '${r.formatted.replace(/'/g, "&#39;")}' )">${r.formatted}</div>`).join('');
     suggestieDiv.classList.add('active');
   } catch {
     suggestieDiv.innerHTML = '';
