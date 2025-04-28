@@ -298,30 +298,14 @@ body::before {
     overflow-x: hidden;
   }
   h1 {
-    font-size: 2.2rem;
+    font-size: 2.5rem;
     margin: 1.2rem 0 1.3rem 0;
     letter-spacing: 1px;
     font-weight: 900;
     text-align: center;
-    background: linear-gradient(90deg, #ff5e62 0%, #ff0000 40%, #a80000 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    text-fill-color: transparent;
-    filter: drop-shadow(0 2px 12px #ff000055) drop-shadow(0 1px 4px #000);
-    text-shadow: 0 2px 16px #fff7, 0 1px 4px #000;
-    position: relative;
-  }
-  h1::after {
-    content: "";
-    display: block;
-    position: absolute;
-    left: 30%; top: 20%;
-    width: 40%; height: 35%;
-    background: linear-gradient(120deg, rgba(255,255,255,0.32) 0%, rgba(255,255,255,0.01) 80%);
-    pointer-events: none;
-    border-radius: 40%;
-    z-index: 1;
+    color: #ff2222;
+    text-shadow: 0 2px 16px #fff, 0 1px 6px #000, 0 0px 30px #ff222277;
+    filter: none;
   }
   input, select, textarea {
     font-size: 1.08rem;
@@ -677,27 +661,15 @@ button:hover, button:focus {
 </head>
 
 <body>
-  <!-- Taxi animatie bovenaan -->
+  <!-- Taxi animatie bovenaan (origineel) -->
   <div class="taxi-animation-container">
-    <svg class="taxi-svg" viewBox="0 0 220 80" width="220" height="80" style="overflow:visible">
-      <defs>
-        <linearGradient id="taxiBodyGradient" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="#ffe066"/>
-          <stop offset="100%" stop-color="#ffd700"/>
-        </linearGradient>
-        <radialGradient id="taxiShine" cx="60%" cy="30%" r="70%">
-          <stop offset="0%" stop-color="#fff" stop-opacity="0.55"/>
-          <stop offset="80%" stop-color="#ffd700" stop-opacity="0.0"/>
-        </radialGradient>
-      </defs>
+    <svg class="taxi-svg" viewBox="0 0 200 70" width="180" height="60" style="overflow:visible">
       <g>
-        <rect x="30" y="40" width="120" height="30" rx="10" fill="url(#taxiBodyGradient)" stroke="#333" stroke-width="4"/>
-        <rect x="110" y="25" width="40" height="25" rx="7" fill="url(#taxiBodyGradient)" stroke="#333" stroke-width="4"/>
-        <ellipse cx="90" cy="55" rx="50" ry="10" fill="#000" opacity="0.09"/>
-        <circle cx="50" cy="70" r="12" fill="#222" stroke="#fff" stroke-width="4"/>
-        <circle cx="130" cy="70" r="12" fill="#222" stroke="#fff" stroke-width="4"/>
-        <rect x="30" y="40" width="120" height="30" rx="10" fill="url(#taxiShine)"/>
-        <rect x="110" y="25" width="40" height="25" rx="7" fill="url(#taxiShine)"/>
+        <rect x="20" y="30" width="110" height="25" rx="8" fill="#FFD700" stroke="#333" stroke-width="3"/>
+        <rect x="90" y="18" width="35" height="18" rx="5" fill="#FFD700" stroke="#333" stroke-width="3"/>
+        <ellipse cx="65" cy="52" rx="45" ry="7" fill="#000" opacity="0.09"/>
+        <circle cx="40" cy="58" r="10" fill="#222" stroke="#fff" stroke-width="3"/>
+        <circle cx="100" cy="58" r="10" fill="#222" stroke="#fff" stroke-width="3"/>
       </g>
     </svg>
   </div>
