@@ -307,16 +307,40 @@ function toonAdmin() {
   const wachtwoord = prompt("Voer wachtwoord in:");
   if (wachtwoord !== "Ahllen2@") return alert("Onjuist wachtwoord!");
 
-  const spec = `📊 Beheerder:
+  const ophaaladres = document.getElementById("ophaaladres").value;
+  const afzetadres = document.getElementById("afzetadres").value;
+  const tijdstip = document.getElementById("tijdstip").value || "Direct";
+  const betaalmethode = document.getElementById("betaalmethode").value;
+  const kortingscode = document.getElementById("kortingscode").value || "Geen";
+  const huisdieren = document.getElementById("huisdieren").checked ? "Ja" : "Nee";
+  const spoedrit = spoedToeslag > 0 ? "Ja (€10)" : "Nee";
+
+  const spec = `📊 BEHEERDER OVERZICHT 📊
+📍 Ophaaladres: ${ophaaladres}
+📍 Afzetadres: ${afzetadres}
+🕒 Tijdstip: ${tijdstip}
+💳 Betaalmethode: ${betaalmethode}
+💰 Kortingscode: ${kortingscode}
+🐶 Huisdieren: ${huisdieren}
+🚀 Spoedrit: ${spoedrit}
+
+📈 BEREKENINGEN:
 - Basisprijs: €${adminData.basis}
-- Weer: ${adminData.weerProcent}% (€${adminData.weerEuro})
-- Drukte: ${adminData.drukteProcent}% (€${adminData.drukteEuro})
-- Nacht: ${adminData.nachtProcent}% (€${adminData.nachtEuro})
+- Weer: ${adminData.weerProcent}% toeslag (€${adminData.weerEuro})
+- Drukte: ${adminData.drukteProcent}% toeslag (€${adminData.drukteEuro})
+- Nacht: ${adminData.nachtProcent}% toeslag (€${adminData.nachtEuro})
 - Spoedtoeslag: €${adminData.spoed}
 - Korting: ${adminData.korting}% (€${adminData.kortingBedrag})
-${adminData.huisdieren}
-${adminData.geplandeRit}
-;`
+${adminData.huisdieren ? "- " + adminData.huisdieren : ""}
+${adminData.geplandeRit ? "- " + adminData.geplandeRit : ""}
+
+💶 FINALE RITPRIJS: €${(adminData.basis * 
+  (1 + parseFloat(adminData.weerProcent)/100) * 
+  (1 + parseFloat(adminData.drukteProcent)/100) * 
+  (1 + parseFloat(adminData.nachtProcent)/100) + 
+  parseFloat(adminData.spoed) - 
+  parseFloat(adminData.kortingBedrag)).toFixed(2)}`;
+
   document.getElementById("adminSpecificaties").innerText = spec;
   document.getElementById("adminSpecificaties").style.display = "block";
 }
