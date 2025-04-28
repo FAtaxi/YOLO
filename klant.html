@@ -164,15 +164,23 @@ body::before {
   width: 100vw;
   min-width: 100vw;
   max-width: 100vw;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: visible;
   display: flex;
   justify-content: flex-start;
   align-items: center;
   margin-bottom: 0.2rem;
-  height: 60px;
+  height: 90px;
   position: relative;
   background: transparent;
   box-sizing: border-box;
+}
+.taxi-svg {
+  height: 80px !important;
+  width: auto !important;
+  display: block;
+  margin: 0;
+  overflow: visible;
 }
 @media (min-width: 700px) {
   .taxi-animation-container {
