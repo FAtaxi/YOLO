@@ -246,7 +246,7 @@ async function berekenRit() {
 
   ritprijs += huisdierToeslag + geplandeRitToeslag + spoedToeslag;
   
-  const bericht = `🚖 FA T4 🚖\n📲 Nieuw ritverzoek\n📍 Ophaaladres: ${ophalen}\n📍 Afzetadres: ${afzetten}\n🕒 Tijdstip: ${tijd}\n💳 Betaalmethode: ${betaalmethode}\n${tijd ? "📅 LET OP GEPLANDE RIT 📅\n🕒 Tijdstip: " + tijd : ""}\n${huisdierenMee ? "🚨 LET OP HUISDIEREN MEE 🚨\n" : ""}${spoedToeslag > 0 ? "🚀 SPOED RIT 🚀\n" : ""}${opmerkingen ? "📝 Opmerking: " + opmerkingen + "\n" : ""}💳 Betaalmethode: ${betaalmethode}\n🚖 Totale Ritprijs: €${ritprijs.toFixed(2)}`;
+  const bericht = `🚖 FA T4 🚖\n📲 Nieuw ritverzoek\n📍 Ophaaladres: ${ophalen}\n📍 Afzetadres: ${afzetten}\n🛣️ Afstand: ${afstandKm} \n💳 Betaalmethode: ${betaalmethode}\n${tijd ? "📅 LET OP GEPLANDE RIT 📅\n🕒 Tijdstip: " + tijd : ""}\n${huisdierenMee ? "🚨 LET OP HUISDIEREN MEE 🚨\n" : ""}${spoedToeslag > 0 ? "🚀 SPOED RIT 🚀\n" : ""}${opmerkingen ? "📝 Opmerking: " + opmerkingen + "\n" : ""}💳 Betaalmethode: ${betaalmethode}\n🚖 Totale Ritprijs: €${ritprijs.toFixed(2)}`;
 
   document.getElementById("resultaat").innerText = bericht;
 
