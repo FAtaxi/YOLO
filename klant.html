@@ -31,13 +31,14 @@ body::before {
       margin-bottom: 1rem;
     }
     .container {
-      max-width: 500px;
-      margin: auto;
-      background: #111;
-      padding: 1rem;
-      border-radius: 10px;
-      box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
-    }
+  max-width: 500px;
+  margin: auto;
+  background: #111;
+  padding: 1rem;
+  border-radius: 10px;
+  box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+  display: block;
+}
     input, button, label, select {
       display: block;
       width: 100%;
@@ -289,12 +290,70 @@ body::before {
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
+    background: linear-gradient(135deg, #232526 0%, #191919 50%, #232526 100%);
   }
   .taxi-animation-container {
-    height: 74px;
-    margin-bottom: 1.1rem;
+    height: 90px;
+    margin-bottom: 2.2rem;
     justify-content: center;
   }
+  .taxi-svg {
+    width: 320px !important;
+    height: 128px !important;
+  }
+  .container {
+    max-width: 850px;
+    width: 98vw;
+    margin: 2.2rem auto 2rem auto;
+    border-radius: 22px;
+    padding: 2.8rem 2.7rem 2.6rem 2.7rem;
+    box-shadow: 0 16px 64px rgba(0,0,0,0.22), 0 2px 18px rgba(255,215,0,0.10);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3vw 2vw;
+    align-items: flex-start;
+    justify-content: center;
+  }
+  .container > div, .container > form, .container > section {
+    min-width: 260px;
+    margin-bottom: 1.5rem;
+  }
+  .container label, .container input, .container select, .container textarea, .container button {
+    font-size: 1.17rem !important;
+  }
+  input[type="text"],
+  input[type="datetime-local"],
+  select, textarea {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    font-size: 1.17rem;
+    padding: 1.25rem 1.2rem;
+    margin-bottom: 1.3rem;
+    border-radius: 15px;
+  }
+  button {
+    width: 100%;
+    min-width: 0;
+    font-size: 1.18rem;
+    padding: 1.45rem 1.2rem;
+    margin-bottom: 1.3rem;
+    border-radius: 16px;
+    box-shadow: 0 5px 20px rgba(255,215,0,0.10);
+  }
+  h1 {
+    font-size: 1.55rem;
+    margin: 1.2rem 0 1.7rem 0;
+  }
+  .adres-suggesties {
+    max-width: 95vw;
+    font-size: 1.13rem;
+    left: 0;
+    right: 0;
+    border-radius: 0 0 16px 16px;
+  }
+}
+
   .taxi-svg {
     width: 260px !important;
     height: 104px !important;
