@@ -31,6 +31,25 @@ body::before {
       text-align: center;
       color: red;
       margin-bottom: 1rem;
+      background: linear-gradient(90deg, #ff5e62 0%, #ff0000 40%, #a80000 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-fill-color: transparent;
+      filter: drop-shadow(0 2px 12px #ff000055) drop-shadow(0 1px 4px #000);
+      text-shadow: 0 2px 16px #fff7, 0 1px 4px #000;
+      position: relative;
+    }
+    h1::after {
+      content: "";
+      display: block;
+      position: absolute;
+      left: 30%; top: 20%;
+      width: 40%; height: 35%;
+      background: linear-gradient(120deg, rgba(255,255,255,0.32) 0%, rgba(255,255,255,0.01) 80%);
+      pointer-events: none;
+      border-radius: 40%;
+      z-index: 1;
     }
     .container {
   max-width: 600px;
@@ -279,13 +298,30 @@ body::before {
     overflow-x: hidden;
   }
   h1 {
-    font-size: 1.35rem;
-    margin: 1.1rem 0 1.2rem 0;
-    text-align: center;
-    color: red;
-    font-weight: 900;
+    font-size: 2.2rem;
+    margin: 1.2rem 0 1.3rem 0;
     letter-spacing: 1px;
-    text-shadow: 0 2px 12px rgba(255,0,0,0.08), 0 1px 4px #000;
+    font-weight: 900;
+    text-align: center;
+    background: linear-gradient(90deg, #ff5e62 0%, #ff0000 40%, #a80000 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-fill-color: transparent;
+    filter: drop-shadow(0 2px 12px #ff000055) drop-shadow(0 1px 4px #000);
+    text-shadow: 0 2px 16px #fff7, 0 1px 4px #000;
+    position: relative;
+  }
+  h1::after {
+    content: "";
+    display: block;
+    position: absolute;
+    left: 30%; top: 20%;
+    width: 40%; height: 35%;
+    background: linear-gradient(120deg, rgba(255,255,255,0.32) 0%, rgba(255,255,255,0.01) 80%);
+    pointer-events: none;
+    border-radius: 40%;
+    z-index: 1;
   }
   input, select, textarea {
     font-size: 1.08rem;
@@ -294,13 +330,25 @@ body::before {
     margin-bottom: 0.7rem;
   }
   button {
-    font-size: 1.08rem;
-    padding: 1rem 0.8rem;
-    border-radius: 10px;
-    margin-bottom: 0.8rem;
-    width: 100%;
-    box-shadow: 0 3px 12px rgba(255,215,0,0.09);
-  }
+  font-size: 1.08rem;
+  padding: 1rem 0.8rem;
+  border-radius: 10px;
+  margin-bottom: 0.8rem;
+  width: 100%;
+  font-weight: bold;
+  background: linear-gradient(90deg, #fffbe6 0%, #ffe066 30%, #ffd700 70%, #bfa100 100%);
+  color: #222;
+  border: none;
+  box-shadow: 0 3px 14px 0 #fff8, 0 3px 14px 0 #ffe06688, 0 1px 4px #bfa10044;
+  text-shadow: 0 2px 8px #fff9, 0 1px 2px #bfa10055;
+  transition: background 0.2s, box-shadow 0.2s, filter 0.2s;
+  filter: brightness(1.08) drop-shadow(0 1px 6px #fff7);
+}
+button:hover, button:focus {
+  background: linear-gradient(90deg, #fffbe6 0%, #ffd700 50%, #bfa100 100%);
+  filter: brightness(1.18) drop-shadow(0 2px 8px #ffd70088);
+  outline: none;
+}
   .taxi-animation-container {
     width: 100vw;
     min-width: 100vw;
@@ -629,6 +677,31 @@ body::before {
 </head>
 
 <body>
+  <!-- Taxi animatie bovenaan -->
+  <div class="taxi-animation-container">
+    <svg class="taxi-svg" viewBox="0 0 220 80" width="220" height="80" style="overflow:visible">
+      <defs>
+        <linearGradient id="taxiBodyGradient" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#ffe066"/>
+          <stop offset="100%" stop-color="#ffd700"/>
+        </linearGradient>
+        <radialGradient id="taxiShine" cx="60%" cy="30%" r="70%">
+          <stop offset="0%" stop-color="#fff" stop-opacity="0.55"/>
+          <stop offset="80%" stop-color="#ffd700" stop-opacity="0.0"/>
+        </radialGradient>
+      </defs>
+      <g>
+        <rect x="30" y="40" width="120" height="30" rx="10" fill="url(#taxiBodyGradient)" stroke="#333" stroke-width="4"/>
+        <rect x="110" y="25" width="40" height="25" rx="7" fill="url(#taxiBodyGradient)" stroke="#333" stroke-width="4"/>
+        <ellipse cx="90" cy="55" rx="50" ry="10" fill="#000" opacity="0.09"/>
+        <circle cx="50" cy="70" r="12" fill="#222" stroke="#fff" stroke-width="4"/>
+        <circle cx="130" cy="70" r="12" fill="#222" stroke="#fff" stroke-width="4"/>
+        <rect x="30" y="40" width="120" height="30" rx="10" fill="url(#taxiShine)"/>
+        <rect x="110" y="25" width="40" height="25" rx="7" fill="url(#taxiShine)"/>
+      </g>
+    </svg>
+  </div>
+
 <img id="flag" src="https://upload.wikimedia.org/wikipedia/en/a/ae/Flag_of_the_United_Kingdom.svg" onclick="switchLanguage()" title="Switch to English">
 
 <div id="adminContainer" onclick="toonAdmin()" title="Beheerder">
