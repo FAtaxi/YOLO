@@ -73,21 +73,76 @@
       padding-top: 5px;
       margin-left: 5px;
     }
-    .kosten-container {
-      background: #222;
-      padding: 0.7rem;
-      border-radius: 5px;
-      margin: 0.5rem 0;
+    /* Switch toggle styling */
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 50px;
+      height: 28px;
+      margin-left: 10px;
+      vertical-align: middle;
+    }
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #888;
+      transition: .4s;
+      border-radius: 28px;
+    }
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 20px;
+      width: 20px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+    .switch input:checked + .slider {
+      background-color: gold;
+    }
+    .switch input:checked + .slider:before {
+      transform: translateX(22px);
+    }
+    /* Kosten-sectie container */
+    .feature-section {
+      background: #111;
+      box-shadow: 0 0 15px rgba(255, 215, 0, 0.15);
+      border-radius: 10px;
+      padding: 1rem;
+      margin: 1rem 0;
       display: flex;
       align-items: center;
       justify-content: space-between;
     }
-    .kosten-label {
-      font-size: 1rem;
+    .feature-label {
+      font-size: 1.1rem;
+      font-weight: 500;
       color: #fff;
+      flex: 1 1 auto;
+      display: flex;
+      flex-direction: column;
     }
-    .kosten-checkbox {
-      margin-left: 10px;
+    .feature-title {
+      font-size: 1.15rem;
+      font-weight: bold;
+      color: gold;
+      margin-bottom: 0.3rem;
+    }
+    .feature-desc {
+      font-size: 0.98rem;
+      color: #ccc;
     }
   </style>
 </head>
@@ -131,23 +186,13 @@
   <label for="opmerkingen" id="labelOpmerkingen">✏️ Opmerkingen voor de klant</label>
   <textarea id="opmerkingen" placeholder="Bijvoorbeeld: extra instructies, bijzonderheden, etc." rows="2" style="resize:vertical; background:#222; color:#fff; border-radius:5px; width:100%; margin:0.5rem 0; padding:0.7rem;"></textarea>
 
-  <!-- Pets container in dezelfde stijl als .container -->
-  <div class="container" style="margin: 0 0 1rem 0; padding: 0.5rem 1rem; background: #222;">
-    <div class="kosten-container">
-      <span class="kosten-label">🐶 Pets €5,- 🐶</span>
-      <input type="checkbox" id="huisdieren" class="kosten-checkbox">
-    </div>
-  </div>
+  <button onclick="toggleHuisdier()" id="huisdierBtn">🐶 Voeg huisdier toe (€5,-) 🐶</button>
+<input type="hidden" id="huisdieren" value="0">
   
   <button onclick="toggleSpoed()" id="spoedBtn">🚀 Voeg €10 spoedrit toe 🚀</button>
 
-  <!-- Annuleringskosten container in dezelfde stijl als .container -->
-  <div class="container" style="margin: 0 0 1rem 0; padding: 0.5rem 1rem; background: #222;">
-    <div class="kosten-container">
-      <span class="kosten-label">🚨 Annuleringskosten €10,- 🚨</span>
-      <input type="checkbox" id="akkoord" class="kosten-checkbox" required>
-    </div>
-  </div>
+  <button onclick="toggleAkkoord()" id="akkoordBtn">🚨 Ga akkoord met annuleringskosten (€10,-) 🚨</button>
+<input type="hidden" id="akkoord" value="0">
 
   <button onclick="berekenRit()" id="btnBereken">🚖 Bereken ritprijs 🚖</button>
 
@@ -262,7 +307,7 @@ function berekenRitprijs(afstand, duur, weer) {
   let totalePrijs = prijsNaToeslagen + spoedToeslag;
 
   // Extra kosten voor huisdieren
-  if (document.getElementById("huisdieren").checked) {
+  if (document.getElementById("huisdieren").value === "1") {
     totalePrijs += huisdierenToeslag;
     adminData.huisdieren = "🚨 LET OP HUISDIEREN MEE 🚨";
   } else {
@@ -300,7 +345,7 @@ async function berekenRit() {
   const betaalmethode = document.getElementById("betaalmethode").value;
   const opmerkingen = document.getElementById("opmerkingen").value;
 
-  if (!ophalen || !afzetten || !document.getElementById("akkoord").checked)
+  if (!ophalen || !afzetten || document.getElementById("akkoord").value !== "1")
     return alert("Vul alles correct in en ga akkoord met de voorwaarden.");
 
   const coordOphalen = await getCoordinates(ophalen);
@@ -344,7 +389,7 @@ function toonAdmin() {
   const tijdstip = document.getElementById("tijdstip").value || "Direct";
   const betaalmethode = document.getElementById("betaalmethode").value;
   const kortingscode = document.getElementById("kortingscode").value || "Geen";
-  const huisdieren = document.getElementById("huisdieren").checked ? "Ja (+€5)" : "Nee";
+  const huisdieren = document.getElementById("huisdieren").value === "1" ? "Ja (+€5)" : "Nee";
   const spoedrit = spoedToeslag > 0 ? "Ja (+€10)" : "Nee";
   const geplandeRit = document.getElementById("tijdstip").value ? "Ja (+€7,50)" : "Nee";
   const opmerkingen = document.getElementById("opmerkingen").value || "Geen";
@@ -392,6 +437,38 @@ function switchLanguage() {
   document.getElementById("labelKorting").innerText = "🎟️ Discount code (optional)";
   document.getElementById("btnLocatie").innerText = "📌 Get my location";
   document.getElementById("btnBereken").innerText = "🚖 Calculate fare";
+}
+// Toggle huisdier button
+function toggleHuisdier() {
+  const btn = document.getElementById('huisdierBtn');
+  const input = document.getElementById('huisdieren');
+  if (input.value === "0") {
+    input.value = "1";
+    btn.innerText = "✅ Huisdier toegevoegd (€5,-)";
+    btn.style.background = "gold";
+    btn.style.color = "black";
+  } else {
+    input.value = "0";
+    btn.innerText = "🐶 Voeg huisdier toe (€5,-) 🐶";
+    btn.style.background = "";
+    btn.style.color = "";
+  }
+}
+// Toggle akkoord button
+function toggleAkkoord() {
+  const btn = document.getElementById('akkoordBtn');
+  const input = document.getElementById('akkoord');
+  if (input.value === "0") {
+    input.value = "1";
+    btn.innerText = "✅ Akkoord met annuleringskosten (€10,-)";
+    btn.style.background = "gold";
+    btn.style.color = "black";
+  } else {
+    input.value = "0";
+    btn.innerText = "🚨 Ga akkoord met annuleringskosten (€10,-) 🚨";
+    btn.style.background = "";
+    btn.style.color = "";
+  }
 }
 </script>
 
