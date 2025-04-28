@@ -144,41 +144,46 @@
       font-size: 0.98rem;
       color: #ccc;
     }
-    /* Bewegende taxi bovenaan */
-    .taxi-move {
-      width: 100%;
-      overflow: hidden;
-      margin-bottom: 0.5rem;
-      height: 60px;
-      position: relative;
-    }
-    .gwagen-svg {
-      animation: taxi-rijden 3.5s linear infinite;
-    }
-    .smoke {
-      opacity: 0;
-      animation: smoke-move 3.5s linear infinite;
-    }
-    .smoke1 {
-      animation-delay: 0.2s;
-    }
-    .smoke2 {
-      animation-delay: 0.6s;
-    }
-    .smoke3 {
-      animation-delay: 1.0s;
-    }
-    @keyframes taxi-rijden {
-      0% { left: -80px; }
-      100% { left: calc(100% + 80px); }
-    }
-    @keyframes smoke-move {
-      0% { opacity: 0; left: -40px; }
-      10% { opacity: 0.7; left: -15px; }
-      60% { opacity: 0.5; left: 50px; }
-      100% { opacity: 0; left: 120px; }
-    }
-  </style>
+  .taxi-animation-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 0.2rem;
+  height: 60px;
+  position: relative;
+  overflow: visible;
+}
+.taxi-svg {
+  animation: taxi-move 2.8s linear infinite;
+}
+@keyframes taxi-move {
+  0% { transform: translateX(-30px); }
+  8% { transform: translateX(0); }
+  92% { transform: translateX(0); }
+  100% { transform: translateX(30px); }
+}
+.smoke1 {
+  animation: smoke1-move 2.8s linear infinite;
+}
+@keyframes smoke1-move {
+  0% { opacity: 0.7; transform: translateX(0) scale(1,1); }
+  10% { opacity: 0.6; transform: translateX(-7px) scale(1.1,1.1); }
+  30% { opacity: 0.3; transform: translateX(-18px) scale(1.3,1.2); }
+  50% { opacity: 0; transform: translateX(-28px) scale(1.5,1.3); }
+  100% { opacity: 0; transform: translateX(-28px) scale(1.5,1.3); }
+}
+.smoke2 {
+  animation: smoke2-move 2.8s linear infinite;
+}
+@keyframes smoke2-move {
+  0% { opacity: 0.5; transform: translateX(0) scale(1,1); }
+  15% { opacity: 0.4; transform: translateX(-10px) scale(1.1,1.1); }
+  35% { opacity: 0.15; transform: translateX(-21px) scale(1.3,1.2); }
+  55% { opacity: 0; transform: translateX(-31px) scale(1.5,1.3); }
+  100% { opacity: 0; transform: translateX(-31px) scale(1.5,1.3); }
+}
+</style>
 </head>
 
 <body>
@@ -188,115 +193,32 @@
   🔐
 </div>
 
-<!-- Bewegende G-Wagon met rook bovenaan -->
-<div class="taxi-move">
-  <svg class="gwagen-svg" viewBox="0 0 160 70" width="140" height="65" style="position:absolute; left:0; top:0; z-index:2;">
-  <!-- Schaduw onder de taxi -->
-  <ellipse cx="80" cy="66" rx="50" ry="7" fill="#000" opacity="0.25"/>
-  <!-- Body (3D effect) -->
-  <rect x="22" y="34" width="100" height="22" rx="10" fill="url(#taxiBodyGradient)" stroke="#222" stroke-width="2"/>
-  <defs>
-    <linearGradient id="taxiBodyGradient" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#fffde4"/>
-      <stop offset="30%" stop-color="#ffe066"/>
-      <stop offset="100%" stop-color="#FFD600"/>
-    </linearGradient>
-    <radialGradient id="windowReflection" cx="50%" cy="40%" r="80%">
-      <stop offset="0%" stop-color="#fff" stop-opacity="0.6"/>
-      <stop offset="60%" stop-color="#B3E5FC" stop-opacity="0.8"/>
-      <stop offset="100%" stop-color="#B3E5FC"/>
-    </radialGradient>
-    <radialGradient id="chrome" cx="50%" cy="50%" r="70%">
-      <stop offset="0%" stop-color="#eee"/>
-      <stop offset="100%" stop-color="#888"/>
-    </radialGradient>
-    <radialGradient id="headlight" cx="50%" cy="50%" r="70%">
-      <stop offset="0%" stop-color="#fffbe6" stop-opacity="1"/>
-      <stop offset="100%" stop-color="#fffbe6" stop-opacity="0"/>
-    </radialGradient>
-    <radialGradient id="wheel" cx="50%" cy="50%" r="70%">
-      <stop offset="0%" stop-color="#444"/>
-      <stop offset="100%" stop-color="#111"/>
-    </radialGradient>
-  </defs>
-  <!-- Motorkap (3D) -->
-  <rect x="12" y="39" width="25" height="15" rx="7" fill="url(#taxiBodyGradient)" stroke="#222" stroke-width="2"/>
-  <!-- Dak -->
-  <rect x="55" y="22" width="45" height="17" rx="5" fill="url(#taxiBodyGradient)" stroke="#222" stroke-width="2"/>
-  <!-- Ramen met reflectie -->
-  <rect x="60" y="26" width="13" height="10" rx="2" fill="url(#windowReflection)" stroke="#333" stroke-width="1"/>
-  <rect x="76" y="26" width="13" height="10" rx="2" fill="url(#windowReflection)" stroke="#333" stroke-width="1"/>
-  <!-- Chrome details -->
-  <rect x="30" y="48" width="80" height="4" rx="2" fill="url(#chrome)"/>
-  <!-- TAXI bordje met glow -->
-  <g>
-    <rect x="85" y="14" width="20" height="9" rx="2" fill="#222" stroke="#FFD600" stroke-width="1.5"/>
-    <text x="95" y="21" font-size="7" font-family="Arial" fill="#FFD600" font-weight="bold" text-anchor="middle" filter="url(#taxiGlow)">TAXI</text>
-    <filter id="taxiGlow" x="-30%" y="-30%" width="160%" height="160%">
-      <feGaussianBlur stdDeviation="2" result="glow"/>
-      <feMerge>
-        <feMergeNode in="glow"/>
-        <feMergeNode in="SourceGraphic"/>
-      </feMerge>
-    </filter>
-  </g>
-  <!-- Koplampen met gloed -->
-  <g>
-    <ellipse cx="18" cy="45" rx="3.5" ry="3" fill="#fff" stroke="#ccc" stroke-width="1"/>
-    <ellipse cx="18" cy="45" rx="12" ry="6" fill="url(#headlight)" opacity="0.6"/>
-    <ellipse cx="30" cy="45" rx="3.5" ry="3" fill="#fff" stroke="#ccc" stroke-width="1"/>
-    <ellipse cx="30" cy="45" rx="12" ry="6" fill="url(#headlight)" opacity="0.6"/>
-  </g>
-  <!-- Wielen met animatie -->
-  <g>
-    <ellipse id="wheel1" cx="38" cy="60" rx="8" ry="8" fill="url(#wheel)" stroke="#666" stroke-width="2"/>
-    <ellipse id="wheel2" cx="110" cy="60" rx="8" ry="8" fill="url(#wheel)" stroke="#666" stroke-width="2"/>
-    <g id="wheelSpokes1">
-      <rect x="37.5" y="52" width="1" height="16" fill="#eee" transform="rotate(0 38 60)">
-        <animateTransform attributeName="transform" type="rotate" from="0 38 60" to="360 38 60" dur="0.8s" repeatCount="indefinite"/>
-      </rect>
-      <rect x="38" y="59.5" width="8" height="1" fill="#eee" transform="rotate(0 38 60)">
-        <animateTransform attributeName="transform" type="rotate" from="0 38 60" to="360 38 60" dur="0.8s" repeatCount="indefinite"/>
-      </rect>
-    </g>
-    <g id="wheelSpokes2">
-      <rect x="109.5" y="52" width="1" height="16" fill="#eee" transform="rotate(0 110 60)">
-        <animateTransform attributeName="transform" type="rotate" from="0 110 60" to="360 110 60" dur="0.8s" repeatCount="indefinite"/>
-      </rect>
-      <rect x="110" y="59.5" width="8" height="1" fill="#eee" transform="rotate(0 110 60)">
-        <animateTransform attributeName="transform" type="rotate" from="0 110 60" to="360 110 60" dur="0.8s" repeatCount="indefinite"/>
-      </rect>
-    </g>
-  </g>
-  <!-- Grill -->
-  <rect x="15" y="48" width="6" height="8" rx="2" fill="#555"/>
-  <!-- Rookpluimpjes die aan de auto vast zitten -->
-  <g class="smoke-group">
-    <g class="smoke smoke1">
-      <ellipse cx="22" cy="57" rx="10" ry="5" fill="#bbb" opacity="0.7">
-        <animate attributeName="opacity" values="0.7;0.3;0" dur="1.5s" repeatCount="indefinite"/>
-        <animate attributeName="cx" values="22;10;0" dur="1.5s" repeatCount="indefinite"/>
-        <animate attributeName="ry" values="5;8;10" dur="1.5s" repeatCount="indefinite"/>
-      </ellipse>
-    </g>
-    <g class="smoke smoke2">
-      <ellipse cx="18" cy="61" rx="7" ry="3.5" fill="#ccc" opacity="0.5">
-        <animate attributeName="opacity" values="0.5;0.2;0" dur="1.2s" repeatCount="indefinite"/>
-        <animate attributeName="cx" values="18;7;-3" dur="1.2s" repeatCount="indefinite"/>
-        <animate attributeName="ry" values="3.5;6;7" dur="1.2s" repeatCount="indefinite"/>
-      </ellipse>
-    </g>
-    <g class="smoke smoke3">
-      <ellipse cx="14" cy="65" rx="4" ry="2" fill="#eee" opacity="0.4">
-        <animate attributeName="opacity" values="0.4;0.1;0" dur="1s" repeatCount="indefinite"/>
-        <animate attributeName="cx" values="14;2;-5" dur="1s" repeatCount="indefinite"/>
-        <animate attributeName="ry" values="2;4;5" dur="1s" repeatCount="indefinite"/>
-      </ellipse>
-    </g>
-  </g>
-</svg>
+<!-- Bewegende gele taxi bovenaan -->
+<div class="taxi-animation-container">
+  <svg class="taxi-svg" viewBox="0 0 160 60" width="120" height="48">
+    <!-- Rookpluimpjes -->
+    <ellipse class="smoke smoke1" cx="18" cy="35" rx="7" ry="3" fill="#bbb" opacity="0.7"/>
+    <ellipse class="smoke smoke2" cx="8" cy="38" rx="5" ry="2" fill="#ccc" opacity="0.5"/>
+    <!-- Taxi body -->
+    <rect x="30" y="30" width="60" height="20" rx="7" fill="#FFD600" stroke="#333" stroke-width="2"/>
+    <!-- Taxi cabin -->
+    <rect x="55" y="20" width="25" height="15" rx="5" fill="#FFD600" stroke="#333" stroke-width="2"/>
+    <!-- Ramen -->
+    <rect x="58" y="23" width="8" height="9" rx="2" fill="#B3E5FC" stroke="#333" stroke-width="1"/>
+    <rect x="68" y="23" width="10" height="9" rx="2" fill="#B3E5FC" stroke="#333" stroke-width="1"/>
+    <!-- Taxi-bord -->
+    <rect x="67" y="16" width="12" height="7" rx="2" fill="#fff" stroke="#333" stroke-width="1"/>
+    <text x="73" y="22" font-size="6" font-family="Arial" fill="#FFD600" text-anchor="middle" font-weight="bold">TAXI</text>
+    <!-- Wielen -->
+    <ellipse cx="40" cy="52" rx="7" ry="7" fill="#222"/>
+    <ellipse cx="80" cy="52" rx="7" ry="7" fill="#222"/>
+    <ellipse cx="40" cy="52" rx="3" ry="3" fill="#888"/>
+    <ellipse cx="80" cy="52" rx="3" ry="3" fill="#888"/>
+    <!-- Koplampen -->
+    <ellipse cx="32" cy="40" rx="2" ry="4" fill="#fffde7" opacity="0.7"/>
+    <ellipse cx="90" cy="40" rx="2" ry="4" fill="#fffde7" opacity="0.7"/>
+  </svg>
 </div>
-
 <h1>FA Taxi Service</h1>
 <h1>TAXI 4 Personen</h1>
 
