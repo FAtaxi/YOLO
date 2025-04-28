@@ -345,8 +345,13 @@ async function berekenRit() {
   const betaalmethode = document.getElementById("betaalmethode").value;
   const opmerkingen = document.getElementById("opmerkingen").value;
 
-  if (!ophalen || !afzetten || document.getElementById("akkoord").value !== "1")
+  if (!ophalen || !afzetten) {
     return alert("Vul alles correct in en ga akkoord met de voorwaarden.");
+  }
+  if (document.getElementById("akkoord").value !== "1") {
+    alert("Dit bedrag wordt niet in rekening gebracht als u binnen 5 min annuleert. Na 5 min worden annuleringskosten in rekening gebracht.");
+    return;
+  }
 
   const coordOphalen = await getCoordinates(ophalen);
   const coordAfzetten = await getCoordinates(afzetten);
