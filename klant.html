@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="nl">
-<head> 
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+ 
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
   <title>FA Taxi Boeking</title>
@@ -31,13 +33,14 @@ body::before {
       margin-bottom: 1rem;
     }
     .container {
-  max-width: 500px;
-  margin: auto;
+  max-width: 600px;
+  margin: 2.2rem auto 2rem auto;
   background: #111;
-  padding: 1rem;
-  border-radius: 10px;
+  padding: 2.2rem 2.1rem 2.2rem 2.1rem;
+  border-radius: 14px;
   box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
   display: block;
+  box-sizing: border-box;
 }
     input, button, label, select {
       display: block;
@@ -250,6 +253,65 @@ body::before {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    overflow-x: hidden;
+  }
+  body {
+    min-height: 100vh;
+    background: #111;
+    padding: 0.2rem 0 0.7rem 0;
+    overflow-x: hidden;
+  }
+  .container {
+    max-width: 100vw;
+    width: 100vw;
+    margin: 0.7rem 0 1.2rem 0;
+    border-radius: 11px;
+    padding: 1.1rem 1vw 1.5rem 1vw;
+    box-sizing: border-box;
+    overflow-x: hidden;
+  }
+  h1 {
+    font-size: 1.35rem;
+    margin: 1.1rem 0 1.2rem 0;
+    text-align: center;
+    color: gold;
+    font-weight: 900;
+    letter-spacing: 1px;
+    text-shadow: 0 2px 12px rgba(255,215,0,0.08), 0 1px 4px #000;
+  }
+  input, select, textarea {
+    font-size: 1.08rem;
+    padding: 0.95rem 0.8rem;
+    border-radius: 10px;
+    margin-bottom: 0.7rem;
+  }
+  button {
+    font-size: 1.08rem;
+    padding: 1rem 0.8rem;
+    border-radius: 10px;
+    margin-bottom: 0.8rem;
+    width: 100%;
+    box-shadow: 0 3px 12px rgba(255,215,0,0.09);
+  }
+  .taxi-animation-container {
+    width: 100vw;
+    min-width: 100vw;
+    max-width: 100vw;
+    height: 60px;
+    margin-bottom: 1.1rem;
+    overflow: hidden;
+    box-sizing: border-box;
+  }
+  .adres-suggesties {
+    font-size: 1.03rem;
+    z-index: 1000;
+    left: 0;
+    right: 0;
+    top: 100%;
+    border-radius: 0 0 13px 13px;
+    max-width: 100vw;
+  }
+}
   }
   body {
     min-height: 100vh;
@@ -526,11 +588,6 @@ body::before {
   font-size: 2.2rem;
   margin: 1.2rem 0 1.3rem 0;
   letter-spacing: 1px;
-  font-weight: 900;
-  text-align: center;
-  color: gold;
-  text-shadow: 0 2px 12px rgba(255,215,0,0.08), 0 1px 4px #000;
-}
   label, select, input, textarea, button {
     font-size: 0.97rem !important;
   }
