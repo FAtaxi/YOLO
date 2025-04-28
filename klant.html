@@ -312,8 +312,9 @@ function toonAdmin() {
   const tijdstip = document.getElementById("tijdstip").value || "Direct";
   const betaalmethode = document.getElementById("betaalmethode").value;
   const kortingscode = document.getElementById("kortingscode").value || "Geen";
-  const huisdieren = document.getElementById("huisdieren").checked ? "Ja" : "Nee";
-  const spoedrit = spoedToeslag > 0 ? "Ja (€10)" : "Nee";
+  const huisdieren = document.getElementById("huisdieren").checked ? "Ja (+€5)" : "Nee";
+  const spoedrit = spoedToeslag > 0 ? "Ja (+€10)" : "Nee";
+  const geplandeRit = document.getElementById("tijdstip").value ? "Ja (+€7,50)" : "Nee";
 
   const spec = `📊 BEHEERDER OVERZICHT 📊
 📍 Ophaaladres: ${ophaaladres}
@@ -323,26 +324,30 @@ function toonAdmin() {
 💰 Kortingscode: ${kortingscode}
 🐶 Huisdieren: ${huisdieren}
 🚀 Spoedrit: ${spoedrit}
+📅 Geplande rit: ${geplandeRit}
 
 📈 BEREKENINGEN:
 - Basisprijs: €${adminData.basis}
-- Weer: ${adminData.weerProcent}% toeslag (€${adminData.weerEuro})
-- Drukte: ${adminData.drukteProcent}% toeslag (€${adminData.drukteEuro})
-- Nacht: ${adminData.nachtProcent}% toeslag (€${adminData.nachtEuro})
-- Spoedtoeslag: €${adminData.spoed}
-- Korting: ${adminData.korting}% (€${adminData.kortingBedrag})
-${adminData.huisdieren ? "- " + adminData.huisdieren : ""}
-${adminData.geplandeRit ? "- " + adminData.geplandeRit : ""}
+- Weer: ${adminData.weerProcent}% toeslag (+€${adminData.weerEuro})
+- Drukte: ${adminData.drukteProcent}% toeslag (+€${adminData.drukteEuro})
+- Nacht: ${adminData.nachtProcent}% toeslag (+€${adminData.nachtEuro})
+- Spoedtoeslag: +€${adminData.spoed}
+${document.getElementById("huisdieren").checked ? "- Huisdieren toeslag: +€5,00" : ""}
+${document.getElementById("tijdstip").value ? "- Geplande rit toeslag: +€7,50" : ""}
+- Korting: ${adminData.korting}% (-€${adminData.kortingBedrag})
 
 💶 FINALE RITPRIJS: €${(adminData.basis * 
   (1 + parseFloat(adminData.weerProcent)/100) * 
   (1 + parseFloat(adminData.drukteProcent)/100) * 
   (1 + parseFloat(adminData.nachtProcent)/100) + 
-  parseFloat(adminData.spoed) - 
+  parseFloat(adminData.spoed) +
+  (document.getElementById("huisdieren").checked ? 5 : 0) +
+  (document.getElementById("tijdstip").value ? 7.5 : 0) - 
   parseFloat(adminData.kortingBedrag)).toFixed(2)}`;
 
   document.getElementById("adminSpecificaties").innerText = spec;
   document.getElementById("adminSpecificaties").style.display = "block";
+
 }
 
 function switchLanguage() {
