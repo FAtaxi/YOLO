@@ -128,16 +128,25 @@
   <label for="kortingscode" id="labelKorting"> 💰 Kortingscode 💰  </label>
   <input type="text" id="kortingscode" placeholder="Voer uw kortingscode in">
 
-  <div class="kosten-container">
-    <span class="kosten-label">🐶 Pets €5,- 🐶</span>
-    <input type="checkbox" id="huisdieren" class="kosten-checkbox">
+  <label for="opmerkingen" id="labelOpmerkingen">✏️ Opmerkingen voor de klant</label>
+  <textarea id="opmerkingen" placeholder="Bijvoorbeeld: extra instructies, bijzonderheden, etc." rows="2" style="resize:vertical; background:#222; color:#fff; border-radius:5px; width:100%; margin:0.5rem 0; padding:0.7rem;"></textarea>
+
+  <!-- Pets container in dezelfde stijl als .container -->
+  <div class="container" style="margin: 0 0 1rem 0; padding: 0.5rem 1rem; background: #222;">
+    <div class="kosten-container">
+      <span class="kosten-label">🐶 Pets €5,- 🐶</span>
+      <input type="checkbox" id="huisdieren" class="kosten-checkbox">
+    </div>
   </div>
   
   <button onclick="toggleSpoed()" id="spoedBtn">🚀 Voeg €10 spoedrit toe 🚀</button>
 
-  <div class="kosten-container">
-    <span class="kosten-label">🚨 Annuleringskosten €10,- 🚨</span>
-    <input type="checkbox" id="akkoord" class="kosten-checkbox" required>
+  <!-- Annuleringskosten container in dezelfde stijl als .container -->
+  <div class="container" style="margin: 0 0 1rem 0; padding: 0.5rem 1rem; background: #222;">
+    <div class="kosten-container">
+      <span class="kosten-label">🚨 Annuleringskosten €10,- 🚨</span>
+      <input type="checkbox" id="akkoord" class="kosten-checkbox" required>
+    </div>
   </div>
 
   <button onclick="berekenRit()" id="btnBereken">🚖 Bereken ritprijs 🚖</button>
@@ -289,6 +298,7 @@ async function berekenRit() {
   const afzetten = document.getElementById("afzetadres").value;
   const tijd = document.getElementById("tijdstip").value;
   const betaalmethode = document.getElementById("betaalmethode").value;
+  const opmerkingen = document.getElementById("opmerkingen").value;
 
   if (!ophalen || !afzetten || !document.getElementById("akkoord").checked)
     return alert("Vul alles correct in en ga akkoord met de voorwaarden.");
@@ -320,7 +330,7 @@ async function berekenRit() {
     spoedBericht = "🚨🚨🚨 SPOEDRIT - PRIORITEIT AUB DIRECT AFHANDELEN 🚨🚨🚨\n";
   }
 
-  const bericht = `${spoedBericht}🚖 FA TAXI SERVICE 4 Personen 🚖\n📲 Nieuw ritverzoek\n📍 Ophaaladres: ${ophalen}\n📍 Afzetadres: ${afzetten}\n🕒 Tijdstip: ${tijd}\n💳 Betaalmethode: ${betaalmethode}\n${document.getElementById("resultaat").innerText}`;
+  const bericht = `${spoedBericht}🚖 FA TAXI SERVICE 4 Personen 🚖\n📲 Nieuw ritverzoek\n📍 Ophaaladres: ${ophalen}\n📍 Afzetadres: ${afzetten}\n🕒 Tijdstip: ${tijd}\n💳 Betaalmethode: ${betaalmethode}\n${opmerkingen ? '✏️ Opmerkingen: ' + opmerkingen + '\n' : ''}${document.getElementById("resultaat").innerText}`;
   document.getElementById("whatsappKnop").href = `https://wa.me/message/WPXHSY3TEYVPA1?text=${encodeURIComponent(bericht)}`;
   document.getElementById("whatsappKnop").style.display = "block";
 }
@@ -337,6 +347,7 @@ function toonAdmin() {
   const huisdieren = document.getElementById("huisdieren").checked ? "Ja (+€5)" : "Nee";
   const spoedrit = spoedToeslag > 0 ? "Ja (+€10)" : "Nee";
   const geplandeRit = document.getElementById("tijdstip").value ? "Ja (+€7,50)" : "Nee";
+  const opmerkingen = document.getElementById("opmerkingen").value || "Geen";
 
   const spec = `📊 BEHEERDER OVERZICHT 📊
 📍 Ophaaladres: ${ophaaladres}
@@ -344,6 +355,7 @@ function toonAdmin() {
 🕒 Tijdstip: ${tijdstip}
 💳 Betaalmethode: ${betaalmethode}
 💰 Kortingscode: ${kortingscode}
+✏️ Opmerkingen: ${opmerkingen}
 🐶 Huisdieren: ${huisdieren}
 🚀 Spoedrit: ${spoedrit}
 📅 Geplande rit: ${geplandeRit}
