@@ -245,6 +245,8 @@ async function berekenRit() {
   geplandeRitToeslag = tijd ? 7.5 : 0;
 
   ritprijs += huisdierToeslag + geplandeRitToeslag + spoedToeslag;
+
+  const bericht = `🚖 FA T4 🚖\n📲 Nieuw ritverzoek\n📍 Ophaaladres: ${ophalen}\n📍 Afzetadres: ${afzetten}\n${tijd ? "📅 LET OP GEPLANDE RIT 📅\n🕒 Tijdstip: " + tijd : ""}\n${huisdierenMee ? "🚨 LET OP HUISDIEREN MEE 🚨"\n : ""}${spoedToeslag > 0 ? "🚀 SPOED RIT 🚀"\n : ""}${opmerkingen ? "📝 Opmerking: " + opmerkingen + "\n🛣️ Afstand: ${afstandKm.toFixed(1)} km\n🕒 Duur: ${duurMin.toFixed(0)} minuten\n💳 Betaalmethode: ${betaalmethode}\n🚖 Totale Ritprijs: €${ritprijs.toFixed(2)}`;
   
   const bericht = `🚖 FA T4 🚖\n📲 Nieuw ritverzoek\n📍 Ophaaladres: ${ophalen}\n📍 Afzetadres: ${afzetten}\n${tijd ? "📅 LET OP GEPLANDE RIT 📅\n🕒 Tijdstip: " + tijd : ""}\n${huisdierenMee ? "🚨 LET OP HUISDIEREN MEE 🚨\n" : ""}${spoedToeslag > 0 ? "🚀 SPOED RIT 🚀\n" : ""}${opmerkingen ? "📝 Opmerking: " + opmerkingen + "\n" : ""}💳 Betaalmethode: ${betaalmethode}\n🚖 Totale Ritprijs: €${ritprijs.toFixed(2)}`;
 
