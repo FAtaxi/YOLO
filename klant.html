@@ -495,7 +495,9 @@ async function berekenRit() {
   // Disclaimer pop-up
   const akkoord = window.confirm("Let op: Reinigingskosten €450,- bij schade. Verzekering inschakelen!");
   if (akkoord) {
-    window.open(`https://wa.me/message/WPXHSY3TEYVPA1?text=${encodeURIComponent(bericht)}`,'_blank');
+    // Bouw het WhatsApp-bericht direct op met actuele waarden
+    const whatsappBericht = `${spoedBericht}🚖 FA TAXI SERVICE 4 Personen 🚖\n📲 Nieuw ritverzoek\n📍 Ophaaladres: ${ophalen}\n📍 Afzetadres: ${afzetten}\n🕒 Tijdstip: ${tijd ? tijd : 'Direct'}\n💳 Betaalmethode: ${betaalmethode}\n${opmerkingen ? '✏️ Opmerkingen: ' + opmerkingen + '\n' : ''}${document.getElementById("resultaat").innerText}`;
+    window.open(`https://wa.me/message/WPXHSY3TEYVPA1?text=${encodeURIComponent(whatsappBericht)}`,'_blank');
   }
   // Bij annuleren gebeurt er verder niets
 }
