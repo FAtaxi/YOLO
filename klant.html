@@ -459,9 +459,9 @@ function toonAdmin() {
   const tijdstip = document.getElementById("tijdstip").value || "Direct";
   const betaalmethode = document.getElementById("betaalmethode").value;
   const kortingscode = document.getElementById("kortingscode").value || "Geen";
-  const huisdieren = document.getElementById("huisdieren").value === "1" ? "Ja (+€5)" : "Nee";
-  const spoedrit = spoedToeslag > 0 ? "Ja (+€10)" : "Nee";
-  const geplandeRit = document.getElementById("tijdstip").value ? "Ja (+€7,50)" : "Nee";
+  const huisdieren = document.getElementById("huisdieren").value === "1" ? "Ja +€5" : "Nee";
+  const spoedrit = spoedToeslag > 0 ? "Ja +€10" : "Nee";
+  const geplandeRit = document.getElementById("tijdstip").value ? "Ja +€7,50" : "Nee";
   const opmerkingen = document.getElementById("opmerkingen").value || "Geen";
 
   const spec = `📊 BEHEERDER OVERZICHT 📊
