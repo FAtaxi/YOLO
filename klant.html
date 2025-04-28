@@ -251,12 +251,12 @@
   <label for="opmerkingen" id="labelOpmerkingen">✏️ Opmerkingen voor de klant</label>
   <textarea id="opmerkingen" placeholder="Bijvoorbeeld: extra instructies, bijzonderheden, etc." rows="2" style="resize:vertical; background:#222; color:#fff; border-radius:5px; width:100%; margin:0.5rem 0; padding:0.7rem;"></textarea>
 
-  <button onclick="toggleHuisdier()" id="huisdierBtn">🐶 Voeg huisdier toe (€5,-) 🐶</button>
+  <button onclick="toggleHuisdier()" id="huisdierBtn">🐶 Voeg huisdier toe €5,- 🐶</button>
 <input type="hidden" id="huisdieren" value="0">
   
   <button onclick="toggleSpoed()" id="spoedBtn">🚀 Voeg €10 spoedrit toe 🚀</button>
 
-  <button onclick="toggleAkkoord()" id="akkoordBtn">🚨 Ga akkoord met annuleringskosten (€10,-) 🚨</button>
+  <button onclick="toggleAkkoord()" id="akkoordBtn">🚨 Ga akkoord met annuleringskosten €10,- 🚨</button>
 <input type="hidden" id="akkoord" value="0">
 
   <button onclick="berekenRit()" id="btnBereken">🚖 Bereken ritprijs 🚖</button>
@@ -514,12 +514,12 @@ function toggleHuisdier() {
   const input = document.getElementById('huisdieren');
   if (input.value === "0") {
     input.value = "1";
-    btn.innerText = "✅ Huisdier toegevoegd (€5,-)";
+    btn.innerText = "✅ Huisdier toegevoegd €5,-";
     btn.style.background = "gold";
     btn.style.color = "black";
   } else {
     input.value = "0";
-    btn.innerText = "🐶 Voeg huisdier toe (€5,-) 🐶";
+    btn.innerText = "🐶 Voeg huisdier toe €5,- 🐶";
     btn.style.background = "";
     btn.style.color = "";
   }
@@ -530,12 +530,12 @@ function toggleAkkoord() {
   const input = document.getElementById('akkoord');
   if (input.value === "0") {
     input.value = "1";
-    btn.innerText = "✅ Akkoord met annuleringskosten (€10,-)";
+    btn.innerText = "✅ Akkoord met annuleringskosten €10,-";
     btn.style.background = "gold";
     btn.style.color = "black";
   } else {
     input.value = "0";
-    btn.innerText = "🚨 Ga akkoord met annuleringskosten (€10,-) 🚨";
+    btn.innerText = "🚨 Ga akkoord met annuleringskosten €10,- 🚨";
     btn.style.background = "";
     btn.style.color = "";
   }
