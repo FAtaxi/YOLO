@@ -63,15 +63,31 @@
       cursor: pointer;
     }
     #adminContainer {
-      display: inline-block; /* Dit zorgt ervoor dat het naast het vlaggetje komt. */
-      background: #111; /* zelfde stijl als de andere containers */
+      display: inline-block;
+      background: #111;
       border-radius: 10px;
-      width: 30px; /* De breedte van de container kan ook dienen als de hoogte van het vlaggetje */
-      height: 30px; /* zelfde hoogte als het vlaggetje */
+      width: 30px;
+      height: 30px;
       cursor: pointer;
-      text-align: center; /* Centraal uitlijnen van de tekst */
-      padding-top: 5px; /* Klein beetje ruimte bovenin de tekst */
-      margin-left: 5px; /* Ruimte tussen vlaggetje en beheerder container */
+      text-align: center;
+      padding-top: 5px;
+      margin-left: 5px;
+    }
+    .kosten-container {
+      background: #222;
+      padding: 0.7rem;
+      border-radius: 5px;
+      margin: 0.5rem 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .kosten-label {
+      font-size: 1rem;
+      color: #fff;
+    }
+    .kosten-checkbox {
+      margin-left: 10px;
     }
   </style>
 </head>
@@ -94,7 +110,7 @@
   <label for="afzetadres" id="labelAfzet">📍 AFZET ADRES 📍</label>
   <input type="text" id="afzetadres" placeholder="Bijv. Damrak 50, Amsterdam">
 
-  <button onclick="toggleDatum()" id="toggleDatumBtn"> 📅 Uw rit plannen klik hier 📅</button>
+  <button onclick="toggleDatum()" id="toggleDatumBtn">📅 Reserveren? Klik hier! €7.50,- 📅</button>
 
   <div id="datumContainer">
     <label for="tijdstip" id="labelTijdstip">🕒 Gewenst tijdstip 🕒 </label>
@@ -112,11 +128,17 @@
   <label for="kortingscode" id="labelKorting"> 💰 Kortingscode 💰  </label>
   <input type="text" id="kortingscode" placeholder="Voer uw kortingscode in">
 
-  <label for="huisdieren">🐶 Huisdieren meenemen? 🐶</label>
-  <input type="checkbox" id="huisdieren"> Ja
+  <div class="kosten-container">
+    <span class="kosten-label">🐶 Pets €5,- 🐶</span>
+    <input type="checkbox" id="huisdieren" class="kosten-checkbox">
+  </div>
   
   <button onclick="toggleSpoed()" id="spoedBtn">🚀 Voeg €10 spoedrit toe 🚀</button>
-  <input type="checkbox" id="akkoord"> 🚨 Akkoord annuleringskosten 🚨 €10,-
+
+  <div class="kosten-container">
+    <span class="kosten-label">🚨 Annuleringskosten €10,- 🚨</span>
+    <input type="checkbox" id="akkoord" class="kosten-checkbox" required>
+  </div>
 
   <button onclick="berekenRit()" id="btnBereken">🚖 Bereken ritprijs 🚖</button>
 
@@ -145,7 +167,7 @@ function toggleDatum() {
   const datumContainer = document.getElementById('datumContainer');
   const toggleBtn = document.getElementById('toggleDatumBtn');
   datumContainer.style.display = datumContainer.style.display === 'none' ? 'block' : 'none';
-  toggleBtn.innerText = datumContainer.style.display === 'none' ? "➕ Voeg datum/tijd toe" : "➖ Verberg datum/tijd";
+  toggleBtn.innerText = datumContainer.style.display === 'none' ? "📅 Reserveren? Klik hier! €7.50,- 📅" : "➖ Verberg datum/tijd";
 }
 
 async function gebruikLocatie() {
@@ -347,7 +369,6 @@ ${document.getElementById("tijdstip").value ? "- Geplande rit toeslag: +€7,50"
 
   document.getElementById("adminSpecificaties").innerText = spec;
   document.getElementById("adminSpecificaties").style.display = "block";
-
 }
 
 function switchLanguage() {
