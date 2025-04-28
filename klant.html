@@ -6,13 +6,25 @@
   <title>FA Taxi Boeking</title>
   <style>
     body {
-      margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background: #000;
-      color: #fff;
-      padding: 1rem;
-      position: relative;
-    }
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  /* Metallic zwart gradient background */
+  background: linear-gradient(135deg, #232526 0%, #191919 50%, #232526 100%);
+  color: #fff;
+  padding: 1rem;
+  position: relative;
+  min-height: 100vh;
+  /* Metallic glans overlay */
+  overflow-x: hidden;
+}
+body::before {
+  content: "";
+  position: fixed;
+  left: 0; top: 0; right: 0; bottom: 0;
+  pointer-events: none;
+  background: linear-gradient(120deg, rgba(255,255,255,0.09) 10%, rgba(255,255,255,0.01) 40%, rgba(255,255,255,0.11) 60%, rgba(255,255,255,0.02) 100%);
+  z-index: 0;
+}
     h1 {
       text-align: center;
       color: red;
@@ -445,7 +457,7 @@ async function berekenRit() {
     return alert("Vul alles correct in en ga akkoord met de voorwaarden.");
   }
   if (document.getElementById("akkoord").value !== "1") {
-    alert("Dit bedrag wordt niet in rekening gebracht als u binnen 5 min annuleert. Na 5 min worden annuleringskosten in rekening gebracht.");
+    alert("U dient akkoord te gaan.Dit bedrag wordt niet in rekening gebracht als u binnen 5 minuten annuleert. Na 5 minuten worden annuleringskosten in rekening gebracht.");
     return;
   }
 
