@@ -10,15 +10,23 @@
     body {
   margin: 0;
   font-family: 'Segoe UI', sans-serif;
-  /* Metallic zwart gradient background */
-  background: linear-gradient(135deg, #232526 0%, #191919 50%, #232526 100%);
+  background: linear-gradient(135deg, #232526 0%, #191919 50%, #232526 100%); /* metallic zwart */
   color: #fff;
   padding: 1rem;
   position: relative;
   min-height: 100vh;
-  /* Metallic glans overlay */
   overflow-x: hidden;
 }
+body::before {
+  content: "";
+  position: fixed;
+  left: 0; top: 0; right: 0; bottom: 0;
+  pointer-events: none;
+  background: linear-gradient(120deg, rgba(255,255,255,0.09) 10%, rgba(255,255,255,0.01) 40%, rgba(255,255,255,0.11) 60%, rgba(255,255,255,0.02) 100%);
+  z-index: 0;
+  mix-blend-mode: lighten;
+}
+
 body::before {
   content: "";
   position: fixed;
@@ -61,7 +69,9 @@ body::before {
   display: block;
   box-sizing: border-box;
 }
-    input, button, label, select {
+    input, button, label, select, textarea {
+  font-family: inherit;
+
   display: block;
   width: 100%;
   margin: 0.3rem 0;
@@ -70,33 +80,66 @@ body::before {
   border-radius: 5px;
   font-size: 0.97rem;
 }
-    input, select {
-      background: #222;
-      color: #fff;
-    }
+    input, select, textarea {
+  background: linear-gradient(120deg, #232526 70%, #191919 100%);
+  color: #ffd700;
+  border: 1.5px solid #ffd70088;
+  box-shadow: 0 1px 6px #ffd70022;
+  outline: none;
+  transition: border 0.18s, box-shadow 0.18s, background 0.18s;
+}
+input:focus, select:focus, textarea:focus {
+  border: 2px solid #ffd700;
+  box-shadow: 0 0 10px #ffd70099, 0 2px 24px #191919cc;
+  background: linear-gradient(120deg, #232526 40%, #ffd70022 100%);
+  color: #fffbe6;
+}
+
     button {
   background: linear-gradient(90deg, #fffbe6 0%, #ffe066 30%, #ffd700 70%, #bfa100 100%);
   color: #222;
   font-weight: bold;
   cursor: pointer;
   border: none;
-  box-shadow: 0 3px 14px 0 #fff8, 0 3px 14px 0 #ffe06688, 0 1px 4px #bfa10044;
-  text-shadow: 0 2px 8px #fff9, 0 1px 2px #bfa10055;
-  transition: background 0.2s, box-shadow 0.2s, filter 0.2s;
-  filter: brightness(1.08) drop-shadow(0 1px 6px #fff7);
+  box-shadow: 0 3px 18px 0 #fff8, 0 3px 18px 0 #ffe06699, 0 1px 6px #bfa10055;
+  text-shadow: 0 2px 10px #fff8, 0 1px 4px #bfa10099;
+  transition: background 0.18s, box-shadow 0.18s, filter 0.18s, transform 0.12s;
+  filter: brightness(1.13) drop-shadow(0 1px 8px #ffd70077);
+  border-radius: 8px;
+  position: relative;
+  overflow: hidden;
+}
+button:after {
+  content: "";
+  display: block;
+  position: absolute;
+  left: 0; top: 0; right: 0; bottom: 0;
+  background: linear-gradient(120deg, rgba(255,255,255,0.13) 10%, rgba(255,255,255,0.01) 90%);
+  pointer-events: none;
+  border-radius: 8px;
+  z-index: 0;
 }
 button:hover, button:focus {
   background: linear-gradient(90deg, #fffbe6 0%, #ffd700 50%, #bfa100 100%);
-  filter: brightness(1.18) drop-shadow(0 2px 8px #ffd70088);
+  filter: brightness(1.18) drop-shadow(0 2px 10px #ffd70099);
   outline: none;
+  transform: scale(1.03);
 }
+
     #resultaat, #adminSpecificaties {
-      white-space: pre-wrap;
-      background: #222;
-      padding: 1rem;
-      border-radius: 5px;
-      margin-top: 1rem;
-    }
+  background: linear-gradient(120deg, #232526 60%, #191919 100%);
+  border: 2px solid #ffd70077;
+  box-shadow: 0 2px 16px #ffd70033, 0 1px 8px #fff2;
+  color: #fffbe6;
+  font-size: 1.1rem;
+  font-family: inherit;
+  margin-top: 1.2rem;
+  padding: 1.1rem 1rem;
+  border-radius: 10px;
+  word-break: break-word;
+  transition: box-shadow 0.18s, border 0.18s;
+}
+
     #datumContainer {
       display: none;
     }
@@ -108,16 +151,20 @@ button:hover, button:focus {
       cursor: pointer;
     }
     #adminContainer {
-      display: inline-block;
-      background: #111;
-      border-radius: 10px;
-      width: 30px;
-      height: 30px;
-      cursor: pointer;
-      text-align: center;
-      padding-top: 5px;
-      margin-left: 5px;
-    }
+  background: linear-gradient(135deg, #232526 60%, #ffd70044 100%);
+  border: 2px solid #ffd700cc;
+  box-shadow: 0 0 10px #ffd70044, 0 1px 8px #fff2;
+  color: #ffd700;
+  font-weight: bold;
+  transition: box-shadow 0.18s, border 0.18s, background 0.18s;
+}
+#adminContainer:hover, #adminContainer:focus {
+  box-shadow: 0 0 18px #ffd70099, 0 2px 16px #232526cc;
+  background: linear-gradient(135deg, #ffd70033 0%, #232526 100%);
+  color: #fffbe6;
+  outline: none;
+}
+
     /* Switch toggle styling */
     .switch {
       position: relative;
@@ -277,6 +324,16 @@ button:hover, button:focus {
   display: block;
 }
 .adres-suggestie-item {
+  background: none;
+  color: #ffd700;
+  transition: background 0.18s, color 0.18s;
+  border-bottom: 1px solid #ffd70022;
+}
+.adres-suggestie-item:hover, .adres-suggestie-item:focus {
+  background: linear-gradient(90deg, #ffd70022 0%, #232526 100%);
+  color: #fffbe6;
+  outline: none;
+}
   padding: 0.7rem 1rem;
   border-bottom: 1px solid #333;
   cursor: pointer;
@@ -328,25 +385,25 @@ button:hover, button:focus {
     margin-bottom: 0.7rem;
   }
   button {
-  font-size: 1.08rem;
-  padding: 1rem 0.8rem;
-  border-radius: 10px;
-  margin-bottom: 0.8rem;
-  width: 100%;
-  font-weight: bold;
-  background: linear-gradient(90deg, #fffbe6 0%, #ffe066 30%, #ffd700 70%, #bfa100 100%);
-  color: #222;
-  border: none;
-  box-shadow: 0 3px 14px 0 #fff8, 0 3px 14px 0 #ffe06688, 0 1px 4px #bfa10044;
-  text-shadow: 0 2px 8px #fff9, 0 1px 2px #bfa10055;
-  transition: background 0.2s, box-shadow 0.2s, filter 0.2s;
-  filter: brightness(1.08) drop-shadow(0 1px 6px #fff7);
-}
-button:hover, button:focus {
-  background: linear-gradient(90deg, #fffbe6 0%, #ffd700 50%, #bfa100 100%);
-  filter: brightness(1.18) drop-shadow(0 2px 8px #ffd70088);
-  outline: none;
-}
+    font-size: 1.08rem;
+    padding: 1rem 0.8rem;
+    border-radius: 10px;
+    margin-bottom: 0.8rem;
+    width: 100%;
+    font-weight: bold;
+    background: linear-gradient(90deg, #fffbe6 0%, #ffe066 30%, #ffd700 70%, #bfa100 100%);
+    color: #222;
+    border: none;
+    box-shadow: 0 3px 14px 0 #fff8, 0 3px 14px 0 #ffe06688, 0 1px 4px #bfa10044;
+    text-shadow: 0 2px 8px #fff9, 0 1px 2px #bfa10055;
+    transition: background 0.2s, box-shadow 0.2s, filter 0.2s;
+    filter: brightness(1.08) drop-shadow(0 1px 6px #fff7);
+  }
+  button:hover, button:focus {
+    background: linear-gradient(90deg, #fffbe6 0%, #ffd700 50%, #bfa100 100%);
+    filter: brightness(1.18) drop-shadow(0 2px 8px #ffd70088);
+    outline: none;
+  }
   .taxi-animation-container {
     width: 100vw;
     min-width: 100vw;
@@ -400,6 +457,10 @@ button:hover, button:focus {
     border-radius: 12px;
     margin-bottom: 1.1rem;
     width: 100%;
+    font-weight: bold;
+    background: linear-gradient(90deg, #fffbe6 0%, #ffe066 30%, #ffd700 70%, #bfa100 100%);
+    color: #222;
+    border: none;
     box-shadow: 0 3px 12px rgba(255,215,0,0.09);
   }
   .taxi-animation-container {
@@ -414,10 +475,7 @@ button:hover, button:focus {
     top: 100%;
     border-radius: 0 0 13px 13px;
     max-width: 100vw;
-  }
-}
-html {
-    font-size: 15px;
+    
   }
   body {
     padding: 0.2rem;
@@ -600,11 +658,7 @@ html {
     right: 0;
     border-radius: 0 0 14px 14px;
   }
-}
 @media (max-width: 900px) and (orientation: landscape) {
-  html {
-    font-size: 15px;
-  }
   body {
     padding: 0.1rem;
     min-width: 0;
@@ -639,6 +693,7 @@ html {
   font-size: 2.2rem;
   margin: 1.2rem 0 1.3rem 0;
   letter-spacing: 1px;
+  }
   label, select, input, textarea, button {
     font-size: 0.97rem !important;
   }
@@ -669,11 +724,64 @@ html {
   }
 }
 }
+
+body {
+  padding: 0.2rem;
+  min-width: 0;
+}
+.container {
+  max-width: 100vw;
+  margin: 1rem 0.2rem;
+  border-radius: 10px;
+  padding: 1rem 0.5rem 1.3rem 0.5rem;
+  box-shadow: 0 2px 18px rgba(0,0,0,0.24);
+}
+h1 {
+  font-size: 1.35rem;
+  margin: 0.5rem 0 0.7rem 0;
+}
+label, select, input, textarea, button {
+  font-size: 1rem !important;
+}
+input[type="text"],
+input[type="datetime-local"],
+select, textarea {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  font-size: 1rem;
+  padding: 0.8rem 0.7rem;
+  margin-bottom: 0.7rem;
+  border-radius: 8px;
+}
+button {
+  width: 100%;
+  min-width: 0;
+  font-size: 1.08rem;
+  padding: 1rem 0.7rem;
+  margin-bottom: 0.8rem;
+  border-radius: 8px;
+}
+.taxi-animation-container {
+  height: 42px;
+  margin-bottom: 0.1rem;
+}
+.taxi-svg {
+  width: 130px !important;
+  height: 52px !important;
+}
+.adres-suggesties {
+  max-width: 100vw;
+  font-size: 0.97rem;
+  left: 0;
+  right: 0;
+}
 </style>
 </head>
 
 <body>
-<!-- Taxi direct bovenaan, vóór ALLES -->
+
+<h1>FA Taxi Service</h1>
 <div class="taxi-animation-container">
   <svg class="taxi-svg" viewBox="0 0 220 88" width="220" height="88">
     <!-- Rookpluimpjes -->
@@ -714,23 +822,23 @@ html {
 
 <div class="container">
   <label for="ophaaladres" id="labelOphaal">📍 OPHAAL ADRES 📍 </label>
-  <input type="text" id="ophaaladres" placeholder="Bijv. Stationsplein 1, Amsterdam" autocomplete="off" oninput="zoekAdresSuggesties(this, 'ophaaladres-suggesties')">
+  <input type="text" id="ophaaladres" placeholder="Bijv. Stationsplein 1, Amsterdam" autocomplete="off" oninput="zoekAdresSuggesties(this, 'ophaaladres-suggesties')" aria-label="Ophaaladres" required />
   <div id="ophaaladres-suggesties" class="adres-suggesties"></div>
-  <button onclick="gebruikLocatie()" id="btnLocatie">📌 Haal mijn locatie op 📌</button>
+  <button onclick="gebruikLocatie()" id="btnLocatie" aria-live="polite">📌 Haal mijn locatie op 📌<span id="locatieLoader" style="display:none;margin-left:8px;" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 50 50"><circle cx="25" cy="25" r="20" stroke="#ffd700" stroke-width="5" fill="none" stroke-linecap="round"><animateTransform attributeName="transform" type="rotate" from="0 25 25" to="360 25 25" dur="1s" repeatCount="indefinite"/></circle></svg></span></button>
 
   <label for="afzetadres" id="labelAfzet">📍 AFZET ADRES 📍</label>
-  <input type="text" id="afzetadres" placeholder="Bijv. Damrak 50, Amsterdam" autocomplete="off" oninput="zoekAdresSuggesties(this, 'afzetadres-suggesties')">
+  <input type="text" id="afzetadres" placeholder="Bijv. Damrak 50, Amsterdam" autocomplete="off" oninput="zoekAdresSuggesties(this, 'afzetadres-suggesties')" aria-label="Afzetadres" required />
   <div id="afzetadres-suggesties" class="adres-suggesties"></div>
 
-  <button onclick="toggleDatum()" id="toggleDatumBtn">📅 Reserveren? Klik hier! €7.50,- 📅</button>
+  <button onclick="toggleDatum()" id="toggleDatumBtn" aria-controls="datumContainer" aria-expanded="false">📅 Reserveren? Klik hier! €7.50,- 📅</button>
 
   <div id="datumContainer">
     <label for="tijdstip" id="labelTijdstip">🕒 Gewenst tijdstip 🕒 </label>
-    <input type="datetime-local" id="tijdstip">
+    <input type="datetime-local" id="tijdstip" aria-label="Gewenst tijdstip" />
   </div>
 
   <label for="betaalmethode" id="labelBetaal">💳 Kies een betaalmethode 💳</label>
-  <select id="betaalmethode">
+  <select id="betaalmethode" aria-label="Betaalmethode" required>
     <option value="Tikkie">🔗 Tikkie (online betaallink)</option>
     <option value="Online betaallink">🌐 Online betaallink</option>
     <option value="Pin bij chauffeur">💳 Pin bij chauffeur</option>
@@ -738,7 +846,7 @@ html {
   </select>
 
   <label for="kortingscode" id="labelKorting"> 💰 Kortingscode 💰  </label>
-  <input type="text" id="kortingscode" placeholder="Voer uw kortingscode in">
+  <input type="text" id="kortingscode" placeholder="Voer uw kortingscode in" aria-label="Kortingscode" />
 
   <label for="opmerkingen" id="labelOpmerkingen">✏️ Opmerkingen voor de klant</label>
   <textarea id="opmerkingen" placeholder="Bijvoorbeeld: extra instructies, bijzonderheden, etc." rows="2" style="resize:vertical; background:#222; color:#fff; border-radius:5px; width:100%; margin:0.5rem 0; padding:0.7rem;"></textarea>
@@ -763,6 +871,8 @@ html {
 </div>
 
 <script>
+// --- FA Taxi Boeking | Modern, robuust & foutloos script ---
+'use strict';
 let spoedToeslag = 0;
 let huisdierenToeslag = 5; // Kosten voor huisdieren
 let geplandeRitToeslag = 7.50; // Kosten voor geplande rit
@@ -783,22 +893,42 @@ function toggleDatum() {
 
 async function gebruikLocatie() {
   if (!navigator.geolocation) return alert("Locatie niet ondersteund.");
-  navigator.geolocation.getCurrentPosition(async pos => {
-    const lat = pos.coords.latitude, lon = pos.coords.longitude;
-    const url = `https://api.opencagedata.com/geocode/v1/json?q=${lat}+${lon}&key=22f9046cc2b242a3a5f08cfabc005f78`;
-    const res = await fetch(url);
-    const data = await res.json();
-    document.getElementById("ophaaladres").value = data.results[0].formatted;
-  });
+  try {
+    navigator.geolocation.getCurrentPosition(async pos => {
+      try {
+        const lat = pos.coords.latitude, lon = pos.coords.longitude;
+        const url = `https://api.opencagedata.com/geocode/v1/json?q=${lat}+${lon}&key=22f9046cc2b242a3a5f08cfabc005f78`;
+        const res = await fetch(url);
+        const data = await res.json();
+        if (data.results && data.results[0]) {
+          const ophaalInput = document.getElementById("ophaaladres");
+          if (ophaalInput) ophaalInput.value = data.results[0].formatted;
+        } else {
+          alert("Adres niet gevonden.");
+        }
+      } catch (err) {
+        alert("Locatie ophalen mislukt: " + (err.message || err));
+      }
+    }, err => {
+      alert("Locatie ophalen mislukt: " + err.message);
+    });
+  } catch (err) {
+    alert("Locatie ophalen mislukt: " + (err.message || err));
+  }
 }
 
 async function getCoordinates(adres) {
-  const url = `https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(adres)}&key=22f9046cc2b242a3a5f08cfabc005f78`;
-  const res = await fetch(url);
-  const data = await res.json();
-  if (data.results.length === 0) throw new Error("Geen locatie gevonden.");
-  const { lat, lng } = data.results[0].geometry;
-  return [lng, lat];
+  try {
+    const url = `https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(adres)}&key=22f9046cc2b242a3a5f08cfabc005f78`;
+    const res = await fetch(url);
+    const data = await res.json();
+    if (!data.results || data.results.length === 0) throw new Error("Geen locatie gevonden.");
+    const { lat, lng } = data.results[0].geometry;
+    return [lng, lat];
+  } catch (err) {
+    alert("Locatie ophalen mislukt: " + err.message);
+    throw err;
+  }
 }
 
 async function getWeer(lat, lon) {
@@ -806,8 +936,12 @@ async function getWeer(lat, lon) {
     const url = `https://api.weatherapi.com/v1/current.json?key=${weatherApiKey}&q=${lat},${lon}`;
     const res = await fetch(url);
     const data = await res.json();
-    return data.current?.condition?.text || "";
-  } catch {
+    if (data && data.current && data.current.condition && data.current.condition.text) {
+      return data.current.condition.text;
+    }
+    return "";
+  } catch (err) {
+    console.error("Weer ophalen mislukt:", err);
     return "";
   }
 }
@@ -896,6 +1030,7 @@ function pasKortingscodeToe(ritprijs) {
 }
 
 async function berekenRit() {
+  try {
   const ophalen = document.getElementById("ophaaladres").value;
   const afzetten = document.getElementById("afzetadres").value;
   const tijd = document.getElementById("tijdstip").value;
@@ -941,8 +1076,9 @@ async function berekenRit() {
   const bericht = `${spoedBericht}🚖 FA TAXI SERVICE 4 Personen 🚖\n📲 Nieuw ritverzoek\n📍 Ophaaladres: ${ophalen}\n📍 Afzetadres: ${afzetten}\n🕒 Tijdstip: ${tijdstipWeergave}\n💳 Betaalmethode: ${betaalmethode}\n${opmerkingen ? '✏️ Opmerkingen: ' + opmerkingen + '\n' : ''}${document.getElementById("resultaat").innerText}`;
   document.getElementById("whatsappKnop").href = `https://wa.me/message/WPXHSY3TEYVPA1?text=${encodeURIComponent(bericht)}`;
   document.getElementById("whatsappKnop").style.display = "block";
-
-
+  } catch (err) {
+    alert("Er is een fout opgetreden bij het berekenen van de rit: " + (err.message || err));
+  }
 }
 
 function toonAdmin() {
@@ -1001,16 +1137,13 @@ function switchLanguage() {
   document.getElementById("labelOphaal").innerText = "📍 Pickup address";
   document.getElementById("labelAfzet").innerText = "📍 Drop-off address";
   document.getElementById("toggleDatumBtn").innerText = "➕ Add date/time";
-  document.getElementById("labelTijdstip").innerText = "🕒 Desired pickup time (optional)";
-  document.getElementById("labelBetaal").innerText = "💳 Choose payment method";
-  document.getElementById("labelKorting").innerText = "🎟️ Discount code (optional)";
-  document.getElementById("btnLocatie").innerText = "📌 Get my location";
-  document.getElementById("btnBereken").innerText = "🚖 Calculate fare";
 }
+
 // Toggle huisdier button
 function toggleHuisdier() {
   const btn = document.getElementById('huisdierBtn');
   const input = document.getElementById('huisdieren');
+  if (!btn || !input) return;
   if (input.value === "0") {
     input.value = "1";
     btn.innerText = "✅ Huisdier toegevoegd €5,-";
@@ -1027,6 +1160,7 @@ function toggleHuisdier() {
 function toggleAkkoord() {
   const btn = document.getElementById('akkoordBtn');
   const input = document.getElementById('akkoord');
+  if (!btn || !input) return;
   if (input.value === "0") {
     input.value = "1";
     btn.innerText = "✅ Akkoord met annuleringskosten €10,-";
@@ -1074,7 +1208,7 @@ function kiesAdresSuggestie(inputId, suggestieDivId, waarde) {
   document.getElementById(suggestieDivId).classList.remove('active');
 }
 // Sluit suggesties bij klik buiten
-window.addEventListener('click', function(e) {
+window.addEventListener('click', e => {
   ['ophaaladres-suggesties','afzetadres-suggesties'].forEach(id => {
     const box = document.getElementById(id);
     if (box && !box.contains(e.target) && e.target.id !== id.replace('-suggesties','')) {
