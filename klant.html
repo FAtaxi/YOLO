@@ -284,9 +284,16 @@ async function berekenRit() {
   let ritprijs = berekenRitprijs(afstandKm, duurMin, weer);
   ritprijs = pasKortingscodeToe(ritprijs);
 
-  document.getElementById("resultaat").innerText = `🚖 Ritprijs: €${ritprijs.toFixed(2)}\n🛣️ Afstand: ${afstandKm.toFixed(1)} km\n🕒 Duur: ${duurMin.toFixed(0)} min\n💳 Betaalmethode: ${betaalmethode}\n📌 Annuleringskosten: €10 (niet inbegrepen)\n🎁 Korting toegepast: €${adminData.kortingBedrag}\n${adminData.geplandeRit}\n${adminData.huisdieren}`;
+  // Voeg spoedritmelding toe aan adminData
+  if (spoedToeslag !== 0) {
+    adminData.spoedMelding = "🚀 SPOED RIT 🚀";
+  } else {
+    adminData.spoedMelding = "";
+  }
 
-  const bericht = `🚖 FA TAXI SERVICE 4 Personen 🚖\n📲 Nieuw ritverzoek\n📍 Ophaaladres: ${ophalen}\n📍 Afzetadres: ${afzetten}\n🕒 Tijdstip: ${tijd}\n💳 Betaalmethode: ${betaalmethode}\n${document.getElementById("resultaat").innerText}`;
+  document.getElementById("resultaat").innerText = `🚖 Ritprijs: €${ritprijs.toFixed(2)}\n🛣️ Afstand: ${afstandKm.toFixed(1)} km\n🕒 Duur: ${duurMin.toFixed(0)} min\n💳 Betaalmethode: ${betaalmethode}\n📌 Annuleringskosten: €10 (niet inbegrepen)\n🎁 Korting toegepast: €${adminData.kortingBedrag}\n${adminData.geplandeRit}\n${adminData.huisdieren}\n${adminData.spoedMelding}`;
+
+  const bericht = `🚖 FA TAXI SERVICE 4 Personen 🚖\n📲 Nieuw ritverzoek\n📍 Ophaaladres: ${ophalen}\n📍 Afzetadres: ${afzetten}\n🕒 Tijdstip: ${tijd}\n💳 Betaalmethode: ${betaalmethode}\n${adminData.spoedMelding}\n${document.getElementById("resultaat").innerText}`;
   document.getElementById("whatsappKnop").href = `https://wa.me/message/WPXHSY3TEYVPA1?text=${encodeURIComponent(bericht)}`;
   document.getElementById("whatsappKnop").style.display = "block";
 }
@@ -304,6 +311,7 @@ function toonAdmin() {
 - Korting: ${adminData.korting}% (€${adminData.kortingBedrag})
 ${adminData.huisdieren}
 ${adminData.geplandeRit}
+${adminData.spoedMelding}
 ;`
   document.getElementById("adminSpecificaties").innerText = spec;
   document.getElementById("adminSpecificaties").style.display = "block";
