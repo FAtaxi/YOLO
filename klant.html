@@ -28,17 +28,18 @@ body::before {
   z-index: 0;
 }
     h1 {
-      text-align: center;
-      color: red;
-      margin-bottom: 1rem;
-      background: linear-gradient(90deg, #ff5e62 0%, #ff0000 40%, #a80000 100%);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent; 
-      filter: drop-shadow(0 2px 12px #ff000055) drop-shadow(0 1px 4px #000);
-      text-shadow: 0 2px 16px #fff7, 0 1px 4px #000;
-      position: relative;
-    }
+  text-align: center;
+  margin-bottom: 1rem;
+  background: linear-gradient(90deg, #fffbe6 0%, #ffe066 30%, #ffd700 70%, #bfa100 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 2px 12px #ffd70088) drop-shadow(0 1px 4px #bfa10044);
+  text-shadow: 0 2px 16px #fff7, 0 1px 4px #bfa100;
+  position: relative;
+  font-weight: 900;
+  letter-spacing: 1px;
+}
     h1::after {
       content: "";
       display: block;
@@ -74,11 +75,21 @@ body::before {
       color: #fff;
     }
     button {
-      background: gold;
-      color: black;
-      font-weight: bold;
-      cursor: pointer;
-    }
+  background: linear-gradient(90deg, #fffbe6 0%, #ffe066 30%, #ffd700 70%, #bfa100 100%);
+  color: #222;
+  font-weight: bold;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 3px 14px 0 #fff8, 0 3px 14px 0 #ffe06688, 0 1px 4px #bfa10044;
+  text-shadow: 0 2px 8px #fff9, 0 1px 2px #bfa10055;
+  transition: background 0.2s, box-shadow 0.2s, filter 0.2s;
+  filter: brightness(1.08) drop-shadow(0 1px 6px #fff7);
+}
+button:hover, button:focus {
+  background: linear-gradient(90deg, #fffbe6 0%, #ffd700 50%, #bfa100 100%);
+  filter: brightness(1.18) drop-shadow(0 2px 8px #ffd70088);
+  outline: none;
+}
     #resultaat, #adminSpecificaties {
       white-space: pre-wrap;
       background: #222;
@@ -187,9 +198,9 @@ body::before {
   display: flex;
   justify-content: flex-start;
   align-items: flex-end;
-  margin-bottom: 0.2rem;
+  margin: 0 auto 0.2rem auto;
   height: 110px;
-  position: relative;
+  position: static;
   background: transparent;
   box-sizing: border-box;
   z-index: 10;
@@ -201,13 +212,6 @@ body::before {
   margin: 0;
   overflow: visible;
   z-index: 10;
-}
-.taxi-svg {
-  height: 100px !important;
-  width: auto !important;
-  display: block;
-  margin: 0;
-  overflow: visible;
 }
 @media (min-width: 700px) {
   .taxi-animation-container {
@@ -668,11 +672,13 @@ html {
 
 <body>
 
-<div style="position: absolute; top: 16px; left: 16px; z-index: 100; display: flex; align-items: flex-start; gap: 8px;">
+<div style="position: fixed; top: 16px; left: 16px; z-index: 100;">
   <div id="adminContainer" onclick="toonAdmin()" title="Beheerder" style="background:#111; border-radius:50%; width:38px; height:38px; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 8px #ffd70066; font-size: 1.7rem; color: gold; border:2px solid gold;">
     🔒
   </div>
-  <img id="flag" src="https://upload.wikimedia.org/wikipedia/en/a/ae/Flag_of_the_United_Kingdom.svg" onclick="switchLanguage()" title="Switch to English" style="width:30px; height:auto; cursor:pointer; margin-left:4px;"/>
+</div>
+<div style="position: fixed; top: 16px; right: 16px; z-index: 100;">
+  <img id="flag" src="https://upload.wikimedia.org/wikipedia/en/a/ae/Flag_of_the_United_Kingdom.svg" onclick="switchLanguage()" title="Switch to English" style="width:30px; height:auto; cursor:pointer;"/>
 </div>
 
 <!-- Bewegende gele taxi bovenaan -->
