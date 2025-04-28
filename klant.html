@@ -278,7 +278,7 @@ const weatherApiKey = "9d1afafb80f94518850212856252004";
 
 function toggleSpoed() {
   spoedToeslag = spoedToeslag === 0 ? 10 : 0;
-  document.getElementById('spoedBtn').innerText = spoedToeslag === 0 ? "🚀 Voeg €10 spoedrit toe 🚀" : "✅ Spoedrit toegevoegd €10";
+  document.getElementById('spoedBtn').innerText = spoedToeslag === 0 ? "🚀 Voeg €10 spoedrit toe 🚀" : "✅ Spoedrit toegevoegd (€10)";
 }
 
 function toggleDatum() {
@@ -447,6 +447,13 @@ async function berekenRit() {
   const bericht = `${spoedBericht}🚖 FA TAXI SERVICE 4 Personen 🚖\n📲 Nieuw ritverzoek\n📍 Ophaaladres: ${ophalen}\n📍 Afzetadres: ${afzetten}\n🕒 Tijdstip: ${tijd}\n💳 Betaalmethode: ${betaalmethode}\n${opmerkingen ? '✏️ Opmerkingen: ' + opmerkingen + '\n' : ''}${document.getElementById("resultaat").innerText}`;
   document.getElementById("whatsappKnop").href = `https://wa.me/message/WPXHSY3TEYVPA1?text=${encodeURIComponent(bericht)}`;
   document.getElementById("whatsappKnop").style.display = "block";
+
+  // Disclaimer pop-up
+  const akkoord = window.confirm("Let op: Reinigingskosten €450,- bij schade. Verzekering inschakelen!");
+  if (akkoord) {
+    window.open(`https://wa.me/message/WPXHSY3TEYVPA1?text=${encodeURIComponent(bericht)}`,'_blank');
+  }
+  // Bij annuleren gebeurt er verder niets
 }
 
 function toonAdmin() {
@@ -488,7 +495,7 @@ ${spoedToeslagLine}
 ${geplandeRitToeslagLine}
 - Korting: ${adminData.korting}% (-€${adminData.kortingBedrag})
 
-💶 RITPRIJS TOTAAL: €${(adminData.basis * 
+💶 FINALE RITPRIJS: €${(adminData.basis * 
   (1 + parseFloat(adminData.weerProcent)/100) * 
   (1 + parseFloat(adminData.drukteProcent)/100) * 
   (1 + parseFloat(adminData.nachtProcent)/100) + 
