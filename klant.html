@@ -33,9 +33,8 @@ body::before {
       margin-bottom: 1rem;
       background: linear-gradient(90deg, #ff5e62 0%, #ff0000 40%, #a80000 100%);
       -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
       background-clip: text;
-      text-fill-color: transparent;
+      color: transparent; 
       filter: drop-shadow(0 2px 12px #ff000055) drop-shadow(0 1px 4px #000);
       text-shadow: 0 2px 16px #fff7, 0 1px 4px #000;
       position: relative;
@@ -352,7 +351,6 @@ button:hover, button:focus {
     max-width: 100vw;
   }
 }
-  }
   body {
     min-height: 100vh;
     background: #111;
@@ -403,7 +401,7 @@ button:hover, button:focus {
     max-width: 100vw;
   }
 }
-  html {
+html {
     font-size: 15px;
   }
   body {
@@ -458,7 +456,6 @@ button:hover, button:focus {
     right: 0;
   }
 }
-
 @media (min-width: 700px) and (max-width: 1200px) and (orientation: landscape) {
   body {
     padding: 0.5rem 0;
@@ -589,7 +586,6 @@ button:hover, button:focus {
     border-radius: 0 0 14px 14px;
   }
 }
-
 @media (max-width: 900px) and (orientation: landscape) {
   html {
     font-size: 15px;
@@ -656,6 +652,7 @@ button:hover, button:focus {
     left: 0;
     right: 0;
   }
+}
 }
 </style>
 </head>
@@ -985,7 +982,7 @@ ${spoedToeslagLine}
 ${geplandeRitToeslagLine}
 - Korting: ${adminData.korting}% (-€${adminData.kortingBedrag})
 
-💶 RITPRIJS TOTAAL: €${(adminData.basis * 
+💶 FINALE RITPRIJS: €${(adminData.basis * 
   (1 + parseFloat(adminData.weerProcent)/100) * 
   (1 + parseFloat(adminData.drukteProcent)/100) * 
   (1 + parseFloat(adminData.nachtProcent)/100) + 
