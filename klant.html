@@ -457,7 +457,7 @@ async function berekenRit() {
     return alert("Vul alles correct in en ga akkoord met de voorwaarden.");
   }
   if (document.getElementById("akkoord").value !== "1") {
-    alert("U dient akkoord te gaan.Dit bedrag wordt niet in rekening gebracht als u binnen 5 minuten annuleert. Na 5 minuten worden annuleringskosten in rekening gebracht.");
+    alert("U dient akkoord te gaan. Dit bedrag wordt niet in rekening gebracht als u binnen 5 minuten annuleert. Na 5 minuten worden annuleringskosten in rekening gebracht. Let op: Reinigingskosten €450,- bij schade. Verzekering inschakelen!");
     return;
   }
 
@@ -492,14 +492,7 @@ async function berekenRit() {
   document.getElementById("whatsappKnop").href = `https://wa.me/message/WPXHSY3TEYVPA1?text=${encodeURIComponent(bericht)}`;
   document.getElementById("whatsappKnop").style.display = "block";
 
-  // Disclaimer pop-up
-  const akkoord = window.confirm("Let op: Reinigingskosten €450,- bij schade. Verzekering inschakelen!");
-  if (akkoord) {
-    // Bouw het WhatsApp-bericht direct op met actuele waarden
-    const whatsappBericht = `${spoedBericht}🚖 FA TAXI SERVICE 4 Personen 🚖\n📲 Nieuw ritverzoek\n📍 Ophaaladres: ${ophalen}\n📍 Afzetadres: ${afzetten}\n🕒 Tijdstip: ${tijd ? tijd : 'Direct'}\n💳 Betaalmethode: ${betaalmethode}\n${opmerkingen ? '✏️ Opmerkingen: ' + opmerkingen + '\n' : ''}${document.getElementById("resultaat").innerText}`;
-    window.open(`https://wa.me/message/WPXHSY3TEYVPA1?text=${encodeURIComponent(whatsappBericht)}`,'_blank');
-  }
-  // Bij annuleren gebeurt er verder niets
+
 }
 
 function toonAdmin() {
