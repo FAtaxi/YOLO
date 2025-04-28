@@ -1,28 +1,99 @@
 <!DOCTYPE html>
 <html lang="nl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FA Taxi Service</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FA Taxi Service</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #000;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      animation: fadeIn 2s ease;
+      color: #fff;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .container {
+      background-color: rgba(255, 215, 0, 0.07);
+      padding: 40px;
+      border-radius: 20px;
+      border: 2px solid gold;
+      box-shadow: 0 0 30px rgba(255, 215, 0, 0.4);
+      text-align: center;
+      width: 90%;
+      max-width: 500px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    h1 {
+      margin: 20px 0 30px;
+      font-size: 2.5rem;
+      color: red;
+      text-shadow: 0 0 10px rgba(255, 0, 0, 0.7);
+    }
+
+    .taxi-icon {
+      width: 80px;
+      animation: moveTaxi 3s infinite alternate ease-in-out;
+    }
+
+    @keyframes moveTaxi {
+      0% { transform: translateX(-10px) rotate(-2deg); }
+      100% { transform: translateX(10px) rotate(2deg); }
+    }
+
+    .button-group {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    button {
+      padding: 15px;
+      border: none;
+      border-radius: 12px;
+      background-color: gold;
+      color: black;
+      font-size: 1.2rem;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 0 10px rgba(255, 215, 0, 0.8), 0 0 20px rgba(255, 215, 0, 0.4);
+      transition: 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #fff;
+      color: #000;
+      transform: scale(1.05);
+      box-shadow: 0 0 15px rgba(255, 255, 255, 0.8), 0 0 25px gold;
+    }
+  </style>
 </head>
 <body>
-    <!-- Welkomstpagina header -->
-    <header>
-        <div class="header-text">
-            <h1>FA Taxi Service</h1>
-            <p>24/7 Service</p>
-        </div>
-    </header>
-
-    <!-- Boekingsknop -->
-    <div class="book-now">
-        <a href="klant.html" class="btn">Boek nu je rit</a>
+  <div class="container">
+    <img src="https://cdn-icons-png.flaticon.com/512/296/296216.png" alt="Taxi" class="taxi-icon" />
+    <h1>Welkom<h1>
+    <h1>FA Taxi Service</h1>
+      <h1>24/7 Service</h1>
+    <div class="button-group">
+      <button onclick="window.location.href='klant.html'">🚖 TAXI 4 Personen 🚖</button>
+      <button onclick="window.location.href='busjexxl.html'">🚍 BUSJE XXL 6 Personen 🚍</button>
     </div>
-
-    <!-- Footer -->
-    <footer>
-        <p>&copy; 2025 FA Taxi Service</p>
-    </footer>
+  </div>
 </body>
 </html>
