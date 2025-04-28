@@ -155,13 +155,12 @@
   overflow: visible;
 }
 .taxi-svg {
-  animation: taxi-move 2.8s linear infinite;
+  animation: taxi-move 8s linear infinite alternate;
+  will-change: transform;
 }
 @keyframes taxi-move {
-  0% { transform: translateX(-30px); }
-  8% { transform: translateX(0); }
-  92% { transform: translateX(0); }
-  100% { transform: translateX(30px); }
+  0%   { transform: translateX(-220px); }
+  100% { transform: translateX(calc(100vw + 220px)); }
 }
 .smoke1 {
   animation: smoke1-move 2.8s linear infinite;
@@ -195,10 +194,10 @@
 
 <!-- Bewegende gele taxi bovenaan -->
 <div class="taxi-animation-container">
-  <svg class="taxi-svg" viewBox="0 0 160 60" width="120" height="48">
+  <svg class="taxi-svg" viewBox="0 0 220 88" width="220" height="88">
     <!-- Rookpluimpjes -->
-    <ellipse class="smoke smoke1" cx="18" cy="35" rx="7" ry="3" fill="#bbb" opacity="0.7"/>
-    <ellipse class="smoke smoke2" cx="8" cy="38" rx="5" ry="2" fill="#ccc" opacity="0.5"/>
+    <ellipse class="smoke smoke1" cx="28" cy="55" rx="14" ry="6" fill="#bbb" opacity="0.7"/>
+    <ellipse class="smoke smoke2" cx="12" cy="62" rx="10" ry="4" fill="#ccc" opacity="0.5"/>
     <!-- Taxi body -->
     <rect x="30" y="30" width="60" height="20" rx="7" fill="#FFD600" stroke="#333" stroke-width="2"/>
     <!-- Taxi cabin -->
