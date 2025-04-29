@@ -179,15 +179,16 @@
     <a href="admin.html" id="adminContainer" title="Beheerder" style="background:#111; border-radius:50%; width:38px; height:38px; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 8px #ffd70066; font-size:1.7rem; color:gold; border:2px solid gold; text-decoration:none;">🔒</a>
   </div>
   <div style="position: fixed; top: 16px; right: 16px; z-index: 100; display:flex; gap:0.5rem;">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/7/7c/Flag_of_Morocco.svg" onclick="switchLanguage('ar')" title="Marokko" style="width:30px; height:auto; cursor:pointer;">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/2/20/Flag_of_the_Netherlands.svg" onclick="switchLanguage('nl')" title="Nederlands" style="width:30px; height:auto; cursor:pointer;">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/b/b4/Flag_of_Turkey.svg" onclick="switchLanguage('tr')" title="Türkçe" style="width:30px; height:auto; cursor:pointer;">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/c/c3/Flag_of_France.svg" onclick="switchLanguage('fr')" title="Français" style="width:30px; height:auto; cursor:pointer;">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/0/03/Flag_of_Italy.svg" onclick="switchLanguage('it')" title="Italiano" style="width:30px; height:auto; cursor:pointer;">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/8/89/Flag_of_Spain.svg" onclick="switchLanguage('es')" title="Español" style="width:30px; height:auto; cursor:pointer;">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/b/ba/Flag_of_Germany.svg" onclick="switchLanguage('de')" title="Deutsch" style="width:30px; height:auto; cursor:pointer;">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/1/12/Flag_of_Poland.svg" onclick="switchLanguage('pl')" title="Polski" style="width:30px; height:auto; cursor:pointer;">
-    <img src="https://upload.wikimedia.org/wikipedia/en/a/ae/Flag_of_the_United_Kingdom.svg" onclick="switchLanguage('en')" title="English" style="width:30px; height:auto; cursor:pointer;">
+    <img src="https://flagcdn.com/w40/nl.png" onclick="switchLanguage('nl')" title="Nederlands" style="width:30px;cursor:pointer;">
+    <img src="https://flagcdn.com/w40/ma.png" onclick="switchLanguage('ar')" title="Marokko" style="width:30px;cursor:pointer;">
+    <img src="https://flagcdn.com/w40/tr.png" onclick="switchLanguage('tr')" title="Türkçe" style="width:30px;cursor:pointer;">
+    <img src="https://flagcdn.com/w40/fr.png" onclick="switchLanguage('fr')" title="Français" style="width:30px;cursor:pointer;">
+    <img src="https://flagcdn.com/w40/it.png" onclick="switchLanguage('it')" title="Italiano" style="width:30px;cursor:pointer;">
+    <img src="https://flagcdn.com/w40/es.png" onclick="switchLanguage('es')" title="Español" style="width:30px;cursor:pointer;">
+    <img src="https://flagcdn.com/w40/de.png" onclick="switchLanguage('de')" title="Deutsch" style="width:30px;cursor:pointer;">
+    <img src="https://flagcdn.com/w40/pl.png" onclick="switchLanguage('pl')" title="Polski" style="width:30px;cursor:pointer;">
+    <img src="https://flagcdn.com/w40/gb.png" onclick="switchLanguage('en')" title="English" style="width:30px;cursor:pointer;">
+    <img src="https://flagcdn.com/w40/pt.png" onclick="switchLanguage('pt')" title="Português" style="width:30px;cursor:pointer;">
   </div>
   <div class="center-outer">
   <div class="container center-inner">
@@ -300,3 +301,9 @@
     }
   </script>
   <script>
+    document.addEventListener('DOMContentLoaded', ()=>{
+      const lang = new URLSearchParams(location.search).get('lang') || 'nl';
+      const dict = {
+        nl: { taxiBtn:'🚖 TAXI 4 Personen 🚖', busBtn:'🚍 BUSJE XXL 6 Personen 🚍' },
+        en: { taxiBtn:'🚖 Taxi 4 Persons 🚖', busBtn:'🚍 Van XXL 6 Persons 🚍' },
+        es: { taxiBtn:'🚖 Taxi 4 Personas 🚖', busBtn:'🚍 Furgoneta XXL 6 Personas 🚍' },
