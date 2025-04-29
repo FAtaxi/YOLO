@@ -46,7 +46,7 @@ h1::after {
   position: absolute;
   left: 30%; top: 20%;
   width: 40%; height: 35%;
-  background: linear-gradient(120deg, rgba(255,255,255,0.32) 0%, rgba(255,255,255,0.01) 80%);
+  background: linear-gradient(120deg, rgba(255,255,255,0.32) 10%, rgba(255,255,255,0.01) 90%);
   pointer-events: none;
   border-radius: 40%;
   z-index: 1;
@@ -431,7 +431,7 @@ button:hover, button:focus {
   }
   h1 {
     font-size: 1.55rem;
-    margin: 1.1rem 0 1.2rem 0;
+    margin: 1.2rem 0 1.2rem 0;
     text-align: center;
     color: gold;
     font-weight: 900;
@@ -1237,6 +1237,20 @@ function boekRit() {
   localStorage.setItem('ritten', JSON.stringify(ritten));
 }
 // Alles in één object, geen dubbele variabelen meer.
+
+// --- Draft saving met timestamp voor oningevulde gegevens ---
+(function() {
+  const fields = ['ophaaladres','afzetadres','tijdstip','betaalmethode','kortingscode','huisdieren','opmerkingen'];
+  fields.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener('change', () => {
+      const draft = { timestamp: new Date().toLocaleString() };
+      fields.forEach(fid => draft[fid] = document.getElementById(fid)?.value || '');
+      localStorage.setItem('draftRit', JSON.stringify(draft));
+    });
+  });
+})();
 
 // --- Adres autocomplete ---
 async function zoekAdresSuggesties(inputElem, suggestieDivId) {
