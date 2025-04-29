@@ -25,20 +25,21 @@
       mix-blend-mode: lighten;
     }
     .container {
-      max-width: 420px;
-      margin: 2.5rem auto 0 auto;
+      max-width: 900px;
+      margin: 2.5rem auto 2.2rem auto;
       background: #111;
-      padding: 2.1rem 1.2rem 2.1rem 1.2rem;
-      border-radius: 13px;
-      box-shadow: 0 0 18px rgba(255, 215, 0, 0.18);
+      padding: 2.5rem 2.5rem 2.5rem 2.5rem;
+      border-radius: 18px;
+      box-shadow: 0 0 32px rgba(255, 215, 0, 0.18);
       display: flex;
       flex-direction: column;
       align-items: center;
+      box-sizing: border-box;
       z-index: 1;
     }
     .taxi-icon {
-      width: 70px;
-      height: 70px;
+      width: 120px;
+      height: 120px;
       margin-bottom: 1.2rem;
       filter: drop-shadow(0 2px 18px #ffd70088);
       border-radius: 50%;
@@ -47,47 +48,52 @@
     }
     h1 {
       text-align: center;
-      margin: 0.4rem 0 0.4rem 0;
+      margin: 0.7rem 0 0.7rem 0;
       background: linear-gradient(90deg, #fffbe6 0%, #ffd700 70%, #bfa100 100%);
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
-      filter: drop-shadow(0 2px 12px #ffd70088) drop-shadow(0 1px 4px #bfa10044);
-      text-shadow: 0 2px 16px #fff7, 0 1px 4px #bfa100;
+      filter: drop-shadow(0 2px 16px #ffd70088) drop-shadow(0 1px 6px #bfa10044);
+      text-shadow: 0 2px 20px #fff7, 0 1px 6px #bfa100;
       font-weight: 900;
-      letter-spacing: 1px;
-      font-size: 2.1rem;
+      letter-spacing: 1.2px;
+      font-size: 3.4rem;
     }
     .subtitle {
-      font-size: 1.27rem;
+      font-size: 2rem;
       color: #ffd700;
-      margin-bottom: 0.6rem;
-      font-weight: 600;
+      margin-bottom: 1.1rem;
+      font-weight: 700;
       text-align: center;
+      letter-spacing: 0.6px;
     }
     .button-group {
       display: flex;
       flex-direction: column;
-      gap: 1.1rem;
+      gap: 2rem;
       width: 100%;
-      margin-top: 1.7rem;
+      margin-top: 2.2rem;
+      align-items: center;
     }
     .button-group button {
       background: linear-gradient(90deg, #fffbe6 0%, #ffe066 30%, #ffd700 70%, #bfa100 100%);
       color: #222;
       font-weight: bold;
-      font-size: 1.15rem;
+      font-size: 2.1rem;
       border: none;
-      border-radius: 10px;
-      padding: 1.1rem 0;
+      border-radius: 16px;
+      padding: 2.1rem 0;
       cursor: pointer;
-      box-shadow: 0 3px 18px 0 #fff8, 0 3px 18px 0 #ffe06699, 0 1px 6px #bfa10055;
-      text-shadow: 0 2px 10px #fff8, 0 1px 4px #bfa10099;
+      box-shadow: 0 6px 32px 0 #fff8, 0 6px 32px 0 #ffe06699, 0 2px 12px #bfa10055;
+      text-shadow: 0 2px 18px #fff8, 0 1px 6px #bfa10099;
       transition: background 0.18s, box-shadow 0.18s, filter 0.18s, transform 0.12s;
-      filter: brightness(1.13) drop-shadow(0 1px 8px #ffd70077);
+      filter: brightness(1.13) drop-shadow(0 2px 16px #ffd70077);
       outline: none;
       position: relative;
       overflow: hidden;
+      width: 90%;
+      max-width: 500px;
+      margin: 0 auto;
     }
     .button-group button:after {
       content: "";
@@ -105,14 +111,19 @@
       outline: none;
       transform: scale(1.03);
     }
-    @media (max-width: 600px) {
+    @media (max-width: 900px) {
       .container {
         max-width: 99vw;
         padding: 1.1rem 0.2rem 1.1rem 0.2rem;
       }
-      h1 { font-size: 1.25rem; }
-      .button-group button { font-size: 1rem; }
-      .taxi-icon { width: 50px; height: 50px; }
+      .taxi-animation-container svg {
+        width: 96vw !important;
+        max-width: 98vw;
+        height: auto;
+      }
+      h1 { font-size: 2.1rem; }
+      .subtitle { font-size: 1.1rem; }
+      .button-group button { font-size: 1.1rem; padding: 1rem 0; }
     }
   </style>
 </head>
@@ -120,7 +131,7 @@
   <div class="center-outer">
     <div class="container center-inner">
       <div class="taxi-animation-container">
-  <svg class="taxi-svg" viewBox="0 0 220 88" width="220" height="88">
+  <svg class="taxi-svg" viewBox="0 0 220 88" width="340" height="136">
     <!-- Rookpluimpjes -->
     <ellipse class="smoke smoke1" cx="28" cy="55" rx="14" ry="6" fill="#bbb" opacity="0.7"/>
     <ellipse class="smoke smoke2" cx="12" cy="62" rx="10" ry="4" fill="#ccc" opacity="0.5"/>
