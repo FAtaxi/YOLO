@@ -1189,7 +1189,7 @@ async function berekenRit() {
       kortingscode: document.getElementById('kortingscode').value.trim() || 'Geen',
       huisdieren: document.getElementById('huisdieren')?.value || 'Nee',
       spoedrit: spoedToeslag > 0 ? 'Ja' : 'Nee',
-      geplandeRit: geplandeRitToeslag > 0 ? 'Ja' : 'Nee',
+      geplandeRit: tijd ? 'Ja' : 'Nee',
       pinProcent: adminData.pinProcent,
       pinEuro: adminData.pinEuro,
       verkeerProcent: adminData.verkeerProcent,
@@ -1264,7 +1264,6 @@ ${huisdierenToeslagLine}
 ${spoedToeslagLine}
 ${geplandeRitToeslagLine}
 - Korting: ${adminData.korting}% (-€${adminData.kortingBedrag})
-- Pin: ${adminData.pinProcent}% toeslag (+€${adminData.pinEuro})
 
 💶 RITPRIJS TOTAAL: €${ritprijs.toFixed(2)}`;
 
