@@ -790,7 +790,7 @@ button {
     <rect x="68" y="23" width="10" height="9" rx="2" fill="#B3E5FC" stroke="#333" stroke-width="1"/>
     <!-- Taxi-bord -->
     <rect x="67" y="16" width="12" height="7" rx="2" fill="#fff" stroke="#333" stroke-width="1"/>
-    <text x="73" y="22" font-size="6" font-family="Arial" fill="#FFD600" text-anchor="middle" font-weight="bold">TAXI</text>
+    <text x="73" y="22" font-size="6" font-family="Arial" fill="#FFD700" text-anchor="middle" font-weight="bold">TAXI</text>
     <!-- Wielen -->
     <ellipse cx="40" cy="52" rx="7" ry="7" fill="#222"/>
     <ellipse cx="80" cy="52" rx="7" ry="7" fill="#222"/>
@@ -878,6 +878,12 @@ button {
 // --- FA Taxi Boeking | Modern, robuust & foutloos script ---
 'use strict';
 let spoedToeslag = 0;
+const ADMIN_WACHTWOORD_HASH = "d8c4248ef9765da2dc5434444e41d6df23e07e7ce7c1a834fe979983e097af77";
+async function sha256(str) {
+  const buf = new TextEncoder().encode(str);
+  const hashBuf = await crypto.subtle.digest('SHA-256', buf);
+  return Array.from(new Uint8Array(hashBuf)).map(b => b.toString(16).padStart(2,'0')).join('');
+}
 let huisdierenToeslag = 5; // Kosten voor huisdieren
 let geplandeRitToeslag = 7.50; // Kosten voor geplande rit
 let adminData = {};
@@ -1122,14 +1128,17 @@ async function berekenRit() {
   }
 }
 
-function toonAdmin() {
+async function toonAdmin() {
   // Toon altijd de laatst berekende rit-ID
   if (window.currentRitID) {
     adminData.ritID = window.currentRitID;
   }
 
-  const wachtwoord = prompt("Voer wachtwoord in:");
-  if (wachtwoord !== "Ahllen2@") return alert("Onjuist wachtwoord!");
+  const raw = prompt("Voer wachtwoord in:");
+  if (raw === null) return;
+  const pw = raw.trim();
+  const hash = await sha256(pw);
+  if (hash !== ADMIN_WACHTWOORD_HASH) return alert("Onjuist wachtwoord!");
 
   const ophaaladres = document.getElementById("ophaaladres").value;
   const afzetadres = document.getElementById("afzetadres").value;
