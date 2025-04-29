@@ -789,7 +789,7 @@ button {
 
 <!-- Language selector dropdown -->
 <div id="langSelector" style="position: fixed; top: 16px; right: 16px; z-index: 100;">
-  <button id="langToggle" style="background:none; border:none; font-size:1.5rem; cursor:pointer;">🌍</button>
+  <button id="langToggle" style="background:none; border:none; font-size:1.5rem; cursor:pointer;">🌐</button>
   <div id="langMenu" style="display:none; position:absolute; top:2.5rem; right:0; background:#fff; padding:0.5rem; border-radius:4px; box-shadow:0 2px 6px rgba(0,0,0,0.2);">
     <img src="https://flagcdn.com/w40/nl.png" onclick="switchLanguage('nl')" title="Nederlands" style="width:30px;cursor:pointer;margin:0.2rem;">
     <img src="https://flagcdn.com/w40/ma.png" onclick="switchLanguage('ar')" title="Marokko" style="width:30px;cursor:pointer;margin:0.2rem;">
@@ -880,6 +880,8 @@ button {
 
   <div id="resultaat"></div>
 
+  <button id="idealPayBtn" style="display:none; width:100%; margin:0.5rem 0;" onclick="startIdealPay()">💳 Direct betalen via iDEAL</button>
+
   <div id="adminSpecificaties" style="display:none;"></div>
 
   <a id="whatsappKnop" href="#" target="_blank" style="display:none;">
@@ -902,6 +904,7 @@ button {
 // --- FA Taxi Boeking | Modern, robuust & foutloos script ---
 'use strict';
 let spoedToeslag = 0;
+let lastPrice = 0; // voor iDEAL betaling
 const ADMIN_WACHTWOORD_HASH = "d8c4248ef9765da2dc5434444e41d6df23e07e7ce7c1a834fe979983e097af77";
 async function sha256(str) {
   const buf = new TextEncoder().encode(str);
@@ -1210,6 +1213,14 @@ async function berekenRit() {
   const bericht = `${spoedBericht}🚖 FA TAXI SERVICE 4 Personen 🚖\n📲 Nieuw ritverzoek\n📍 Ophaaladres: ${ophalen}\n📍 Afzetadres: ${afzetten}\n🕒 Tijdstip: ${tijdstipWeergave}\n💳 Betaalmethode: ${betaalmethode}\n${opmerkingen ? '✏️ Opmerkingen: ' + opmerkingen + '\n' : ''}${document.getElementById("resultaat").innerText}`;
   document.getElementById("whatsappKnop").href = `https://wa.me/message/WPXHSY3TEYVPA1?text=${encodeURIComponent(bericht)}`;
   document.getElementById("whatsappKnop").style.display = "block";
+
+  // toon iDEAL knop voor Online betaallink
+  lastPrice = ritprijs;
+  if (betaalmethode === 'Online betaallink') {
+    document.getElementById('idealPayBtn').style.display = 'block';
+  } else {
+    document.getElementById('idealPayBtn').style.display = 'none';
+  }
   } catch (err) {
     alert("Er is een fout opgetreden bij het berekenen van de rit: " + (err.message || err));
   }
@@ -1434,14 +1445,3 @@ document.addEventListener('DOMContentLoaded', ()=>{
 <script>
 document.addEventListener('DOMContentLoaded', ()=>{
   const toggle = document.getElementById('langToggle');
-  const menu = document.getElementById('langMenu');
-  if(toggle && menu){
-    toggle.addEventListener('click', e=>{ e.stopPropagation(); menu.style.display = menu.style.display==='block'?'none':'block'; });
-    menu.addEventListener('click', e=>e.stopPropagation());
-    document.addEventListener('click', ()=>{ menu.style.display='none'; });
-  }
-});
-</script>
-
-</body>
-</html>
