@@ -117,15 +117,86 @@
   </style>
 </head>
 <body>
-  <div class="container">
-    <img src="https://cdn-icons-png.flaticon.com/512/296/296216.png" alt="Taxi" class="taxi-icon" />
-    <h1>Welkom</h1>
-    <div class="subtitle">FA Taxi Service</div>
-    <div class="subtitle">24/7 Service</div>
-    <div class="button-group">
-      <button onclick="window.location.href='klant.html'">🚖 TAXI 4 Personen 🚖</button>
-      <button onclick="window.location.href='busjexxl.html'">🚍 BUSJE XXL 6 Personen 🚍</button>
+  <div class="center-outer">
+    <div class="container center-inner">
+      <div class="taxi-animation-container">
+        <svg class="taxi-svg" viewBox="0 0 130 60" width="130" height="60" style="overflow:visible;">
+          <!-- Taxi body -->
+          <rect x="18" y="24" width="80" height="22" rx="7" fill="#FFD600" stroke="#333" stroke-width="2"/>
+          <rect x="58" y="23" width="8" height="9" rx="2" fill="#B3E5FC" stroke="#333" stroke-width="1"/>
+          <rect x="68" y="23" width="10" height="9" rx="2" fill="#B3E5FC" stroke="#333" stroke-width="1"/>
+          <!-- Taxi-bord -->
+          <rect x="67" y="16" width="12" height="7" rx="2" fill="#fff" stroke="#333" stroke-width="1"/>
+          <text x="73" y="22" font-size="6" font-family="Arial" fill="#FFD600" text-anchor="middle" font-weight="bold">TAXI</text>
+          <!-- Wheels -->
+          <ellipse cx="40" cy="52" rx="7" ry="7" fill="#222"/>
+          <ellipse cx="80" cy="52" rx="7" ry="7" fill="#222"/>
+          <ellipse cx="40" cy="52" rx="3" ry="3" fill="#888"/>
+          <ellipse cx="80" cy="52" rx="3" ry="3" fill="#888"/>
+          <!-- Headlights -->
+          <ellipse cx="32" cy="40" rx="2" ry="4" fill="#fffde7" opacity="0.7"/>
+          <ellipse cx="90" cy="40" rx="2" ry="4" fill="#fffde7" opacity="0.7"/>
+          <!-- Smoke animation -->
+          <ellipse class="smoke" cx="27" cy="53" rx="4" ry="2" fill="#fff" opacity="0.23"/>
+        </svg>
+      </div>
+      <h1>Welkom</h1>
+      <div class="subtitle">FA Taxi Service</div>
+      <div class="subtitle">24/7 Service</div>
+      <div class="button-group">
+        <button onclick="window.location.href='klant.html'">🚖 TAXI 4 Personen 🚖</button>
+        <button onclick="window.location.href='busjexxl.html'">🚍 BUSJE XXL 6 Personen 🚍</button>
+      </div>
     </div>
   </div>
 </body>
+<style>
+  .center-outer {
+    min-height: 100vh;
+    width: 100vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 1;
+  }
+  .center-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
+    width: 100%;
+  }
+  .taxi-animation-container {
+    width: 130px;
+    height: 60px;
+    margin-bottom: 1.2rem;
+    overflow: visible;
+    position: relative;
+    z-index: 2;
+  }
+  .taxi-svg {
+    animation: taxi-ride 3.3s cubic-bezier(0.45,0.1,0.55,0.9) infinite;
+    /* animation-delay: 0.5s; */
+  }
+  @keyframes taxi-ride {
+    0% { transform: translateX(-120px); }
+    10% { transform: translateX(-90px); }
+    30% { transform: translateX(0); }
+    60% { transform: translateX(60px); }
+    85% { transform: translateX(200px); opacity: 1; }
+    100% { transform: translateX(200px); opacity: 0; }
+  }
+  .smoke {
+    animation: smoke-move 3.3s linear infinite;
+  }
+  @keyframes smoke-move {
+    0% { opacity: 0.24; transform: translateX(0) scale(1,1); }
+    12% { opacity: 0.18; transform: translateX(-10px) scale(1.1,1.1); }
+    35% { opacity: 0.08; transform: translateX(-21px) scale(1.3,1.2); }
+    50% { opacity: 0; transform: translateX(-28px) scale(1.5,1.3); }
+    100% { opacity: 0; transform: translateX(-28px) scale(1.5,1.3); }
+  }
+</style>
 </html>
