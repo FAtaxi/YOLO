@@ -43,6 +43,7 @@
     <table id="rittenTable">
       <thead>
         <tr>
+          <th>Datum/Tijd</th>
           <th>Rit-ID</th>
           <th>Ophaaladres</th>
           <th>Afzetadres</th>
@@ -103,12 +104,13 @@
       const tb = document.getElementById('rittenBody');
       tb.innerHTML = '';
       if (!ritten.length) {
-        tb.innerHTML = '<tr><td colspan="10" style="text-align:center;color:#888;">Nog geen ritten geboekt.</td></tr>';
+        tb.innerHTML = '<tr><td colspan="11" style="text-align:center;color:#888;">Nog geen ritten geboekt.</td></tr>';
         return;
       }
       ritten.slice().reverse().forEach((r, idx) => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
+          <td>${r.timestamp||''}</td>
           <td>${r.ritId||r.ritID||''}</td>
           <td>${r.ophaaladres||''}</td>
           <td>${r.afzetadres||''}</td>
@@ -126,7 +128,7 @@
         detailTr.classList.add('details-row');
         detailTr.style.display = 'none';
         const detailTd = document.createElement('td');
-        detailTd.colSpan = 10;
+        detailTd.colSpan = 11;
         detailTd.style.background = '#191919';
         detailTd.style.color = '#fff';
         detailTd.style.fontFamily = 'monospace';
@@ -166,5 +168,3 @@
       location.reload();
     });
   </script>
-</body>
-</html>
