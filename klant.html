@@ -829,7 +829,7 @@ button {
   <input type="text" id="afzetadres" placeholder="Bijv. Damrak 50, Amsterdam" autocomplete="off" oninput="zoekAdresSuggesties(this, 'afzetadres-suggesties')" aria-label="Afzetadres" required />
   <div id="afzetadres-suggesties" class="adres-suggesties"></div>
 
-  <button onclick="toggleDatum()" id="toggleDatumBtn" aria-controls="datumContainer" aria-expanded="false">📅 Reserveren? Klik hier! €7.50,- 📅</button>
+  <button onclick="toggleDatum()" id="toggleDatumBtn" aria-controls="datumContainer" aria-expanded="false">📅 Reserveren? Klik hier! €17.50,- 📅</button>
 
   <div id="datumContainer">
     <label for="tijdstip" id="labelTijdstip">🕒 Gewenst tijdstip 🕒 </label>
@@ -874,7 +874,7 @@ button {
 'use strict';
 let spoedToeslag = 0;
 let huisdierenToeslag = 5; // Kosten voor huisdieren
-let geplandeRitToeslag = 7.50; // Kosten voor geplande rit
+let geplandeRitToeslag = 17.50; // Kosten voor geplande rit
 let adminData = {};
 const weatherApiKey = "9d1afafb80f94518850212856252004";
 
@@ -887,7 +887,7 @@ function toggleDatum() {
   const datumContainer = document.getElementById('datumContainer');
   const toggleBtn = document.getElementById('toggleDatumBtn');
   datumContainer.style.display = datumContainer.style.display === 'none' ? 'block' : 'none';
-  toggleBtn.innerText = datumContainer.style.display === 'none' ? "📅 Reserveren? Klik hier! €7.50,- 📅" : "➖ Verberg datum/tijd";
+  toggleBtn.innerText = datumContainer.style.display === 'none' ? "📅 Reserveren? Klik hier! €17.50,- 📅" : "➖ Verberg datum/tijd";
 }
 
 async function gebruikLocatie() {
@@ -1091,12 +1091,12 @@ function toonAdmin() {
   const kortingscode = document.getElementById("kortingscode").value || "Geen";
   const huisdieren = document.getElementById("huisdieren").value === "1" ? "Ja +€5" : "Nee";
   const spoedrit = spoedToeslag > 0 ? "Ja +€10" : "Nee";
-  const geplandeRit = document.getElementById("tijdstip").value ? "Ja +€7,50" : "Nee";
+  const geplandeRit = document.getElementById("tijdstip").value ? "Ja +€17,50" : "Nee";
   const opmerkingen = document.getElementById("opmerkingen").value || "Geen";
 
   const huisdierenToeslagLine = `- Huisdieren toeslag: +€${document.getElementById("huisdieren").value === "1" ? "5,00" : "0,00"}`;
   const spoedToeslagLine = `- Spoedrit toeslag: +€${spoedToeslag > 0 ? "10,00" : "0,00"}`;
-  const geplandeRitToeslagLine = `- Geplande rit toeslag: +€${document.getElementById("tijdstip").value ? "7,50" : "0,00"}`;
+  const geplandeRitToeslagLine = `- Geplande rit toeslag: +€${document.getElementById("tijdstip").value ? "17,50" : "0,00"}`;
 
   const spec = `📊 BEHEERDER OVERZICHT 📊
 📍 Ophaaladres: ${ophaaladres}
@@ -1125,7 +1125,7 @@ ${geplandeRitToeslagLine}
   (1 + parseFloat(adminData.nachtProcent)/100) + 
   parseFloat(adminData.spoed) +
   (document.getElementById("huisdieren").value === "1" ? 5 : 0) +
-  (document.getElementById("tijdstip").value ? 7.5 : 0) - 
+  (document.getElementById("tijdstip").value ? 17.5 : 0) - 
   parseFloat(adminData.kortingBedrag)).toFixed(2)}`;
 
   document.getElementById("adminSpecificaties").innerText = spec;
