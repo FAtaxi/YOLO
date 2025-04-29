@@ -101,6 +101,11 @@
 
     function laadRitten() {
       const ritten = JSON.parse(localStorage.getItem('ritten') || '[]');
+      const draft = JSON.parse(localStorage.getItem('draftRit') || 'null');
+      if (draft && draft.timestamp) {
+        // Prepend draft entry with identifier
+        ritten.unshift(Object.assign({ ritId: 'DRAFT' }, draft));
+      }
       const tb = document.getElementById('rittenBody');
       tb.innerHTML = '';
       if (!ritten.length) {
@@ -163,8 +168,3 @@
     }
 
     // Logout handler
-    document.getElementById('logoutBtn').addEventListener('click', () => {
-      localStorage.removeItem('adminLoggedIn');
-      location.reload();
-    });
-  </script>
