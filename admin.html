@@ -203,10 +203,11 @@
     </table>
   </div>
   <script>
-    // Inloggegevens
+    // --- Admin login & ritten tonen ---
     const ADMIN_GEBRUIKERSNAAM = "Fouad";
     const ADMIN_WACHTWOORD = "Ahllen2@";
 
+    // Loginformulier afhandeling
     document.getElementById('loginForm').onsubmit = function(e) {
       e.preventDefault();
       const gebruikersnaam = document.getElementById('gebruikersnaam').value.trim();
@@ -220,6 +221,14 @@
       }
     };
 
+    // Enter key support voor snel inloggen
+    ['gebruikersnaam','wachtwoord'].forEach(id => {
+      document.getElementById(id).addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') document.getElementById('loginForm').dispatchEvent(new Event('submit'));
+      });
+    });
+
+    // Toon ritten uit LocalStorage in de admin tabel
     function laadRitten() {
       const ritten = JSON.parse(localStorage.getItem('ritten') || '[]');
       const tbody = document.getElementById('rittenBody');
@@ -228,43 +237,24 @@
         tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;color:#888;">Nog geen ritten geboekt.</td></tr>';
         return;
       }
-      ritten.reverse().forEach(rit => {
+      ritten.slice().reverse().forEach(rit => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
-          <td>${rit.ritID}</td>
+          <td>${rit.ritId || rit.ritID || ''}</td>
           <td>${rit.ophaaladres||''}</td>
           <td>${rit.afzetadres||''}</td>
           <td>${rit.tijdstip||''}</td>
           <td>${rit.betaalmethode||''}</td>
           <td>${rit.kortingscode||''}</td>
           <td>${rit.huisdieren||''}</td>
-          <td>${rit.spoed||''}</td>
+          <td>${rit.spoedrit || rit.spoed || ''}</td>
           <td>${rit.geplandeRit||''}</td>
-          <td><button onclick="alert('Basistarief: €'+rit.basis+'\n'+rit.basisUitleg+'\nInstaptarief: €2,50\nWeer: '+rit.weerProcent+'% (+€'+rit.weerEuro+')\nDrukte: '+rit.drukteProcent+'% (+€'+rit.drukteEuro+')\nNacht: '+rit.nachtProcent+'% (+€'+rit.nachtEuro+')\nSpoed: '+rit.spoed+'\nKorting: '+rit.korting+'% (-€'+rit.kortingBedrag+')\nOpmerkingen: '+(rit.opmerkingen||'-')+'')">Details</button></td>
+          <td><button onclick="alert('Basistarief: €'+(rit.basis||'-')+'\n'+(rit.basisUitleg||'')+'\nInstaptarief: €2,50\nWeer: '+(rit.weerProcent||'-')+'% (+€'+(rit.weerEuro||'-')+')\nDrukte: '+(rit.drukteProcent||'-')+'% (+€'+(rit.drukteEuro||'-')+')\nNacht: '+(rit.nachtProcent||'-')+'% (+€'+(rit.nachtEuro||'-')+')\nSpoed: '+(rit.spoedrit||rit.spoed||'-')+'\nKorting: '+(rit.korting||'-')+'% (-€'+(rit.kortingBedrag||'-')+')\nOpmerkingen: '+(rit.opmerkingen||'-')+'')">Details</button></td>
         `;
         tbody.appendChild(tr);
       });
     }
+    // --- EINDE ADMIN ---
   </script>
-  <div id="rittenOverzicht"></div>
-<script>
-function checkLogin() {
-  const gebruikersnaam = document.getElementById('gebruikersnaam').value.trim();
-  const wachtwoord = document.getElementById('wachtwoord').value;
-  if (gebruikersnaam === 'Fouad' && wachtwoord === 'Ahllen2@') {
-    document.getElementById('loginContainer').style.display = 'none';
-    document.getElementById('adminContent').style.display = 'block';
-    toonAlleRitten();
-  } else {
-    document.getElementById('loginFout').style.display = 'block';
-  }
-}
-// Enter key support
-['gebruikersnaam','wachtwoord'].forEach(id => {
-  document.getElementById(id).addEventListener('keydown', function(e) {
-    if (e.key === 'Enter') checkLogin();
-  });
-});
-</script>
 </body>
 </html>
