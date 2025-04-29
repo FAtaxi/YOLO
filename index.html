@@ -25,12 +25,12 @@
       mix-blend-mode: lighten;
     }
     .container {
-      max-width: 900px;
-      margin: 2.5rem auto 2.2rem auto;
+      max-width: 1400px;
+      margin: 3.5rem auto 3.5rem auto;
       background: #111;
-      padding: 2.5rem 2.5rem 2.5rem 2.5rem;
-      border-radius: 18px;
-      box-shadow: 0 0 32px rgba(255, 215, 0, 0.18);
+      padding: 4.5rem 3.5rem 4.5rem 3.5rem;
+      border-radius: 32px;
+      box-shadow: 0 0 60px rgba(255, 215, 0, 0.22);
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -48,51 +48,51 @@
     }
     h1 {
       text-align: center;
-      margin: 0.7rem 0 0.7rem 0;
+      margin: 1.2rem 0 1.2rem 0;
       background: linear-gradient(90deg, #fffbe6 0%, #ffd700 70%, #bfa100 100%);
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
-      filter: drop-shadow(0 2px 16px #ffd70088) drop-shadow(0 1px 6px #bfa10044);
-      text-shadow: 0 2px 20px #fff7, 0 1px 6px #bfa100;
+      filter: drop-shadow(0 4px 32px #ffd70088) drop-shadow(0 2px 12px #bfa10044);
+      text-shadow: 0 4px 40px #fff7, 0 2px 12px #bfa100;
       font-weight: 900;
-      letter-spacing: 1.2px;
-      font-size: 3.4rem;
+      letter-spacing: 2px;
+      font-size: 6rem;
     }
     .subtitle {
-      font-size: 2rem;
+      font-size: 3.2rem;
       color: #ffd700;
-      margin-bottom: 1.1rem;
+      margin-bottom: 2.2rem;
       font-weight: 700;
       text-align: center;
-      letter-spacing: 0.6px;
+      letter-spacing: 1.2px;
     }
     .button-group {
       display: flex;
       flex-direction: column;
-      gap: 2rem;
+      gap: 2.4rem;
       width: 100%;
-      margin-top: 2.2rem;
+      margin-top: 3.2rem;
       align-items: center;
     }
     .button-group button {
       background: linear-gradient(90deg, #fffbe6 0%, #ffe066 30%, #ffd700 70%, #bfa100 100%);
       color: #222;
       font-weight: bold;
-      font-size: 2.1rem;
+      font-size: 1.3rem;
       border: none;
-      border-radius: 16px;
-      padding: 2.1rem 0;
+      border-radius: 10px;
+      padding: 0.7rem 0;
       cursor: pointer;
-      box-shadow: 0 6px 32px 0 #fff8, 0 6px 32px 0 #ffe06699, 0 2px 12px #bfa10055;
-      text-shadow: 0 2px 18px #fff8, 0 1px 6px #bfa10099;
+      box-shadow: 0 2px 12px 0 #fff8, 0 2px 12px 0 #ffe06699, 0 1px 4px #bfa10055;
+      text-shadow: 0 1px 6px #fff8, 0 1px 4px #bfa10099;
       transition: background 0.18s, box-shadow 0.18s, filter 0.18s, transform 0.12s;
-      filter: brightness(1.13) drop-shadow(0 2px 16px #ffd70077);
+      filter: brightness(1.08) drop-shadow(0 1px 8px #ffd70077);
       outline: none;
       position: relative;
       overflow: hidden;
-      width: 90%;
-      max-width: 500px;
+      width: 55%;
+      max-width: 300px;
       margin: 0 auto;
     }
     .button-group button:after {
@@ -117,24 +117,29 @@
         padding: 1.1rem 0.2rem 1.1rem 0.2rem;
       }
       .taxi-animation-container svg {
-        width: 96vw !important;
-        max-width: 98vw;
+        width: 98vw !important;
+        max-width: 99vw;
         height: auto;
       }
-      h1 { font-size: 2.1rem; }
-      .subtitle { font-size: 1.1rem; }
-      .button-group button { font-size: 1.1rem; padding: 1rem 0; }
+      h1 { font-size: 2.3rem; }
+      .subtitle { font-size: 1.2rem; }
+      .button-group button { font-size: 0.95rem; padding: 0.5rem 0; }
     }
   </style>
 </head>
 <body>
   <div class="center-outer">
-    <div class="container center-inner">
-      <div class="taxi-animation-container">
-  <svg class="taxi-svg" viewBox="0 0 220 88" width="340" height="136">
-    <!-- Rookpluimpjes -->
-    <ellipse class="smoke smoke1" cx="28" cy="55" rx="14" ry="6" fill="#bbb" opacity="0.7"/>
-    <ellipse class="smoke smoke2" cx="12" cy="62" rx="10" ry="4" fill="#ccc" opacity="0.5"/>
+  <div class="container center-inner">
+    <div class="taxi-animation-container">
+  <svg class="taxi-svg" viewBox="0 0 220 88" width="100vw" height="260">
+    <!-- Dynamische rookpluimen direct achter de auto -->
+    <g class="smoke-group">
+      <ellipse class="smoke smoke1" cx="28" cy="55" rx="22" ry="10" fill="#bbb" opacity="0.7"/>
+      <ellipse class="smoke smoke2" cx="12" cy="62" rx="15" ry="7" fill="#ccc" opacity="0.5"/>
+      <ellipse class="smoke smoke3" cx="22" cy="70" rx="12" ry="5" fill="#fff" opacity="0.28"/>
+      <ellipse class="smoke smoke4" cx="8" cy="58" rx="10" ry="4" fill="#ddd" opacity="0.36"/>
+      <ellipse class="smoke smoke5" cx="34" cy="66" rx="16" ry="7" fill="#eee" opacity="0.19"/>
+    </g>
     <!-- Taxi body -->
     <rect x="30" y="30" width="60" height="20" rx="7" fill="#FFD600" stroke="#333" stroke-width="2"/>
     <!-- Taxi cabin -->
@@ -192,36 +197,58 @@
     z-index: 2;
   }
   .taxi-svg {
-    animation: taxi-ride 3.3s cubic-bezier(0.45,0.1,0.55,0.9) infinite;
+    animation: taxi-ride 8s linear infinite;
+    width: 100vw !important;
+    max-width: 100vw;
+    min-width: 100vw;
     /* animation-delay: 0.5s; */
   }
   @keyframes taxi-ride {
-    0% { transform: translateX(-160px); }
-    10% { transform: translateX(-90px); }
-    30% { transform: translateX(0); }
-    60% { transform: translateX(60px); }
-    85% { transform: translateX(200px); opacity: 1; }
-    100% { transform: translateX(200px); opacity: 0; }
+    0% { transform: translateX(-220px); }
+    100% { transform: translateX(calc(100vw + 220px)); }
+  }
+  .smoke-group {
+    animation: smoke-follow 8s linear infinite;
+    transform-origin: left center;
+  }
+  @keyframes smoke-follow {
+    0% { transform: translateX(0); opacity: 1; }
+    100% { transform: translateX(calc(100vw + 220px)); opacity: 1; }
   }
   .smoke1 {
-    animation: smoke1-move 3.3s linear infinite;
+    animation: smoke1-move 2.3s linear infinite;
   }
   .smoke2 {
-    animation: smoke2-move 3.3s linear infinite;
+    animation: smoke2-move 2.8s linear infinite;
+  }
+  .smoke3 {
+    animation: smoke3-move 3.1s linear infinite;
+  }
+  .smoke4 {
+    animation: smoke4-move 2.7s linear infinite;
+  }
+  .smoke5 {
+    animation: smoke5-move 2.5s linear infinite;
   }
   @keyframes smoke1-move {
-    0% { opacity: 0.7; transform: translateX(0) scale(1,1); }
-    15% { opacity: 0.5; transform: translateX(-20px) scale(1.1,1.1); }
-    35% { opacity: 0.2; transform: translateX(-40px) scale(1.3,1.2); }
-    50% { opacity: 0; transform: translateX(-60px) scale(1.5,1.3); }
-    100% { opacity: 0; transform: translateX(-60px) scale(1.5,1.3); }
+    0% { opacity: 0.7; transform: scale(1,1); }
+    100% { opacity: 0; transform: scale(1.8,1.3) translateX(-110px); }
   }
   @keyframes smoke2-move {
-    0% { opacity: 0.5; transform: translateX(0) scale(1,1); }
-    15% { opacity: 0.4; transform: translateX(-10px) scale(1.1,1.1); }
-    35% { opacity: 0.15; transform: translateX(-21px) scale(1.3,1.2); }
-    50% { opacity: 0; transform: translateX(-28px) scale(1.5,1.3); }
-    100% { opacity: 0; transform: translateX(-28px) scale(1.5,1.3); }
+    0% { opacity: 0.5; transform: scale(1,1); }
+    100% { opacity: 0; transform: scale(1.6,1.2) translateX(-100px); }
+  }
+  @keyframes smoke3-move {
+    0% { opacity: 0.28; transform: scale(1,1); }
+    100% { opacity: 0; transform: scale(1.7,1.3) translateX(-120px); }
+  }
+  @keyframes smoke4-move {
+    0% { opacity: 0.36; transform: scale(1,1); }
+    100% { opacity: 0; transform: scale(1.3,1.1) translateX(-90px); }
+  }
+  @keyframes smoke5-move {
+    0% { opacity: 0.19; transform: scale(1,1); }
+    100% { opacity: 0; transform: scale(1.9,1.4) translateX(-130px); }
   }
 </style>
 </html>
