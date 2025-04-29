@@ -172,6 +172,26 @@
       filter: brightness(1.18) drop-shadow(0 2px 10px #ffd70099);
       transform: scale(1.03);
     }
+    /* Taxi & smoke animation */
+    .taxi-animation-container { height: 56px; margin-bottom: 0.1rem; }
+    .taxi-svg { animation: taxi-move-loop 7s linear infinite; will-change: transform; position: relative; width:180px; height:72px; }
+    @keyframes taxi-move-loop { 0% { transform: translateX(-30vw); } 100% { transform: translateX(100vw); } }
+    .smoke1 { animation: smoke1-move 2.8s linear infinite; }
+    @keyframes smoke1-move {
+      0% { opacity: 0.7; transform: translateX(0) scale(1,1); }
+      10% { opacity: 0.6; transform: translateX(-7px) scale(1.1,1.1); }
+      30% { opacity: 0.3; transform: translateX(-18px) scale(1.3,1.2); }
+      50% { opacity: 0; transform: translateX(-28px) scale(1.5,1.3); }
+      100% { opacity: 0; transform: translateX(-28px) scale(1.5,1.3); }
+    }
+    .smoke2 { animation: smoke2-move 2.8s linear infinite; }
+    @keyframes smoke2-move {
+      0% { opacity: 0.5; transform: translateX(0) scale(1,1); }
+      15% { opacity: 0.4; transform: translateX(-10px) scale(1.1,1.1); }
+      35% { opacity: 0.15; transform: translateX(-21px) scale(1.3,1.2); }
+      55% { opacity: 0; transform: translateX(-31px) scale(1.5,1.3); }
+      100% { opacity: 0; transform: translateX(-31px) scale(1.5,1.3); }
+    }
   </style>
 </head>
 <body>
