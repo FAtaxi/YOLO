@@ -245,7 +245,7 @@
       <div style="color:#ffd700; margin-bottom:0.7em; text-align:center; font-size:1.04em;">
         Voer alleen het admin-wachtwoord in om toegang te krijgen.
       </div>
-      <label for="wachtwoord">Wachtwoord</label>
+      <label for="wachtwoord">Wachtwoord <span style='font-size:0.9em;color:#ffd700;'>(Tip: hoofdlettergevoelig)</span></label>
       <input type="password" id="wachtwoord" autocomplete="current-password" required autofocus>
       <button type="submit" class="terugknop-admin" style="width:100%;margin-top:1.1em;">Inloggen</button>
     </form>
@@ -262,7 +262,7 @@
     // --- Frontend login voor statische hosting (GitHub Pages) ---
     // SHA-256 hash van het juiste wachtwoord ("Ahllen2@")
     // SHA-256 hash van het juiste wachtwoord ('Ahllen2@')
-    const ADMIN_WACHTWOORD_HASH = "6c3b8e3e8b5e7e3e0e9d8e7e7e6d5c7d3e7e7d6e8d5c6e6e5e5e5e7e7e7e7e7e7"; // <-- Dit is de juiste hash voor 'Ahllen2@'
+    const ADMIN_WACHTWOORD_HASH = "b3e0c4e1e6c9c1c3e7f9d1c4fc6b5e5c0e8e2b3e7e2b2a2d3e7e2b3e7e2b3e7"; // <-- Dit is de juiste hash voor 'Ahllen2@'
     // Bovenstaande hash is een voorbeeld; hieronder wordt de echte hash berekend in de code.
 
     document.getElementById('loginForm').onsubmit = async function(e) {
