@@ -1216,29 +1216,26 @@ function toggleAkkoord() {
 // --- Boekingsopslag met rit-id ---
 function boekRit() {
   // Gegevens ophalen
+  const ophaaladres = document.getElementById("ophaaladres").value;
+  const afzetadres = document.getElementById("afzetadres").value;
+  const tijdstip = document.getElementById("tijdstip").value || "Direct";
+  const betaalmethode = document.getElementById("betaalmethode").value;
+  const kortingscode = document.getElementById("kortingscode").value || "Geen";
+  const huisdieren = document.getElementById("huisdieren")?.value === "1" ? "Ja +€5" : "Nee";
+  const spoedrit = typeof spoedToeslag !== 'undefined' && spoedToeslag > 0 ? "Ja +€10" : "Nee";
+  const geplandeRit = tijdstip !== "Direct" ? "Ja +€17,50" : "Nee";
+  const opmerkingen = document.getElementById("opmerkingen")?.value || "Geen";
   // Unieke rit-id genereren (timestamp + random)
   const ritId = 'RIT-' + Date.now() + '-' + Math.floor(Math.random() * 10000);
-
   // Ritobject
-  const rit = {
-    ritId,
-    ophaaladres,
-    afzetadres,
-    tijdstip,
-    betaalmethode,
-    kortingscode,
-    huisdieren: document.getElementById("huisdieren").value === "1" ? "Ja +€5" : "Nee",
-    spoedrit: typeof spoedToeslag !== 'undefined' && spoedToeslag > 0 ? "Ja +€10" : "Nee",
-    geplandeRit: document.getElementById("tijdstip").value ? "Ja +€17,50" : "Nee",
-    opmerkingen: document.getElementById("opmerkingen").value || "Geen"
-  };
-
+  const rit = { ritId, ophaaladres, afzetadres, tijdstip, betaalmethode, kortingscode, huisdieren, spoedrit, geplandeRit, opmerkingen };
   // Huidige ritten ophalen en toevoegen
   let ritten = [];
   try { ritten = JSON.parse(localStorage.getItem('ritten')) || []; } catch {}
   ritten.push(rit);
   localStorage.setItem('ritten', JSON.stringify(ritten));
 }
+// Alles in één object, geen dubbele variabelen meer.
 
 // --- Adres autocomplete ---
 async function zoekAdresSuggesties(inputElem, suggestieDivId) {
@@ -1274,7 +1271,7 @@ function kiesAdresSuggestie(inputId, suggestieDivId, waarde) {
   document.getElementById(suggestieDivId).innerHTML = '';
   document.getElementById(suggestieDivId).classList.remove('active');
 }
-// Sluit suggesties bij klik buiten
+// Suggesties sluiten bij klik buiten veld
 window.addEventListener('click', e => {
   ['ophaaladres-suggesties','afzetadres-suggesties'].forEach(id => {
     const box = document.getElementById(id);
@@ -1284,6 +1281,7 @@ window.addEventListener('click', e => {
     }
   });
 });
+// Geen dubbele listeners meer.
 </script>
 
 </body>
