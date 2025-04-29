@@ -155,33 +155,25 @@
   </style>
 </head>
 <body>
-  <div id="loginContainer" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;">
-    <div style="background:#222;padding:2rem 2.5rem;border-radius:1.2rem;box-shadow:0 2px 18px #0007;max-width:340px;width:100%;">
-      <h2 style="color:#ffd700;text-align:center;margin-bottom:1.2rem;">Admin Login</h2>
-      <input id="gebruikersnaam" type="text" placeholder="Gebruikersnaam" style="width:100%;padding:0.7rem;margin-bottom:1rem;border-radius:0.5rem;border:none;font-size:1.1rem;" autofocus />
-      <input id="wachtwoord" type="password" placeholder="Wachtwoord" style="width:100%;padding:0.7rem;margin-bottom:1rem;border-radius:0.5rem;border:none;font-size:1.1rem;" />
-      <button onclick="checkLogin()" style="width:100%;padding:0.7rem;background:#ffd700;color:#111;font-weight:bold;font-size:1.1rem;border:none;border-radius:0.5rem;cursor:pointer;">Inloggen</button>
-      <div id="loginFout" style="color:#ff4c4c;text-align:center;margin-top:1rem;display:none;">Onjuiste gebruikersnaam of wachtwoord.</div>
-    </div>
-  </div>
-  <div id="adminContent" style="display:none;">
-
-  <div style="text-align:center; max-width:340px; margin:2rem auto 1.5rem auto;">
-    <button class="back-btn" onclick="window.location.href='index.html'" style="font-size:1.1rem; min-width:180px; padding:0.7rem 1.5rem;">⬅️ Terug naar boekingen</button>
-  </div>
-  <div id="loginContainer" style="max-width:350px;margin:2rem auto;padding:2rem 2rem 1.5rem 2rem;background:#232526;border-radius:12px;box-shadow:0 2px 18px #ffd70044;">
-    <h1 style="text-align:center;color:gold;">Admin Inloggen</h1>
+  <div id="loginContainer" style="max-width:380px;margin:2.2em auto 2.3em auto;padding:2.2em 2.2em 1.6em 2.2em;background:#232526;border-radius:12px;box-shadow:0 2px 18px #ffd70044;">
+    <h2 style="color:gold;text-align:center;margin-bottom:1.2rem;">Admin inloggen</h2>
+    <div id="loginFout" style="display:none;color:#ff4d4d;text-align:center;margin-bottom:1rem;">Onjuist wachtwoord</div>
     <form id="loginForm">
-      <label for="gebruikersnaam">Gebruikersnaam</label>
-      <input type="text" id="gebruikersnaam" name="gebruikersnaam" required autocomplete="username" style="width:100%;margin-bottom:1rem;">
-      <label for="wachtwoord">Wachtwoord</label>
-      <input type="password" id="wachtwoord" name="wachtwoord" required autocomplete="current-password" style="width:100%;margin-bottom:1.5rem;">
-      <button type="submit" class="back-btn" style="width:100%;margin-bottom:0;">Inloggen</button>
-      <div id="loginFout" style="color:#ff4d4d;margin-top:1rem;text-align:center;display:none;">Onjuiste gebruikersnaam of wachtwoord</div>
+      <div style="color:#ffd700; margin-bottom:0.7em; text-align:center; font-size:1.04em;">
+        Voer alleen het admin-wachtwoord in om toegang te krijgen.
+      </div>
+      <label for="wachtwoord">Wachtwoord <span style='font-size:0.9em;color:#ffd700;'>(Tip: hoofdlettergevoelig)</span></label>
+      <input type="password" id="wachtwoord" autocomplete="current-password" required autofocus>
+      <button type="submit" class="terugknop-admin" style="width:100%;margin-top:1.1em;">Inloggen</button>
     </form>
   </div>
   <div id="adminContent" style="display:none;">
-    <h1>Ritoverzicht (Admin)</h1>
+    <div class="admin-info">
+      Je bent ingelogd als <b>admin</b>. Hieronder zie je het overzicht van alle geboekte ritten.
+    </div>
+    <div style="text-align:center; margin-bottom: 1.3em;">
+      <a href="klant.html" class="terugknop-admin">← Terug naar boekingspagina</a>
+    </div>
     <table id="rittenTable">
       <thead>
         <tr>
@@ -201,7 +193,7 @@
         <!-- Ritten worden hier getoond -->
       </tbody>
     </table>
-  </div>
+
   <style>
     .terugknop-admin {
       display: inline-block;
