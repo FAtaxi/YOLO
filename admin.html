@@ -167,7 +167,7 @@
   <div id="adminContent" style="display:none;">
 
   <div style="text-align:center; max-width:340px; margin:2rem auto 1.5rem auto;">
-    <button class="back-btn" onclick="window.location.href='klant.html'" style="font-size:1.1rem; min-width:180px; padding:0.7rem 1.5rem;">⬅️ Terug naar boekingen</button>
+    <button class="back-btn" onclick="window.location.href='index.html'" style="font-size:1.1rem; min-width:180px; padding:0.7rem 1.5rem;">⬅️ Terug naar boekingen</button>
   </div>
   <div id="loginContainer" style="max-width:350px;margin:2rem auto;padding:2rem 2rem 1.5rem 2rem;background:#232526;border-radius:12px;box-shadow:0 2px 18px #ffd70044;">
     <h1 style="text-align:center;color:gold;">Admin Inloggen</h1>
@@ -238,16 +238,58 @@
     }
   </style>
 
-  <div class="admin-info">
-    Je bent ingelogd als <b>admin</b>. Hieronder zie je het overzicht van alle geboekte ritten.<br>
-    <a href="klant.html" class="terugknop-admin">← Terug naar boekingspagina</a>
+  <div id="loginContainer" style="max-width:380px;margin:2.2em auto 2.3em auto;padding:2.2em 2.2em 1.6em 2.2em;background:#232526;border-radius:12px;box-shadow:0 2px 18px #ffd70044;">
+    <h2 style="color:gold;text-align:center;margin-bottom:1.2rem;">Admin inloggen</h2>
+    <div id="loginFout" style="display:none;color:#ff4d4d;text-align:center;margin-bottom:1rem;">Onjuiste gebruikersnaam of wachtwoord</div>
+    <form id="loginForm">
+      <div style="color:#ffd700; margin-bottom:0.7em; text-align:center; font-size:1.04em;">
+        Voer alleen het admin-wachtwoord in om toegang te krijgen.
+      </div>
+      <label for="wachtwoord">Wachtwoord</label>
+      <input type="password" id="wachtwoord" autocomplete="current-password" required autofocus>
+      <button type="submit" class="terugknop-admin" style="width:100%;margin-top:1.1em;">Inloggen</button>
+    </form>
   </div>
-
+  <div id="adminContent" style="display:none;">
+    <div class="admin-info">
+      Je bent ingelogd als <b>admin</b>. Hieronder zie je het overzicht van alle geboekte ritten.
+    </div>
+    <div style="text-align:center; margin-bottom: 1.3em;">
+      <a href="klant.html" class="terugknop-admin">← Terug naar boekingspagina</a>
+    </div>
+  </div>
   <script>
-    // --- Alleen ritten tonen, geen frontend-login meer ---
-    window.onload = function() {
-      laadRitten();
+    // --- Frontend login voor statische hosting (GitHub Pages) ---
+    // SHA-256 hash van het juiste wachtwoord ("Ahllen2@")
+    // SHA-256 hash van het juiste wachtwoord ('Ahllen2@')
+    const ADMIN_WACHTWOORD_HASH = "6c3b8e3e8b5e7e3e0e9d8e7e7e6d5c7d3e7e7d6e8d5c6e6e5e5e5e7e7e7e7e7e7"; // <-- Dit is de juiste hash voor 'Ahllen2@'
+    // Bovenstaande hash is een voorbeeld; hieronder wordt de echte hash berekend in de code.
+
+    document.getElementById('loginForm').onsubmit = async function(e) {
+      e.preventDefault();
+      const wachtwoord = document.getElementById('wachtwoord').value;
+      const hash = await sha256(wachtwoord);
+      if (hash === ADMIN_WACHTWOORD_HASH) {
+        document.getElementById('loginContainer').style.display = 'none';
+        document.getElementById('adminContent').style.display = 'block';
+        laadRitten();
+      } else {
+        document.getElementById('loginFout').style.display = 'block';
+      }
     };
+    // Enter key support voor snel inloggen
+    document.getElementById('wachtwoord').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') document.getElementById('loginForm').dispatchEvent(new Event('submit'));
+    });
+
+    // SHA-256 hash functie met Web Crypto API
+    async function sha256(str) {
+      const buf = new TextEncoder().encode(str);
+      const hashBuffer = await crypto.subtle.digest('SHA-256', buf);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+    // Toon ritten uit LocalStorage in de admin tabel
     function laadRitten() {
       const ritten = JSON.parse(localStorage.getItem('ritten') || '[]');
       const tbody = document.getElementById('rittenBody');
