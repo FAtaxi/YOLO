@@ -38,6 +38,7 @@
   <div class="container" id="adminContent" style="display:none;">
     <h2>Admin Overzicht</h2>
     <p>Je bent ingelogd als <b>admin</b>. <a href="klant.html">← Terug naar boekingspagina</a></p>
+    <div class="admin-info"><button type="button" id="logoutBtn">Uitloggen</button></div>
     <table id="rittenTable">
       <thead>
         <tr>
@@ -63,6 +64,13 @@
     // Admin login logic
     const ADMIN_WACHTWOORD_HASH = "d8c4248ef9765da2dc5434444e41d6df23e07e7ce7c1a834fe979983e097af77";
 
+    // Persistent login: if flag set, show admin
+    if (localStorage.getItem('adminLoggedIn') === 'true') {
+      document.getElementById('loginContainer').style.display = 'none';
+      document.getElementById('adminContent').style.display = 'block';
+      laadRitten();
+    }
+
     document.getElementById('loginForm').onsubmit = async function(e) {
       e.preventDefault();
       const raw = document.getElementById('wachtwoord').value;
@@ -72,6 +80,7 @@
       console.log('Expected hash:', ADMIN_WACHTWOORD_HASH, 'Computed hash:', hash);
       const errElm = document.getElementById('loginFout');
       if (hash === ADMIN_WACHTWOORD_HASH) {
+        localStorage.setItem('adminLoggedIn', 'true');
         errElm.style.display = 'none';
         document.getElementById('loginContainer').style.display = 'none';
         document.getElementById('adminContent').style.display = 'block';
@@ -116,6 +125,12 @@
         });
       });
     }
+
+    // Logout handler
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      localStorage.removeItem('adminLoggedIn');
+      location.reload();
+    });
   </script>
 </body>
 </html>
