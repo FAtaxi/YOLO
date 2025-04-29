@@ -12,7 +12,7 @@
     @media (max-width: 600px) {
       h1 { font-size: 2.5rem !important; }
       h2, .subtitle { font-size: 1.2rem !important; }
-      .button-group button { font-size: 1rem !important; padding: 0.8rem !important; }
+      .button-group button { font-size: 1rem !important; padding: 0.8rem 0 !important; }
     }
     body {
       margin: 0;
@@ -138,6 +138,15 @@
       h1 { font-size: 2.3rem; }
       .subtitle { font-size: 1.2rem; }
       .button-group button { font-size: 0.95rem; padding: 0.5rem 0; }
+    }
+    /* Additional mobile optimizations */
+    @media (max-width: 600px) {
+      h1 { font-size: 2.5rem !important; }
+      .subtitle { font-size: 1.2rem !important; }
+      .button-group { gap: 1.6rem; }
+      .button-group button { width: 90% !important; font-size: 1rem !important; padding: 0.8rem 0 !important; }
+      .taxi-animation-container { width: 100%; height: auto; margin-bottom: 1.5rem; }
+      .taxi-svg { width: 100vw !important; height: auto !important; }
     }
     /* Admin button styling */
     .admin-btn {
