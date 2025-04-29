@@ -375,8 +375,8 @@ button:hover, button:focus {
     letter-spacing: 1px;
     font-weight: 900;
     text-align: center;
-    color: #ff2222;
-    text-shadow: 0 2px 16px #fff, 0 1px 6px #000, 0 0px 30px #ff222277;
+    color: gold;
+    text-shadow: 0 2px 16px rgba(255,215,0,0.08), 0 1px 6px rgba(0,0,0,0.2), 0 0px 30px rgba(255,215,0,0.08);
     filter: none;
   }
   input, select, textarea {
@@ -395,14 +395,14 @@ button:hover, button:focus {
     background: linear-gradient(90deg, #fffbe6 0%, #ffe066 30%, #ffd700 70%, #bfa100 100%);
     color: #222;
     border: none;
-    box-shadow: 0 3px 14px 0 #fff8, 0 3px 14px 0 #ffe06688, 0 1px 4px #bfa10044;
-    text-shadow: 0 2px 8px #fff9, 0 1px 2px #bfa10055;
+    box-shadow: 0 3px 14px rgba(255,215,0,0.09), 0 3px 14px rgba(255,215,0,0.09), 0 1px 4px rgba(0,0,0,0.1);
+    text-shadow: 0 2px 8px rgba(255,215,0,0.08), 0 1px 2px rgba(0,0,0,0.1);
     transition: background 0.2s, box-shadow 0.2s, filter 0.2s;
-    filter: brightness(1.08) drop-shadow(0 1px 6px #fff7);
+    filter: brightness(1.08) drop-shadow(0 1px 6px rgba(255,215,0,0.08));
   }
   button:hover, button:focus {
     background: linear-gradient(90deg, #fffbe6 0%, #ffd700 50%, #bfa100 100%);
-    filter: brightness(1.18) drop-shadow(0 2px 8px #ffd70088);
+    filter: brightness(1.18) drop-shadow(0 2px 8px rgba(255,215,0,0.18));
     outline: none;
   }
   .taxi-animation-container {
@@ -444,7 +444,7 @@ button:hover, button:focus {
     color: gold;
     font-weight: 900;
     letter-spacing: 1px;
-    text-shadow: 0 2px 12px rgba(255,215,0,0.08), 0 1px 4px #000;
+    text-shadow: 0 2px 12px rgba(255,215,0,0.08), 0 1px 4px rgba(0,0,0,0.1);
   }
   input, select, textarea {
     font-size: 1.12rem;
@@ -911,6 +911,7 @@ let huisdierenToeslag = 5; // Kosten voor huisdieren
 let geplandeRitToeslag = 7.50; // Kosten voor geplande rit
 let adminData = {};
 const weatherApiKey = "9d1afafb80f94518850212856252004";
+const TRAFFIC_API_KEY = 'fLy6nvAxRi3ACx2G69Q9fHabDwHz80fe';
 
 function toggleSpoed() {
   spoedToeslag = spoedToeslag === 0 ? 10 : 0;
@@ -1073,6 +1074,36 @@ function berekenRitprijs(afstand, duur, weer) {
   return totalePrijs;
 }
 
+async function getTrafficToeslag(start, end) {
+  const midLat = (start[1] + end[1]) / 2;
+  const midLon = (start[0] + end[0]) / 2;
+  // Flow data
+  const flowUrl = `https://api.tomtom.com/traffic/services/4/flowSegmentData/absolute/10/json?point=${midLat},${midLon}&unit=KMPH&key=${TRAFFIC_API_KEY}`;
+  const flow = await fetch(flowUrl).then(r=>r.json()).catch(()=>null);
+  let surcharge = 1;
+  if (flow && flow.flowSegmentData) {
+    const { freeFlowSpeed, currentSpeed } = flow.flowSegmentData;
+    const ratio = currentSpeed / freeFlowSpeed;
+    if (ratio > 0.9) surcharge = 1;
+    else if (ratio > 0.7) surcharge = 1.05;
+    else if (ratio > 0.4) surcharge = 1.15;
+    else surcharge = 1.5;
+  }
+  // Incidents (optional)
+  const bbox = `${midLat-0.01},${midLon-0.01},${midLat+0.01},${midLon+0.01}`;
+  const incUrl = `https://api.tomtom.com/traffic/services/4/incidentDetails/s3/25/json?bbox=${bbox}&key=${TRAFFIC_API_KEY}`;
+  const inc = await fetch(incUrl).then(r=>r.json()).catch(()=>null);
+  if (inc && inc.incidents) {
+    // lane closures
+    (inc.incidents.roadClosureDetails||[]).forEach(()=> surcharge *= 1.03);
+    // road works
+    (inc.incidents.roadWorks||[]).forEach(() => surcharge *= 1 + (0.05 + Math.random() * 0.10));
+    // accidents
+    (inc.incidents.trafficIncidents||[]).filter(i=>i.eventType==='ACCIDENT').forEach(() => surcharge *= 1 + (0.20 + Math.random() * 0.30));
+  }
+  return surcharge;
+}
+
 function pasKortingscodeToe(ritprijs) {
   const code = document.getElementById("kortingscode").value.trim();
   let perc = 0;
@@ -1118,6 +1149,10 @@ async function berekenRit() {
   const weer = await getWeer(coordOphalen[1], coordOphalen[0]);
 
   let ritprijs = berekenRitprijs(afstandKm, duurMin, weer);
+  const trafficMul = await getTrafficToeslag(coordOphalen, coordAfzetten);
+  adminData.verkeerProcent = ((trafficMul - 1) * 100).toFixed(0);
+  adminData.verkeerEuro = (adminData.basis * (trafficMul - 1)).toFixed(2);
+  ritprijs *= trafficMul;
   ritprijs = pasKortingscodeToe(ritprijs);
 
   // Toon spoedrit informatie aan klant
@@ -1127,7 +1162,7 @@ async function berekenRit() {
   }
 
   const tijdstipWeergave = tijd ? tijd : 'On-Demand';
-  document.getElementById("resultaat").innerText = `${spoedInfo}🚖 Ritprijs: €${ritprijs.toFixed(2)}\n🛣️ Afstand: ${afstandKm.toFixed(1)} km\n🕒 Duur: ${duurMin.toFixed(0)} min\n🕒 Tijdstip: ${tijdstipWeergave}\n💳 Betaalmethode: ${betaalmethode}\n📌 Annuleringskosten: €10 (niet inbegrepen)\n🎁 Korting toegepast: €${adminData.kortingBedrag}\n${adminData.geplandeRit}\n${adminData.huisdieren}`;
+  document.getElementById("resultaat").innerText = `${spoedInfo}🚖 Ritprijs: €${ritprijs.toFixed(2)}\n🛣️ Afstand: ${afstandKm.toFixed(1)} km\n🕒 Duur: ${duurMin.toFixed(0)} min\n🕒 Tijdstip: ${tijdstipWeergave}\n💳 Betaalmethode: ${betaalmethode}\n📌 Annuleringskosten: €10 (niet inbegrepen)\n🎁 Korting toegepast: €${adminData.kortingBedrag}\n${adminData.geplandeRit}\n${adminData.huisdieren}\n🚦 Verkeerstoelage: ${adminData.verkeerProcent}% (€${adminData.verkeerEuro})`;
 
   // Sla de rit op in LocalStorage
   try {
@@ -1200,6 +1235,7 @@ ${huisdierenToeslagLine}
 ${spoedToeslagLine}
 ${geplandeRitToeslagLine}
 - Korting: ${adminData.korting}% (-€${adminData.kortingBedrag})
+- Verkeer: ${adminData.verkeerProcent}% toeslag (+€${adminData.verkeerEuro})
 
 💶 RITPRIJS TOTAAL: €${ritprijs.toFixed(2)}`;
 
