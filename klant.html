@@ -1218,17 +1218,18 @@ function boekRit() {
   // Gegevens ophalen
   const ophaaladres = document.getElementById("ophaaladres").value;
   const afzetadres = document.getElementById("afzetadres").value;
-  const tijdstip = document.getElementById("tijdstip").value || "Direct";
+  const tijdstip = document.getElementById("tijdstip").value || "On-Demand";
   const betaalmethode = document.getElementById("betaalmethode").value;
   const kortingscode = document.getElementById("kortingscode").value || "Geen";
   const huisdieren = document.getElementById("huisdieren")?.value === "1" ? "Ja +€5" : "Nee";
   const spoedrit = typeof spoedToeslag !== 'undefined' && spoedToeslag > 0 ? "Ja +€10" : "Nee";
-  const geplandeRit = tijdstip !== "Direct" ? "Ja +€17,50" : "Nee";
+  const geplandeRit = tijdstip !== "On-Demand" ? "Ja +€17,50" : "Nee";
   const opmerkingen = document.getElementById("opmerkingen")?.value || "Geen";
   // Unieke rit-id genereren (timestamp + random)
   const ritId = 'RIT-' + Date.now() + '-' + Math.floor(Math.random() * 10000);
   // Ritobject
-  const rit = { ritId, ophaaladres, afzetadres, tijdstip, betaalmethode, kortingscode, huisdieren, spoedrit, geplandeRit, opmerkingen };
+  const timestamp = new Date().toLocaleString();
+  const rit = { timestamp, ritId, ophaaladres, afzetadres, tijdstip, betaalmethode, kortingscode, huisdieren, spoedrit, geplandeRit, opmerkingen };
   // Huidige ritten ophalen en toevoegen
   let ritten = [];
   try { ritten = JSON.parse(localStorage.getItem('ritten')) || []; } catch {}
