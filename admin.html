@@ -155,7 +155,20 @@
   </style>
 </head>
 <body>
-  <button class="back-btn" onclick="window.location.href='index.html'">⬅️ Terug naar boekingen</button>
+  <div id="loginContainer" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;">
+    <div style="background:#222;padding:2rem 2.5rem;border-radius:1.2rem;box-shadow:0 2px 18px #0007;max-width:340px;width:100%;">
+      <h2 style="color:#ffd700;text-align:center;margin-bottom:1.2rem;">Admin Login</h2>
+      <input id="gebruikersnaam" type="text" placeholder="Gebruikersnaam" style="width:100%;padding:0.7rem;margin-bottom:1rem;border-radius:0.5rem;border:none;font-size:1.1rem;" autofocus />
+      <input id="wachtwoord" type="password" placeholder="Wachtwoord" style="width:100%;padding:0.7rem;margin-bottom:1rem;border-radius:0.5rem;border:none;font-size:1.1rem;" />
+      <button onclick="checkLogin()" style="width:100%;padding:0.7rem;background:#ffd700;color:#111;font-weight:bold;font-size:1.1rem;border:none;border-radius:0.5rem;cursor:pointer;">Inloggen</button>
+      <div id="loginFout" style="color:#ff4c4c;text-align:center;margin-top:1rem;display:none;">Onjuiste gebruikersnaam of wachtwoord.</div>
+    </div>
+  </div>
+  <div id="adminContent" style="display:none;">
+
+  <div style="text-align:center; max-width:340px; margin:2rem auto 1.5rem auto;">
+    <button class="back-btn" onclick="window.location.href='index.html'" style="font-size:1.1rem; min-width:180px; padding:0.7rem 1.5rem;">⬅️ Terug naar boekingen</button>
+  </div>
   <div id="loginContainer" style="max-width:350px;margin:2rem auto;padding:2rem 2rem 1.5rem 2rem;background:#232526;border-radius:12px;box-shadow:0 2px 18px #ffd70044;">
     <h1 style="text-align:center;color:gold;">Admin Inloggen</h1>
     <form id="loginForm">
@@ -190,40 +203,68 @@
     </table>
   </div>
   <script>
-    // Inloggegevens (pas aan indien gewenst)
-    const ADMIN_GEBRUIKERSNAAM = "admin";
+    // Inloggegevens
+    const ADMIN_GEBRUIKERSNAAM = "Fouad";
     const ADMIN_WACHTWOORD = "Ahllen2@";
 
     document.getElementById('loginForm').onsubmit = function(e) {
       e.preventDefault();
-      const gebruikersnaam = document.getElementById('gebruikersnaam').value;
+      const gebruikersnaam = document.getElementById('gebruikersnaam').value.trim();
       const wachtwoord = document.getElementById('wachtwoord').value;
       if (gebruikersnaam === ADMIN_GEBRUIKERSNAAM && wachtwoord === ADMIN_WACHTWOORD) {
         document.getElementById('loginContainer').style.display = 'none';
         document.getElementById('adminContent').style.display = 'block';
         laadRitten();
+      } else {
+        document.getElementById('loginFout').style.display = 'block';
+      }
+    };
+
+    function laadRitten() {
       const ritten = JSON.parse(localStorage.getItem('ritten') || '[]');
-      if (!ritten.length) {
-        container.innerHTML = '<div style="color:#ffd700;text-align:center;">Nog geen ritten geboekt.</div>';
+      const tbody = document.getElementById('rittenBody');
+      tbody.innerHTML = '';
+      if (ritten.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;color:#888;">Nog geen ritten geboekt.</td></tr>';
         return;
       }
-      let html = '<table style="width:100%;border-collapse:collapse;background:#222;color:#fff;font-size:1rem;">';
-      html += '<tr style="background:#333;"><th>Rit-ID</th><th>Ophaaladres</th><th>Afzetadres</th><th>Tijdstip</th><th>Prijs (€)</th><th>Details</th></tr>';
       ritten.reverse().forEach(rit => {
-        html += `<tr style="border-bottom:1px solid #444;">
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
           <td>${rit.ritID}</td>
           <td>${rit.ophaaladres||''}</td>
           <td>${rit.afzetadres||''}</td>
           <td>${rit.tijdstip||''}</td>
-          <td>${rit.ritprijs}</td>
+          <td>${rit.betaalmethode||''}</td>
+          <td>${rit.kortingscode||''}</td>
+          <td>${rit.huisdieren||''}</td>
+          <td>${rit.spoed||''}</td>
+          <td>${rit.geplandeRit||''}</td>
           <td><button onclick="alert('Basistarief: €'+rit.basis+'\n'+rit.basisUitleg+'\nInstaptarief: €2,50\nWeer: '+rit.weerProcent+'% (+€'+rit.weerEuro+')\nDrukte: '+rit.drukteProcent+'% (+€'+rit.drukteEuro+')\nNacht: '+rit.nachtProcent+'% (+€'+rit.nachtEuro+')\nSpoed: '+rit.spoed+'\nKorting: '+rit.korting+'% (-€'+rit.kortingBedrag+')\nOpmerkingen: '+(rit.opmerkingen||'-')+'')">Details</button></td>
-        </tr>`;
+        `;
+        tbody.appendChild(tr);
       });
-      html += '</table>';
-      container.innerHTML = html;
     }
-    document.addEventListener('DOMContentLoaded', toonAlleRitten);
   </script>
   <div id="rittenOverzicht"></div>
+<script>
+function checkLogin() {
+  const gebruikersnaam = document.getElementById('gebruikersnaam').value.trim();
+  const wachtwoord = document.getElementById('wachtwoord').value;
+  if (gebruikersnaam === 'Fouad' && wachtwoord === 'Ahllen2@') {
+    document.getElementById('loginContainer').style.display = 'none';
+    document.getElementById('adminContent').style.display = 'block';
+    toonAlleRitten();
+  } else {
+    document.getElementById('loginFout').style.display = 'block';
+  }
+}
+// Enter key support
+['gebruikersnaam','wachtwoord'].forEach(id => {
+  document.getElementById(id).addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') checkLogin();
+  });
+});
+</script>
 </body>
 </html>
