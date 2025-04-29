@@ -785,17 +785,22 @@ button {
 <div style="position: fixed; top: 16px; left: 16px; z-index: 100;">
   <a href="admin.html" id="adminContainer" title="Beheerder" style="background:#111; border-radius:50%; width:38px; height:38px; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 8px #ffd70066; font-size:1.7rem; color:gold; border:2px solid gold; text-decoration:none;">🔒</a>
 </div>
-<div style="position: fixed; top: 16px; right: 16px; z-index: 100; display:flex; gap:0.5rem;">
-  <img src="https://flagcdn.com/w40/nl.png" onclick="switchLanguage('nl')" title="Nederlands" style="width:30px;cursor:pointer;">
-  <img src="https://flagcdn.com/w40/ma.png" onclick="switchLanguage('ar')" title="Marokko" style="width:30px;cursor:pointer;">
-  <img src="https://flagcdn.com/w40/tr.png" onclick="switchLanguage('tr')" title="Türkçe" style="width:30px;cursor:pointer;">
-  <img src="https://flagcdn.com/w40/fr.png" onclick="switchLanguage('fr')" title="Français" style="width:30px;cursor:pointer;">
-  <img src="https://flagcdn.com/w40/it.png" onclick="switchLanguage('it')" title="Italiano" style="width:30px;cursor:pointer;">
-  <img src="https://flagcdn.com/w40/es.png" onclick="switchLanguage('es')" title="Español" style="width:30px;cursor:pointer;">
-  <img src="https://flagcdn.com/w40/de.png" onclick="switchLanguage('de')" title="Deutsch" style="width:30px;cursor:pointer;">
-  <img src="https://flagcdn.com/w40/pl.png" onclick="switchLanguage('pl')" title="Polski" style="width:30px;cursor:pointer;">
-  <img src="https://flagcdn.com/w40/gb.png" onclick="switchLanguage('en')" title="English" style="width:30px;cursor:pointer;">
-  <img src="https://flagcdn.com/w40/pt.png" onclick="switchLanguage('pt')" title="Português" style="width:30px;cursor:pointer;">
+
+<!-- Language selector dropdown -->
+<div id="langSelector" style="position: fixed; top: 16px; right: 16px; z-index: 100;">
+  <button id="langToggle" style="background:none; border:none; font-size:1.5rem; cursor:pointer;">🌐</button>
+  <div id="langMenu" style="display:none; position:absolute; top:2.5rem; right:0; background:#fff; padding:0.5rem; border-radius:4px; box-shadow:0 2px 6px rgba(0,0,0,0.2);">
+    <img src="https://flagcdn.com/w40/nl.png" onclick="switchLanguage('nl')" title="Nederlands" style="width:30px;cursor:pointer;margin:0.2rem;">
+    <img src="https://flagcdn.com/w40/ma.png" onclick="switchLanguage('ar')" title="Marokko" style="width:30px;cursor:pointer;margin:0.2rem;">
+    <img src="https://flagcdn.com/w40/tr.png" onclick="switchLanguage('tr')" title="Türkçe" style="width:30px;cursor:pointer;margin:0.2rem;">
+    <img src="https://flagcdn.com/w40/fr.png" onclick="switchLanguage('fr')" title="Français" style="width:30px;cursor:pointer;margin:0.2rem;">
+    <img src="https://flagcdn.com/w40/it.png" onclick="switchLanguage('it')" title="Italiano" style="width:30px;cursor:pointer;margin:0.2rem;">
+    <img src="https://flagcdn.com/w40/es.png" onclick="switchLanguage('es')" title="Español" style="width:30px;cursor:pointer;margin:0.2rem;">
+    <img src="https://flagcdn.com/w40/de.png" onclick="switchLanguage('de')" title="Deutsch" style="width:30px;cursor:pointer;margin:0.2rem;">
+    <img src="https://flagcdn.com/w40/pl.png" onclick="switchLanguage('pl')" title="Polski" style="width:30px;cursor:pointer;margin:0.2rem;">
+    <img src="https://flagcdn.com/w40/gb.png" onclick="switchLanguage('en')" title="English" style="width:30px;cursor:pointer;margin:0.2rem;">
+    <img src="https://flagcdn.com/w40/pt.png" onclick="switchLanguage('pt')" title="Português" style="width:30px;cursor:pointer;margin:0.2rem;">
+  </div>
 </div>
 
 <h1>FA TAXI Service</h1>
@@ -1359,6 +1364,18 @@ document.addEventListener('DOMContentLoaded', ()=>{
   document.getElementById('ophaaladres').placeholder = t.ph;
   document.getElementById('afzetadres').placeholder = t.dh;
   document.getElementById('locatieBtn').innerText = t.locatieBtn;
+});
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', ()=>{
+  const toggle = document.getElementById('langToggle');
+  const menu = document.getElementById('langMenu');
+  if(toggle && menu){
+    toggle.addEventListener('click', e=>{ e.stopPropagation(); menu.style.display = menu.style.display==='block'?'none':'block'; });
+    menu.addEventListener('click', e=>e.stopPropagation());
+    document.addEventListener('click', ()=>{ menu.style.display='none'; });
+  }
 });
 </script>
 
