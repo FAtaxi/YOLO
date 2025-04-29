@@ -786,16 +786,16 @@ button {
   <a href="admin.html" id="adminContainer" title="Beheerder" style="background:#111; border-radius:50%; width:38px; height:38px; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 8px #ffd70066; font-size:1.7rem; color:gold; border:2px solid gold; text-decoration:none;">🔒</a>
 </div>
 <div style="position: fixed; top: 16px; right: 16px; z-index: 100; display:flex; gap:0.5rem;">
-  <img src="https://upload.wikimedia.org/wikipedia/commons/2/20/Flag_of_the_Netherlands.svg" onclick="switchLanguage('nl')" title="Nederlands" style="width:30px; height:auto; cursor:pointer;">
-  <img src="https://upload.wikimedia.org/wikipedia/commons/7/7c/Flag_of_Morocco.svg" onclick="switchLanguage('ar')" title="Marokko" style="width:30px; height:auto; cursor:pointer;">
-  <img src="https://upload.wikimedia.org/wikipedia/commons/b/b4/Flag_of_Turkey.svg" onclick="switchLanguage('tr')" title="Türkçe" style="width:30px; height:auto; cursor:pointer;">
-  <img src="https://upload.wikimedia.org/wikipedia/commons/c/c3/Flag_of_France.svg" onclick="switchLanguage('fr')" title="Français" style="width:30px; height:auto; cursor:pointer;">
-  <img src="https://upload.wikimedia.org/wikipedia/commons/0/03/Flag_of_Italy.svg" onclick="switchLanguage('it')" title="Italiano" style="width:30px; height:auto; cursor:pointer;">
-  <img src="https://upload.wikimedia.org/wikipedia/commons/8/89/Flag_of_Spain.svg" onclick="switchLanguage('es')" title="Español" style="width:30px; height:auto; cursor:pointer;">
-  <img src="https://upload.wikimedia.org/wikipedia/commons/b/ba/Flag_of_Germany.svg" onclick="switchLanguage('de')" title="Deutsch" style="width:30px; height:auto; cursor:pointer;">
-  <img src="https://upload.wikimedia.org/wikipedia/commons/1/12/Flag_of_Poland.svg" onclick="switchLanguage('pl')" title="Polski" style="width:30px; height:auto; cursor:pointer;">
-  <img src="https://upload.wikimedia.org/wikipedia/en/a/ae/Flag_of_the_United_Kingdom.svg" onclick="switchLanguage('en')" title="English" style="width:30px; height:auto; cursor:pointer;">
-  <img src="https://upload.wikimedia.org/wikipedia/commons/5/5c/Flag_of_Portugal.svg" onclick="switchLanguage('pt')" title="Português" style="width:30px; height:auto; cursor:pointer;">
+  <img src="https://flagcdn.com/w40/nl.png" onclick="switchLanguage('nl')" title="Nederlands" style="width:30px;cursor:pointer;">
+  <img src="https://flagcdn.com/w40/ma.png" onclick="switchLanguage('ar')" title="Marokko" style="width:30px;cursor:pointer;">
+  <img src="https://flagcdn.com/w40/tr.png" onclick="switchLanguage('tr')" title="Türkçe" style="width:30px;cursor:pointer;">
+  <img src="https://flagcdn.com/w40/fr.png" onclick="switchLanguage('fr')" title="Français" style="width:30px;cursor:pointer;">
+  <img src="https://flagcdn.com/w40/it.png" onclick="switchLanguage('it')" title="Italiano" style="width:30px;cursor:pointer;">
+  <img src="https://flagcdn.com/w40/es.png" onclick="switchLanguage('es')" title="Español" style="width:30px;cursor:pointer;">
+  <img src="https://flagcdn.com/w40/de.png" onclick="switchLanguage('de')" title="Deutsch" style="width:30px;cursor:pointer;">
+  <img src="https://flagcdn.com/w40/pl.png" onclick="switchLanguage('pl')" title="Polski" style="width:30px;cursor:pointer;">
+  <img src="https://flagcdn.com/w40/gb.png" onclick="switchLanguage('en')" title="English" style="width:30px;cursor:pointer;">
+  <img src="https://flagcdn.com/w40/pt.png" onclick="switchLanguage('pt')" title="Português" style="width:30px;cursor:pointer;">
 </div>
 
 <h1>FA TAXI Service</h1>
@@ -833,6 +833,7 @@ button {
   <div class="input-wrapper" style="position:relative; width:100%;">
     <input type="text" id="ophaaladres" placeholder="Bijv. Stationsplein 1, Amsterdam" autocomplete="off" oninput="zoekAdresSuggesties(this, 'ophaaladres-suggesties')" aria-label="Ophaaladres" required />
     <div id="ophaaladres-suggesties" class="adres-suggesties" style="position:absolute; top:100%; left:0; width:100%; right:auto;"></div>
+    <button onclick="gebruikLocatie()" id="locatieBtn" style="margin:0.5rem 0;">📍 Mijn locatie</button>
   </div>
   <label for="afzetadres" id="labelAfzet">📍 AFZET ADRES 📍</label>
   <div class="input-wrapper" style="position:relative; width:100%;">
@@ -1332,11 +1333,11 @@ window.addEventListener('click', e => {
 document.addEventListener('DOMContentLoaded', ()=>{
   const lang = new URLSearchParams(location.search).get('lang') || 'nl';
   const dict = {
-    nl: { ophaal:'📍 OPHAAL ADRES 📍', afzet:'📍 AFZET ADRES 📍', reserveren:'📅 Reserveren? €17,50 📅', huisdieren:'🐶 Huisdieren €5,- 🐶', spoed:'🚀 Spoedrit €10 🚀', akkoord:'🚨 Annuleringskosten €10,- 🚨', bereken:'🚖 Bereken ritprijs 🚖', ph:'Bijv. Stationsplein 1, Amsterdam', dh:'Bijv. Damrak 50, Amsterdam' },
-    en: { ophaal:'📍 Pickup Address 📍', afzet:'📍 Drop-off Address 📍', reserveren:'📅 Reserve? $17,50 📅', huisdieren:'🐶 Pets $5,- 🐶', spoed:'🚀 Rush $10 🚀', akkoord:'🚨 Cancel fee $10,- 🚨', bereken:'🚖 Calculate Fare 🚖', ph:'e.g. Central Station 1, Amsterdam', dh:'e.g. Damrak 50, Amsterdam' },
-    es: { ophaal:'📍 Dirección de recogida 📍', afzet:'📍 Dirección de entrega 📍', reserveren:'📅 Reservar? €17,50 📅', huisdieren:'🐶 Mascotas €5,- 🐶', spoed:'🚀 Servicio urgente €10 🚀', akkoord:'🚨 Cargo de cancelación €10,- 🚨', bereken:'🚖 Calcular tarifa 🚖', ph:'p.ej. Stationsplein 1, Ámsterdam', dh:'p.ej. Damrak 50, Ámsterdam' },
-    ar: { ophaal:'📍 عنوان الانطلاق 📍', afzet:'📍 عنوان الوصول 📍', reserveren:'📅 حجز؟ €17,50 📅', huisdieren:'🐶 حيوانات أليفة €5,- 🐶', spoed:'🚀 خدمة عاجلة €10 🚀', akkoord:'🚨 رسوم الإلغاء €10,- 🚨', bereken:'🚖 احسب الأجرة 🚖', ph:'مثال: Stationsplein 1, Amsterdam', dh:'مثال: Damrak 50, Amsterdam' },
-    pt: { ophaal:'📍 Endereço de partida 📍', afzet:'📍 Endereço de chegada 📍', reserveren:'📅 Reservar? €17,50 📅', huisdieren:'🐶 Animais €5,- 🐶', spoed:'🚀 Serviço urgente €10 🚀', akkoord:'🚨 Taxa de cancelamento €10,- 🚨', bereken:'🚖 Calcular tarifa 🚖', ph:'Ex: Stationsplein 1, Amsterdã', dh:'Ex: Damrak 50, Amsterdã' }
+    nl: { ophaal:'📍 OPHAAL ADRES 📍', afzet:'📍 AFZET ADRES 📍', reserveren:'📅 Reserveren? €17,50 📅', huisdieren:'🐶 Huisdieren €5,- 🐶', spoed:'🚀 Spoedrit €10 🚀', akkoord:'🚨 Annuleringskosten €10,- 🚨', bereken:'🚖 Bereken ritprijs 🚖', ph:'Bijv. Stationsplein 1, Amsterdam', dh:'Bijv. Damrak 50, Amsterdam', locatieBtn:'📍 Mijn locatie' },
+    en: { ophaal:'📍 Pickup Address 📍', afzet:'📍 Drop-off Address 📍', reserveren:'📅 Reserve? $17,50 📅', huisdieren:'🐶 Pets $5,- 🐶', spoed:'🚀 Rush $10 🚀', akkoord:'🚨 Cancel fee $10,- 🚨', bereken:'🚖 Calculate Fare 🚖', ph:'e.g. Central Station 1, Amsterdam', dh:'e.g. Damrak 50, Amsterdam', locatieBtn:'📍 My location' },
+    es: { ophaal:'📍 Dirección de recogida 📍', afzet:'📍 Dirección de entrega 📍', reserveren:'📅 Reservar? €17,50 📅', huisdieren:'🐶 Mascotas €5,- 🐶', spoed:'🚀 Servicio urgente €10 🚀', akkoord:'🚨 Cargo de cancelación €10,- 🚨', bereken:'🚖 Calcular tarifa 🚖', ph:'p.ej. Stationsplein 1, Ámsterdam', dh:'p.ej. Damrak 50, Ámsterdam', locatieBtn:'📍 Mi ubicación' },
+    ar: { ophaal:'📍 عنوان الانطلاق 📍', afzet:'📍 عنوان الوصول 📍', reserveren:'📅 حجز؟ €17,50 📅', huisdieren:'🐶 حيوانات أليفة €5,- 🐶', spoed:'🚀 خدمة عاجلة €10 🚀', akkoord:'🚨 رسوم الإلغاء €10,- 🚨', bereken:'🚖 احسب الأجرة 🚖', ph:'مثال: Stationsplein 1, Amsterdam', dh:'مثال: Damrak 50, Amsterdam', locatieBtn:'📍 موقعي' },
+    pt: { ophaal:'📍 Endereço de partida 📍', afzet:'📍 Endereço de chegada 📍', reserveren:'📅 Reservar? €17,50 📅', huisdieren:'🐶 Animais €5,- 🐶', spoed:'🚀 Serviço urgente €10 🚀', akkoord:'🚨 Taxa de cancelamento €10,- 🚨', bereken:'🚖 Calcular tarifa 🚖', ph:'Ex: Stationsplein 1, Amsterdã', dh:'Ex: Damrak 50, Amsterdã', locatieBtn:'📍 Minha localização' }
 
   };
   const t = dict[lang] || dict.nl;
@@ -1349,6 +1350,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
   document.getElementById('btnBereken').innerText = t.bereken;
   document.getElementById('ophaaladres').placeholder = t.ph;
   document.getElementById('afzetadres').placeholder = t.dh;
+  document.getElementById('locatieBtn').innerText = t.locatieBtn;
 });
 </script>
 
