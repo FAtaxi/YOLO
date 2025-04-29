@@ -3,6 +3,7 @@ const session = require('express-session');
 const path = require('path');
 const PDFDocument = require('pdfkit');
 const nodemailer = require('nodemailer');
+const { createMollieClient } = require('@mollie/api-client');
 
 const app = express();
 const PORT = 3000;
@@ -10,6 +11,9 @@ const PORT = 3000;
 // Eenvoudige gebruikersnaam en wachtwoord (alleen op de server zichtbaar)
 const ADMIN_USER = 'admin';
 const ADMIN_PASS = 'Ahllen2@';
+
+// Mollie client met test API key
+const mollieClient = createMollieClient({ apiKey: 'test_BzzwVfz5eDbPn5HCHKKt2DDHzSHEk7' });
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -112,8 +116,4 @@ app.post('/email-rit', (req, res) => {
   });
   doc.text(`Rit details:\n${JSON.stringify(rit, null, 2)}`);
   doc.end();
-});
-
-app.listen(PORT, () => {
-  console.log(`Server gestart op http://localhost:${PORT}`);
 });
