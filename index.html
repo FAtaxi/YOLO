@@ -2,1429 +2,341 @@
 <html lang="nl">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
-  <title>FA Taxi Boeking</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welkom | FA Taxi Service</title>
   <style>
     /* Responsive base */
     body { padding: 0.5rem; }
-    .container { max-width: 95vw; margin: 1rem auto; padding: 1rem; }
-    input, select, textarea, button { width: 100% !important; box-sizing: border-box; }
+    .container { max-width: 95vw; margin: 1rem auto; padding: 1rem; box-sizing: border-box; }
+    button, input { width: 100% !important; box-sizing: border-box; }
     @media (max-width: 600px) {
-      label, input, button, select, textarea { font-size: 0.9rem !important; }
-      button, input { padding: 0.8rem !important; }
+      h1 { font-size: 2.5rem !important; }
+      h2, .subtitle { font-size: 1.2rem !important; }
+      .button-group button { font-size: 1rem !important; padding: 0.8rem 0 !important; }
     }
-    /* --- BASIS STYLING --- */
     body {
-  margin: 0;
-  font-family: 'Segoe UI', sans-serif;
-  background: linear-gradient(135deg, #232526 0%, #191919 50%, #232526 100%);
-  color: #fff;
-  padding: 1rem;
-  min-height: 100vh;
-  overflow-x: hidden;
-  position: relative;
-}
-body::before {
-  content: "";
-  position: fixed;
-  left: 0; top: 0; right: 0; bottom: 0;
-  pointer-events: none;
-  background: linear-gradient(120deg, rgba(255,255,255,0.09) 10%, rgba(255,255,255,0.01) 40%, rgba(255,255,255,0.11) 60%, rgba(255,255,255,0.02) 100%);
-  z-index: 0;
-  mix-blend-mode: lighten;
-}
-/* Dubbele body::before verwijderd */
-}
-h1 {
-  text-align: center;
-  margin: 0.7rem 0 0.7rem 0;
-  background: linear-gradient(90deg, #fffbe6 0%, #ffe066 30%, #ffd700 70%, #bfa100 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  filter: drop-shadow(0 2px 12px #ffd70088) drop-shadow(0 1px 4px #bfa10044);
-  text-shadow: 0 2px 16px #fff7, 0 1px 4px #bfa100;
-  position: relative;
-  font-weight: 900;
-  letter-spacing: 1px;
-}
-h1::after {
-  content: "";
-  display: block;
-  position: absolute;
-  left: 30%; top: 20%;
-  width: 40%; height: 35%;
-  background: linear-gradient(120deg, rgba(255,255,255,0.32) 10%, rgba(255,255,255,0.01) 90%);
-  pointer-events: none;
-  border-radius: 40%;
-  z-index: 1;
-}
-/* Dubbele h1-styling verwijderd */
-.container {
-  max-width: 420px;
-  margin: 1rem auto 0.7rem auto;
-  background: #111;
-  padding: 1.1rem 1rem 1.1rem 1rem;
-  border-radius: 10px;
-  box-shadow: 0 0 10px rgba(255, 215, 0, 0.18);
-  box-sizing: border-box;
-}
-/* Dubbele .container-styling verwijderd */
-    input, button, label, select, textarea {
-      font-family: inherit;
-      display: block;
-      width: 100%;
-      margin: 0.3rem 0;
-      padding: 0.55rem;
-      border: none;
-      border-radius: 5px;
-      font-size: 0.97rem;
-    }
-    input, select, textarea {
-      background: linear-gradient(120deg, #232526 70%, #191919 100%);
-      color: #ffd700;
-      border: 1.5px solid #ffd70088;
-      box-shadow: 0 1px 6px #ffd70022;
-      outline: none;
-      transition: border 0.18s, box-shadow 0.18s, background 0.18s;
-    }
-    /* Dubbele input/select/textarea styling verwijderd */
-input:focus, select:focus, textarea:focus {
-  border: 2px solid #ffd700;
-  box-shadow: 0 0 10px #ffd70099, 0 2px 24px #191919cc;
-  background: linear-gradient(120deg, #232526 40%, #ffd70022 100%);
-  color: #fffbe6;
-}
-
-    button {
-  background: linear-gradient(90deg, #fffbe6 0%, #ffe066 30%, #ffd700 70%, #bfa100 100%);
-  color: #222;
-  font-weight: bold;
-  cursor: pointer;
-  border: none;
-  box-shadow: 0 3px 18px 0 #fff8, 0 3px 18px 0 #ffe06699, 0 1px 6px #bfa10055;
-  text-shadow: 0 2px 10px #fff8, 0 1px 4px #bfa10099;
-  transition: background 0.18s, box-shadow 0.18s, filter 0.18s, transform 0.12s;
-  filter: brightness(1.13) drop-shadow(0 1px 8px #ffd70077);
-  border-radius: 8px;
-  position: relative;
-  overflow: hidden;
-}
-button:after {
-  content: "";
-  display: block;
-  position: absolute;
-  left: 0; top: 0; right: 0; bottom: 0;
-  background: linear-gradient(120deg, rgba(255,255,255,0.13) 10%, rgba(255,255,255,0.01) 90%);
-  pointer-events: none;
-  border-radius: 8px;
-  z-index: 0;
-}
-button:hover, button:focus {
-  background: linear-gradient(90deg, #fffbe6 0%, #ffd700 50%, #bfa100 100%);
-  filter: brightness(1.18) drop-shadow(0 2px 10px #ffd70099);
-  outline: none;
-  transform: scale(1.03);
-}
-
-    #resultaat, #adminSpecificaties {
-  background: linear-gradient(120deg, #232526 60%, #191919 100%);
-  border: 2px solid #ffd70077;
-  box-shadow: 0 2px 16px #ffd70033, 0 1px 8px #fff2;
-  color: #fffbe6;
-  font-size: 1.1rem;
-  font-family: inherit;
-  margin-top: 1.2rem;
-  padding: 1.1rem 1rem;
-  border-radius: 10px;
-  word-break: break-word;
-  transition: box-shadow 0.18s, border 0.18s;
-}
-
-    #datumContainer {
-      display: none;
-    }
-    #flag {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      width: 30px;
-      cursor: pointer;
-    }
-    #adminContainer {
-  background: linear-gradient(135deg, #232526 60%, #ffd70044 100%);
-  border: 2px solid #ffd700cc;
-  box-shadow: 0 0 10px #ffd70044, 0 1px 8px #fff2;
-  color: #ffd700;
-  font-weight: bold;
-  transition: box-shadow 0.18s, border 0.18s, background 0.18s;
-}
-#adminContainer:hover, #adminContainer:focus {
-  box-shadow: 0 0 18px #ffd70099, 0 2px 16px #232526cc;
-  background: linear-gradient(135deg, #ffd70033 0%, #232526 100%);
-  color: #fffbe6;
-  outline: none;
-}
-
-    /* Switch toggle styling */
-    .switch {
-      position: relative;
-      display: inline-block;
-      width: 50px;
-      height: 28px;
-      margin-left: 10px;
-      vertical-align: middle;
-    }
-    .switch input {
-      opacity: 0;
-      width: 0;
-      height: 0;
-    }
-    .slider {
-      position: absolute;
-      cursor: pointer;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-color: #888;
-      transition: .4s;
-      border-radius: 28px;
-    }
-    .slider:before {
-      position: absolute;
-      content: "";
-      height: 20px;
-      width: 20px;
-      left: 4px;
-      bottom: 4px;
-      background-color: white;
-      transition: .4s;
-      border-radius: 50%;
-    }
-    .switch input:checked + .slider {
-      background-color: gold;
-    }
-    .switch input:checked + .slider:before {
-      transform: translateX(22px);
-    }
-    /* Kosten-sectie container */
-    .feature-section {
-      background: #111;
-      box-shadow: 0 0 15px rgba(255, 215, 0, 0.15);
-      border-radius: 10px;
-      padding: 1rem;
-      margin: 1rem 0;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .feature-label {
-      font-size: 1.1rem;
-      font-weight: 500;
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #232526 0%, #191919 50%, #232526 100%);
       color: #fff;
-      flex: 1 1 auto;
+      padding: 1rem;
+      min-height: 100vh;
+      position: relative;
+      overflow-x: hidden;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      left: 0; top: 0; right: 0; bottom: 0;
+      pointer-events: none;
+      background: linear-gradient(120deg, rgba(255,255,255,0.09) 10%, rgba(255,255,255,0.01) 40%, rgba(255,255,255,0.11) 60%, rgba(255,255,255,0.02) 100%);
+      z-index: 0;
+      mix-blend-mode: lighten;
+    }
+    .container {
+      max-width: 1400px;
+      margin: 3.5rem auto 3.5rem auto;
+      background: #111;
+      padding: 4.5rem 3.5rem 4.5rem 3.5rem;
+      border-radius: 32px;
+      box-shadow: 0 0 60px rgba(255, 215, 0, 0.22);
       display: flex;
       flex-direction: column;
+      align-items: center;
+      box-sizing: border-box;
+      z-index: 1;
     }
-    .feature-title {
-      font-size: 1.15rem;
+    .taxi-icon {
+      width: 120px;
+      height: 120px;
+      margin-bottom: 1.2rem;
+      filter: drop-shadow(0 2px 18px #ffd70088);
+      border-radius: 50%;
+      background: linear-gradient(120deg, #fffbe6 0%, #ffd70044 100%);
+      padding: 0.7rem;
+    }
+    h1 {
+      text-align: center;
+      margin: 1.2rem 0 1.2rem 0;
+      background: linear-gradient(90deg, #fffbe6 0%, #ffd700 70%, #bfa100 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      filter: drop-shadow(0 4px 32px #ffd70088) drop-shadow(0 2px 12px #bfa10044);
+      text-shadow: 0 4px 40px #fff7, 0 2px 12px #bfa100;
+      font-weight: 900;
+      letter-spacing: 2px;
+      font-size: 6rem;
+    }
+    .subtitle {
+      font-size: 3.2rem;
+      color: #ffd700;
+      margin-bottom: 2.2rem;
+      font-weight: 700;
+      text-align: center;
+      letter-spacing: 1.2px;
+    }
+    .button-group {
+      display: flex;
+      flex-direction: column;
+      gap: 2.4rem;
+      width: 100%;
+      margin-top: 3.2rem;
+      align-items: center;
+    }
+    .button-group button {
+      background: linear-gradient(90deg, #fffbe6 0%, #ffe066 30%, #ffd700 70%, #bfa100 100%);
+      color: #222;
       font-weight: bold;
-      color: gold;
-      margin-bottom: 0.3rem;
+      font-size: 1.3rem;
+      border: none;
+      border-radius: 10px;
+      padding: 0.7rem 0;
+      cursor: pointer;
+      box-shadow: 0 2px 12px 0 #fff8, 0 2px 12px 0 #ffe06699, 0 1px 4px #bfa10055;
+      text-shadow: 0 1px 6px #fff8, 0 1px 4px #bfa10099;
+      transition: background 0.18s, box-shadow 0.18s, filter 0.18s, transform 0.12s;
+      filter: brightness(1.08) drop-shadow(0 1px 8px #ffd70077);
+      outline: none;
+      position: relative;
+      overflow: hidden;
+      width: 55%;
+      max-width: 300px;
+      margin: 0 auto;
     }
-    .feature-desc {
-      font-size: 0.98rem;
-      color: #ccc;
+    .button-group button:after {
+      content: "";
+      display: block;
+      position: absolute;
+      left: 0; top: 0; right: 0; bottom: 0;
+      background: linear-gradient(120deg, rgba(255,255,255,0.13) 10%, rgba(255,255,255,0.01) 90%);
+      pointer-events: none;
+      border-radius: 10px;
+      z-index: 0;
     }
-  .taxi-animation-container {
-  width: 100%;
-  max-width: 100vw;
-  overflow-x: hidden;
-  overflow-y: visible;
-  display: flex;
-  justify-content: flex-start;
-  align-items: flex-end;
-  margin: 0;
-  height: 60px;
-  position: static;
-  background: transparent;
-  box-sizing: border-box;
-  z-index: 10;
-}
-.taxi-svg {
-  height: 60px;
-  width: auto;
-  display: block;
-  margin: 0;
-  overflow: visible;
-  z-index: 10;
-}
-@media (min-width: 700px) {
-  .taxi-animation-container {
-    height: 80px;
-  }
-  .taxi-svg {
-    height: 80px;
-  }
-}
-@media (orientation: landscape) and (max-width: 900px) {
-  .taxi-animation-container {
-    height: 90px;
-  }
-}
-.taxi-svg {
-  animation: taxi-move-loop 7s linear infinite;
-  will-change: transform;
-  position: relative;
-}
-@keyframes taxi-move-loop {
-  0%   { transform: translateX(-30vw); }
-  100% { transform: translateX(100vw); }
-}
-@keyframes taxi-move {
-  0%   { transform: translateX(-220px); }
-  100% { transform: translateX(calc(100vw + 220px)); }
-}
-.smoke1 {
-  animation: smoke1-move 2.8s linear infinite;
-}
-@keyframes smoke1-move {
-  0% { opacity: 0.7; transform: translateX(0) scale(1,1); }
-  10% { opacity: 0.6; transform: translateX(-7px) scale(1.1,1.1); }
-  30% { opacity: 0.3; transform: translateX(-18px) scale(1.3,1.2); }
-  50% { opacity: 0; transform: translateX(-28px) scale(1.5,1.3); }
-  100% { opacity: 0; transform: translateX(-28px) scale(1.5,1.3); }
+    .button-group button:hover, .button-group button:focus {
+      background: linear-gradient(90deg, #fffbe6 0%, #ffd700 50%, #bfa100 100%);
+      filter: brightness(1.18) drop-shadow(0 2px 10px #ffd70099);
+      outline: none;
+      transform: scale(1.03);
+    }
+    @media (max-width: 900px) {
+      .container {
+        max-width: 99vw;
+        padding: 1.1rem 0.2rem 1.1rem 0.2rem;
+      }
+      .taxi-animation-container {
+        width: 92vw;
+        height: auto;
+      }
+      .taxi-animation-container svg {
+        width: 92vw !important;
+        max-width: 92vw;
+        height: auto;
+        min-width: 180px;
+      }
+      h1 { font-size: 2.3rem; }
+      .subtitle { font-size: 1.2rem; }
+      .button-group button { font-size: 0.95rem; padding: 0.5rem 0; }
+    }
+    /* Additional mobile optimizations */
+    @media (max-width: 600px) {
+      h1 { font-size: 2.5rem !important; }
+      .subtitle { font-size: 1.2rem !important; }
+      .button-group { gap: 1.6rem; }
+      .button-group button { width: 90% !important; font-size: 1rem !important; padding: 0.8rem 0 !important; }
+      .taxi-animation-container { width: 100%; height: auto; margin-bottom: 1.5rem; }
+      .taxi-svg { width: 100vw !important; height: auto !important; }
+    }
+    /* Admin button styling */
+    .admin-btn {
+      position: absolute;
+      top: 1rem;
+      left: 1rem;
+      background: linear-gradient(90deg, #fffbe6 0%, #ffe066 30%, #ffd700 70%, #bfa100 100%);
+      color: #222;
+      font-weight: bold;
+      font-size: 1.3rem;
+      border: none;
+      border-radius: 10px;
+      padding: 0.7rem 1rem;
+      cursor: pointer;
+      box-shadow: 0 2px 12px 0 #fff8, 0 2px 12px 0 #ffe06699, 0 1px 4px #bfa10055;
+      text-shadow: 0 1px 6px #fff8, 0 1px 4px #bfa10099;
+      transition: background 0.18s, box-shadow 0.18s, filter 0.18s, transform 0.12s;
+      filter: brightness(1.08) drop-shadow(0 1px 8px #ffd70077);
+      z-index: 5;
+    }
+    .admin-btn:hover, .admin-btn:focus {
+      background: linear-gradient(90deg, #fffbe6 0%, #ffd700 50%, #bfa100 100%);
+      filter: brightness(1.18) drop-shadow(0 2px 10px #ffd70099);
+      transform: scale(1.03);
+    }
+  </style>
+</head>
+<body>
+  <div style="position: fixed; top: 16px; left: 16px; z-index: 100;">
+    <a href="admin.html" id="adminContainer" title="Beheerder" style="background:#111; border-radius:50%; width:38px; height:38px; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 8px #ffd70066; font-size:1.7rem; color:gold; border:2px solid gold; text-decoration:none;">🔒</a>
+  </div>
+  <!-- Language selector dropdown -->
+  <div id="langSelector" style="position: fixed; top: 16px; right: 16px; z-index: 100;">
+    <button id="langToggle" style="background:none; border:none; font-size:1.5rem; cursor:pointer;">🌐</button>
+    <div id="langMenu" style="display:none; position:absolute; top:2.5rem; right:0; background:#fff; padding:0.5rem; border-radius:4px; box-shadow:0 2px 6px rgba(0,0,0,0.2);">
+      <img src="https://flagcdn.com/w40/nl.png" onclick="switchLanguage('nl')" title="Nederlands" style="width:30px;cursor:pointer;margin:0.2rem;">
+      <img src="https://flagcdn.com/w40/ma.png" onclick="switchLanguage('ar')" title="Marokko" style="width:30px;cursor:pointer;margin:0.2rem;">
+      <img src="https://flagcdn.com/w40/tr.png" onclick="switchLanguage('tr')" title="Türkçe" style="width:30px;cursor:pointer;margin:0.2rem;">
+      <img src="https://flagcdn.com/w40/fr.png" onclick="switchLanguage('fr')" title="Français" style="width:30px;cursor:pointer;margin:0.2rem;">
+      <img src="https://flagcdn.com/w40/it.png" onclick="switchLanguage('it')" title="Italiano" style="width:30px;cursor:pointer;margin:0.2rem;">
+      <img src="https://flagcdn.com/w40/es.png" onclick="switchLanguage('es')" title="Español" style="width:30px;cursor:pointer;margin:0.2rem;">
+      <img src="https://flagcdn.com/w40/de.png" onclick="switchLanguage('de')" title="Deutsch" style="width:30px;cursor:pointer;margin:0.2rem;">
+      <img src="https://flagcdn.com/w40/pl.png" onclick="switchLanguage('pl')" title="Polski" style="width:30px;cursor:pointer;margin:0.2rem;">
+      <img src="https://flagcdn.com/w40/gb.png" onclick="switchLanguage('en')" title="English" style="width:30px;cursor:pointer;margin:0.2rem;">
+      <img src="https://flagcdn.com/w40/pt.png" onclick="switchLanguage('pt')" title="Português" style="width:30px;cursor:pointer;margin:0.2rem;">
+    </div>
+  </div>
+  <div class="center-outer">
+  <div class="container center-inner">
+    <div class="taxi-animation-container">
+      <svg class="taxi-svg" viewBox="0 0 220 88" width="350" height="140">
+        <ellipse class="smoke smoke1" cx="28" cy="55" rx="14" ry="6" fill="#bbb" opacity="0.7"/>
+<ellipse class="smoke smoke2" cx="12" cy="62" rx="10" ry="4" fill="#ccc" opacity="0.5"/>
+        <!-- Taxi body -->
+        <rect x="30" y="30" width="60" height="20" rx="7" fill="#FFD600" stroke="#333" stroke-width="2"/>
+        <!-- Taxi cabin -->
+        <rect x="55" y="20" width="25" height="15" rx="5" fill="#FFD600" stroke="#333" stroke-width="2"/>
+        <!-- Ramen -->
+        <rect x="58" y="23" width="8" height="9" rx="2" fill="#B3E5FC" stroke="#333" stroke-width="1"/>
+        <rect x="68" y="23" width="10" height="9" rx="2" fill="#B3E5FC" stroke="#333" stroke-width="1"/>
+        <!-- Taxi-bord -->
+        <rect x="67" y="16" width="12" height="7" rx="2" fill="#fff" stroke="#333" stroke-width="1"/>
+        <text x="73" y="22" font-size="6" font-family="Arial" fill="#FFD600" text-anchor="middle" font-weight="bold">TAXI</text>
+        <!-- Wielen -->
+        <ellipse cx="40" cy="52" rx="7" ry="7" fill="#222"/>
+        <ellipse cx="80" cy="52" rx="7" ry="7" fill="#222"/>
+        <ellipse cx="40" cy="52" rx="3" ry="3" fill="#888"/>
+        <ellipse cx="80" cy="52" rx="3" ry="3" fill="#888"/>
+        <!-- Koplampen -->
+        <ellipse cx="32" cy="40" rx="2" ry="4" fill="#fffde7" opacity="0.7"/>
+        <ellipse cx="90" cy="40" rx="2" ry="4" fill="#fffde7" opacity="0.7"/>
+      </svg>
+    </div>
+      <h1>Welkom</h1>
+      <div class="subtitle">FA Taxi Service</div>
+      <div class="subtitle">24/7 Service</div>
+      <div class="button-group">
+        <button id="btnTaxi" onclick="window.location.href='klant.html'">🚖 TAXI 4 Personen 🚖</button>
+        <button id="btnBus" onclick="window.location.href='busjexxl.html'">🚍 BUSJE XXL 6 Personen 🚍</button>
+      </div>
+    </div>
+  </div>
+  <style>
+    .center-outer {
+      min-height: 100vh;
+      width: 100vw;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: fixed;
+      top: 0; left: 0;
+      z-index: 1;
+      background: inherit;
+    }
+    .container.center-inner {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 80vh;
+      width: 100%;
+      max-width: 700px;
+      margin: 0 auto;
+      box-sizing: border-box;
+    }
+    .center-inner {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 60vh;
+      width: 100%;
+    }
+    .taxi-animation-container {
+      width: 350px;
+      height: 140px;
+      margin-bottom: 2.2rem;
+      overflow: visible;
+      position: relative;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .taxi-svg {
+      animation: taxi-ride 8s linear infinite;
+      /* animation-delay: 0.5s; */
+      width: 350px !important;
+      max-width: 90vw;
+      min-width: 220px;
+      height: 140px;
+      display: block;
+    }
+    @keyframes taxi-ride {
+      0% { opacity: 0; transform: translateX(-380px); }
+      5% { opacity: 1; }
+      95% { opacity: 1; }
+      100% { opacity: 0; transform: translateX(calc(100vw + 380px)); }
+    }
+    .smoke1 {
+  animation: smoke1-move 2.6s linear infinite;
 }
 .smoke2 {
-  animation: smoke2-move 2.8s linear infinite;
+  animation: smoke2-move 3.1s linear infinite;
 }
-@keyframes smoke2-move {
-  0% { opacity: 0.5; transform: translateX(0) scale(1,1); }
-  15% { opacity: 0.4; transform: translateX(-10px) scale(1.1,1.1); }
-  35% { opacity: 0.15; transform: translateX(-21px) scale(1.3,1.2); }
-  55% { opacity: 0; transform: translateX(-31px) scale(1.5,1.3); }
-  100% { opacity: 0; transform: translateX(-31px) scale(1.5,1.3); }
-}
-.adres-suggesties {
-  position: absolute;
-  background: #222;
-  color: #fff;
-  z-index: 10;
-  width: 100%;
-  max-width: 500px;
-  border-radius: 0 0 10px 10px;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.3);
-  margin-top: -0.5rem;
-  left: 0;
-  right: 0;
-  font-size: 1rem;
-  display: none;
-}
-.adres-suggesties.active {
-  display: block;
-}
-.adres-suggestie-item {
-  background: none;
-  color: #ffd700;
-  transition: background 0.18s, color 0.18s;
-  border-bottom: 1px solid #ffd70022;
-}
-.adres-suggestie-item:hover, .adres-suggestie-item:focus {
-  background: linear-gradient(90deg, #ffd70022 0%, #232526 100%);
-  color: #fffbe6;
-  outline: none;
-}
-  padding: 0.7rem 1rem;
-  border-bottom: 1px solid #333;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-.adres-suggestie-item:last-child {
-  border-bottom: none;
-}
-.adres-suggestie-item:hover {
-  background: #444;
-}
-@media (max-width: 600px) {
-  html, body {
-    min-height: 100vh;
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    overflow-x: hidden;
-  }
-  body {
-    min-height: 100vh;
-    background: #111;
-    padding: 0.2rem 0 0.7rem 0;
-    overflow-x: hidden;
-  }
-  .container {
-    max-width: 100vw;
-    width: 100vw;
-    margin: 0.7rem 0 1.2rem 0;
-    border-radius: 11px;
-    padding: 1.1rem 1vw 1.5rem 1vw;
-    box-sizing: border-box;
-    overflow-x: hidden;
-  }
-  h1 {
-    font-size: 2.5rem;
-    margin: 1.2rem 0 1.3rem 0;
-    letter-spacing: 1px;
-    font-weight: 900;
-    text-align: center;
-    color: gold;
-    text-shadow: 0 2px 16px rgba(255,215,0,0.08), 0 1px 6px rgba(0,0,0,0.2), 0 0px 30px rgba(255,215,0,0.08);
-    filter: none;
-  }
-  input, select, textarea {
-    font-size: 1.08rem;
-    padding: 0.95rem 0.8rem;
-    border-radius: 10px;
-    margin-bottom: 0.7rem;
-  }
-  button {
-    font-size: 1.08rem;
-    padding: 1rem 0.8rem;
-    border-radius: 10px;
-    margin-bottom: 0.8rem;
-    width: 100%;
-    font-weight: bold;
-    background: linear-gradient(90deg, #fffbe6 0%, #ffe066 30%, #ffd700 70%, #bfa100 100%);
-    color: #222;
-    border: none;
-    box-shadow: 0 3px 14px rgba(255,215,0,0.09), 0 3px 14px rgba(255,215,0,0.09), 0 1px 4px rgba(0,0,0,0.1);
-    text-shadow: 0 2px 8px rgba(255,215,0,0.08), 0 1px 2px rgba(0,0,0,0.1);
-    transition: background 0.2s, box-shadow 0.2s, filter 0.2s;
-    filter: brightness(1.08) drop-shadow(0 1px 6px rgba(255,215,0,0.08));
-  }
-  button:hover, button:focus {
-    background: linear-gradient(90deg, #fffbe6 0%, #ffd700 50%, #bfa100 100%);
-    filter: brightness(1.18) drop-shadow(0 2px 8px rgba(255,215,0,0.18));
-    outline: none;
-  }
-  .taxi-animation-container {
-    width: 100vw;
-    min-width: 100vw;
-    max-width: 100vw;
-    height: 60px;
-    margin-bottom: 1.1rem;
-    overflow: hidden;
-    box-sizing: border-box;
-  }
-  .adres-suggesties {
-    font-size: 1.03rem;
-    z-index: 1000;
-    left: 0;
-    right: 0;
-    top: 100%;
-    border-radius: 0 0 13px 13px;
-    max-width: 100vw;
-  }
-}
-  body {
-    min-height: 100vh;
-    background: #111;
-    padding: 0.2rem 0 0.7rem 0;
-    overflow-x: hidden;
-  }
-  .container {
-    max-width: 100vw;
-    width: 100vw;
-    margin: 0.7rem 0.1rem;
-    border-radius: 11px;
-    padding: 1.1rem 0.15rem 1.8rem 0.15rem;
-    box-sizing: border-box;
-  }
-  h1 {
-    font-size: 1.55rem;
-    margin: 1.2rem 0 1.2rem 0;
-    text-align: center;
-    color: gold;
-    font-weight: 900;
-    letter-spacing: 1px;
-    text-shadow: 0 2px 12px rgba(255,215,0,0.08), 0 1px 4px rgba(0,0,0,0.1);
-  }
-  input, select, textarea {
-    font-size: 1.12rem;
-    padding: 1.05rem 0.9rem;
-    border-radius: 10px;
-    margin-bottom: 0.9rem;
-  }
-  button {
-    font-size: 1.17rem;
-    padding: 1.2rem 0.9rem;
-    border-radius: 12px;
-    margin-bottom: 1.1rem;
-    width: 100%;
-    font-weight: bold;
-    background: linear-gradient(90deg, #fffbe6 0%, #ffe066 30%, #ffd700 70%, #bfa100 100%);
-    color: #222;
-    border: none;
-    box-shadow: 0 3px 12px rgba(255,215,0,0.09);
-  }
-  .taxi-animation-container {
-    height: 60px;
-    margin-bottom: 1.2rem;
-  }
-  .adres-suggesties {
-    font-size: 1.08rem;
-    z-index: 1000;
-    left: 0;
-    right: 0;
-    top: 100%;
-    border-radius: 0 0 13px 13px;
-    max-width: 100vw;
-    
-  }
-  body {
-    padding: 0.2rem;
-    min-width: 0;
-  }
-  .container {
-    max-width: 100vw;
-    margin: 1rem 0.2rem;
-    border-radius: 10px;
-    padding: 1rem 0.5rem 1.3rem 0.5rem;
-    box-shadow: 0 2px 18px rgba(0,0,0,0.24);
-  }
-  h1 {
-    font-size: 1.35rem;
-    margin: 0.5rem 0 0.7rem 0;
-  }
-  label, select, input, textarea, button {
-    font-size: 1rem !important;
-  }
-  input[type="text"],
-  input[type="datetime-local"],
-  select, textarea {
-    width: 100%;
-    min-width: 0;
-    max-width: 100%;
-    font-size: 1rem;
-    padding: 0.8rem 0.7rem;
-    margin-bottom: 0.7rem;
-    border-radius: 8px;
-  }
-  button {
-    width: 100%;
-    min-width: 0;
-    font-size: 1.08rem;
-    padding: 1rem 0.7rem;
-    margin-bottom: 0.8rem;
-    border-radius: 8px;
-  }
-  .taxi-animation-container {
-    height: 42px;
-    margin-bottom: 0.1rem;
-  }
-  .taxi-svg {
-    width: 130px !important;
-    height: 52px !important;
-  }
-  .adres-suggesties {
-    max-width: 100vw;
-    font-size: 0.97rem;
-    left: 0;
-    right: 0;
-  }
-}
-@media (min-width: 700px) and (max-width: 1200px) and (orientation: landscape) {
-  body {
-    padding: 0.5rem 0;
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    background: linear-gradient(135deg, #232526 0%, #191919 50%, #232526 100%);
-  }
-  .taxi-animation-container {
-    height: 90px;
-    margin-bottom: 2.2rem;
-    justify-content: center;
-  }
-  .taxi-svg {
-    width: 320px !important;
-    height: 128px !important;
-  }
-  .container {
-    max-width: 850px;
-    width: 98vw;
-    margin: 2.2rem auto 2rem auto;
-    border-radius: 22px;
-    padding: 2.8rem 2.7rem 2.6rem 2.7rem;
-    box-shadow: 0 16px 64px rgba(0,0,0,0.22), 0 2px 18px rgba(255,215,0,0.10);
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 3vw 2vw;
-    align-items: flex-start;
-    justify-content: center;
-  }
-  .container > div, .container > form, .container > section {
-    min-width: 260px;
-    margin-bottom: 1.5rem;
-  }
-  .container label, .container input, .container select, .container textarea, .container button {
-    font-size: 1.17rem !important;
-  }
-  input[type="text"],
-  input[type="datetime-local"],
-  select, textarea {
-    width: 100%;
-    min-width: 0;
-    max-width: 100%;
-    font-size: 1.17rem;
-    padding: 1.25rem 1.2rem;
-    margin-bottom: 1.3rem;
-    border-radius: 15px;
-  }
-  button {
-    width: 100%;
-    min-width: 0;
-    font-size: 1.18rem;
-    padding: 1.45rem 1.2rem;
-    margin-bottom: 1.3rem;
-    border-radius: 16px;
-    box-shadow: 0 5px 20px rgba(255,215,0,0.10);
-  }
-  h1 {
-    font-size: 1.55rem;
-    margin: 1.2rem 0 1.7rem 0;
-  }
-  .adres-suggesties {
-    max-width: 95vw;
-    font-size: 1.13rem;
-    left: 0;
-    right: 0;
-    border-radius: 0 0 16px 16px;
-  }
-}
+@keyframes smoke1-move {
+  0% { opacity: 0.7; transform: scale(1,1); }
 
-  .taxi-svg {
-    width: 260px !important;
-    height: 104px !important;
-  }
-  .container {
-    max-width: 750px;
-    width: 96vw;
-    margin: 1.5rem auto 1.2rem auto;
-    border-radius: 18px;
-    padding: 2.4rem 2.2rem 2.3rem 2.2rem;
-    box-shadow: 0 12px 48px rgba(0,0,0,0.22), 0 2px 18px rgba(255,215,0,0.09);
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: 2.5vw;
-    align-items: flex-start;
-    justify-content: space-between;
-  }
-  .container > div, .container > form, .container > section {
-    flex: 1 1 44%;
-    min-width: 260px;
-    margin-bottom: 1.2rem;
-  }
-  .container label, .container input, .container select, .container textarea, .container button {
-    font-size: 1.09rem !important;
-  }
-  input[type="text"],
-  input[type="datetime-local"],
-  select, textarea {
-    width: 100%;
-    min-width: 0;
-    max-width: 100%;
-    font-size: 1.09rem;
-    padding: 1.1rem 1.1rem;
-    margin-bottom: 1.1rem;
-    border-radius: 12px;
-  }
-  button {
-    width: 100%;
-    min-width: 0;
-    font-size: 1.13rem;
-    padding: 1.25rem 1.1rem;
-    margin-bottom: 1.1rem;
-    border-radius: 14px;
-    box-shadow: 0 3px 16px rgba(255,215,0,0.09);
-  }
-  h1 {
-    font-size: 1.35rem;
-    margin: 0.7rem 0 1.1rem 0;
-  }
-  .adres-suggesties {
-    max-width: 95vw;
-    font-size: 1.05rem;
-    left: 0;
-    right: 0;
-    border-radius: 0 0 14px 14px;
-  }
-@media (max-width: 900px) and (orientation: landscape) {
-  body {
-    padding: 0.1rem;
-    min-width: 0;
-  }
-  .container {
-    max-width: 95vw;
-    margin: 0.7rem auto;
-    border-radius: 12px;
-    padding: 0.7rem 1.2rem 1.1rem 1.2rem;
-    box-shadow: 0 2px 18px rgba(0,0,0,0.22);
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 2vw;
-  }
-  .container > * {
-    flex: 1 1 44%;
-    min-width: 170px;
-    margin-bottom: 0.7rem;
-  }
-  .taxi-animation-container {
-    height: 56px;
-    margin-bottom: 0.1rem;
-  }
-  .taxi-svg {
-    width: 180px !important;
-    height: 72px !important;
-  }
-  h1 {
-  font-size: 2.2rem;
-  margin: 1.2rem 0 1.3rem 0;
-  letter-spacing: 1px;
-  }
-  label, select, input, textarea, button {
-    font-size: 0.97rem !important;
-  }
-  input[type="text"],
-  input[type="datetime-local"],
-  select, textarea {
-    width: 100%;
-    min-width: 0;
-    max-width: 100%;
-    font-size: 0.97rem;
-    padding: 0.6rem 0.6rem;
-    margin-bottom: 0.5rem;
-    border-radius: 7px;
-  }
-  button {
-    width: 100%;
-    min-width: 0;
-    font-size: 1rem;
-    padding: 0.8rem 0.5rem;
-    margin-bottom: 0.6rem;
-    border-radius: 7px;
-  }
-  .adres-suggesties {
-    max-width: 95vw;
-    font-size: 0.92rem;
-    left: 0;
-    right: 0;
-  }
-}
-}
-
-body {
-  padding: 0.2rem;
-  min-width: 0;
-}
-.container {
-  max-width: 100vw;
-  margin: 1rem 0.2rem;
-  border-radius: 10px;
-  padding: 1rem 0.5rem 1.3rem 0.5rem;
-  box-shadow: 0 2px 18px rgba(0,0,0,0.24);
-}
-h1 {
-  font-size: 1.35rem;
-  margin: 0.5rem 0 0.7rem 0;
-}
-label, select, input, textarea, button {
-  font-size: 1rem !important;
-}
-input[type="text"],
-input[type="datetime-local"],
-select, textarea {
-  width: 100%;
-  min-width: 0;
-  max-width: 100%;
-  font-size: 1rem;
-  padding: 0.8rem 0.7rem;
-  margin-bottom: 0.7rem;
-  border-radius: 8px;
-}
-button {
-  width: 100%;
-  min-width: 0;
-  font-size: 1.08rem;
-  padding: 1rem 0.7rem;
-  margin-bottom: 0.8rem;
-  border-radius: 8px;
-}
-.taxi-animation-container {
-  height: 42px;
-  margin-bottom: 0.1rem;
-}
-.taxi-svg {
-  width: 130px !important;
-  height: 52px !important;
-}
-.adres-suggesties {
-  max-width: 100vw;
-  font-size: 0.97rem;
-  left: 0;
-  right: 0;
-}
-</style>
-</head>
-
-<body>
-
-<div style="position: fixed; top: 16px; left: 16px; z-index: 100;">
-  <a href="admin.html" id="adminContainer" title="Beheerder" style="background:#111; border-radius:50%; width:38px; height:38px; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 8px #ffd70066; font-size:1.7rem; color:gold; border:2px solid gold; text-decoration:none;">🔒</a>
-</div>
-
-<!-- Language selector dropdown -->
-<div id="langSelector" style="position: fixed; top: 16px; right: 16px; z-index: 100;">
-  <button id="langToggle" style="background:none; border:none; font-size:1.5rem; cursor:pointer;">🌐</button>
-  <div id="langMenu" style="display:none; position:absolute; top:2.5rem; right:0; background:#fff; padding:0.5rem; border-radius:4px; box-shadow:0 2px 6px rgba(0,0,0,0.2);">
-    <img src="https://flagcdn.com/w40/nl.png" onclick="switchLanguage('nl')" title="Nederlands" style="width:30px;cursor:pointer;margin:0.2rem;">
-    <img src="https://flagcdn.com/w40/ma.png" onclick="switchLanguage('ar')" title="Marokko" style="width:30px;cursor:pointer;margin:0.2rem;">
-    <img src="https://flagcdn.com/w40/tr.png" onclick="switchLanguage('tr')" title="Türkçe" style="width:30px;cursor:pointer;margin:0.2rem;">
-    <img src="https://flagcdn.com/w40/fr.png" onclick="switchLanguage('fr')" title="Français" style="width:30px;cursor:pointer;margin:0.2rem;">
-    <img src="https://flagcdn.com/w40/it.png" onclick="switchLanguage('it')" title="Italiano" style="width:30px;cursor:pointer;margin:0.2rem;">
-    <img src="https://flagcdn.com/w40/es.png" onclick="switchLanguage('es')" title="Español" style="width:30px;cursor:pointer;margin:0.2rem;">
-    <img src="https://flagcdn.com/w40/de.png" onclick="switchLanguage('de')" title="Deutsch" style="width:30px;cursor:pointer;margin:0.2rem;">
-    <img src="https://flagcdn.com/w40/pl.png" onclick="switchLanguage('pl')" title="Polski" style="width:30px;cursor:pointer;margin:0.2rem;">
-    <img src="https://flagcdn.com/w40/gb.png" onclick="switchLanguage('en')" title="English" style="width:30px;cursor:pointer;margin:0.2rem;">
-    <img src="https://flagcdn.com/w40/pt.png" onclick="switchLanguage('pt')" title="Português" style="width:30px;cursor:pointer;margin:0.2rem;">
-  </div>
-</div>
-
-<h1>FA TAXI Service</h1>
-<h2 style="text-align:center; margin-top:-0.7rem; color:gold; font-size:1.1rem; letter-spacing:1px;">TAXI 4 Personen</h2>
-<div class="taxi-animation-container">
-  <svg class="taxi-svg" viewBox="0 0 220 88" width="220" height="88">
-    <!-- Rookpluimpjes -->
-    <ellipse class="smoke smoke1" cx="28" cy="55" rx="14" ry="6" fill="#bbb" opacity="0.7"/>
-    <ellipse class="smoke smoke2" cx="12" cy="62" rx="10" ry="4" fill="#ccc" opacity="0.5"/>
-    <!-- Taxi body -->
-    <rect x="30" y="30" width="60" height="20" rx="7" fill="#FFD600" stroke="#333" stroke-width="2"/>
-    <!-- Taxi cabin -->
-    <rect x="55" y="20" width="25" height="15" rx="5" fill="#FFD600" stroke="#333" stroke-width="2"/>
-    <!-- Ramen -->
-    <rect x="58" y="23" width="8" height="9" rx="2" fill="#B3E5FC" stroke="#333" stroke-width="1"/>
-    <rect x="68" y="23" width="10" height="9" rx="2" fill="#B3E5FC" stroke="#333" stroke-width="1"/>
-    <!-- Taxi-bord -->
-    <rect x="67" y="16" width="12" height="7" rx="2" fill="#fff" stroke="#333" stroke-width="1"/>
-    <text x="73" y="22" font-size="6" font-family="Arial" fill="#FFD700" text-anchor="middle" font-weight="bold">TAXI</text>
-    <!-- Wielen -->
-    <ellipse cx="40" cy="52" rx="7" ry="7" fill="#222"/>
-    <ellipse cx="80" cy="52" rx="7" ry="7" fill="#222"/>
-    <ellipse cx="40" cy="52" rx="3" ry="3" fill="#888"/>
-    <ellipse cx="80" cy="52" rx="3" ry="3" fill="#888"/>
-    <!-- Koplampen -->
-    <ellipse cx="32" cy="40" rx="2" ry="4" fill="#fffde7" opacity="0.7"/>
-    <ellipse cx="90" cy="40" rx="2" ry="4" fill="#fffde7" opacity="0.7"/>
-  </svg>
-</div>
-<!-- Hoekknoppen -->
-
-
-<div class="container">
-  <label for="ophaaladres" id="labelOphaal">📍 OPHAAL ADRES 📍 </label>
-  <div class="input-wrapper" style="position:relative; width:100%;">
-    <input type="text" id="ophaaladres" placeholder="Bijv. Stationsplein 1, Amsterdam" autocomplete="off" oninput="zoekAdresSuggesties(this, 'ophaaladres-suggesties')" aria-label="Ophaaladres" required />
-    <div id="ophaaladres-suggesties" class="adres-suggesties" style="position:absolute; top:100%; left:0; width:100%; right:auto;"></div>
-    <button onclick="gebruikLocatie()" id="locatieBtn" style="margin:0.5rem 0;">📍 Mijn locatie</button>
-  </div>
-  <label for="afzetadres" id="labelAfzet">📍 AFZET ADRES 📍</label>
-  <div class="input-wrapper" style="position:relative; width:100%;">
-    <input type="text" id="afzetadres" placeholder="Bijv. Damrak 50, Amsterdam" autocomplete="off" oninput="zoekAdresSuggesties(this, 'afzetadres-suggesties')" aria-label="Afzetadres" required />
-    <div id="afzetadres-suggesties" class="adres-suggesties" style="position:absolute; top:100%; left:0; width:100%; right:auto;"></div>
-  </div>
-
-  <button onclick="toggleDatum()" id="toggleDatumBtn" aria-controls="datumContainer" aria-expanded="false">📅 Reserveren? €17.50,- 📅</button>
-
-  <div id="datumContainer">
-    <label for="tijdstip" id="labelTijdstip">🕒 Gewenst tijdstip 🕒 </label>
-    <input type="datetime-local" id="tijdstip" aria-label="Gewenst tijdstip" />
-  </div>
-
-  <label for="betaalmethode" id="labelBetaal">💳 Kies een betaalmethode 💳</label>
-  <select id="betaalmethode" aria-label="Betaalmethode" required>
-    <option value="Online betaallink">🌐 IDEAL</option>
-    <option value="Tikkie">🔗 Tikkie (online Betaal-Link)</option>
-    <option value="Pin bij chauffeur">💳 Pin bij chauffeur</option>
-    <option value="Contant">💶 Contant</option>
-  </select>
-
-  <label for="kortingscode" id="labelKorting"> 💰 Kortingscode 💰  </label>
-  <input type="text" id="kortingscode" placeholder="Voer uw kortingscode in" aria-label="Kortingscode" />
-
-  <label for="opmerkingen" id="labelOpmerkingen">✏️ Opmerkingen</label>
-  <textarea id="opmerkingen" placeholder="Bijvoorbeeld: helpen met bagage, bijzonderheden, etc." rows="2" style="resize:vertical; background:#222; color:#fff; border-radius:5px; width:100%; margin:0.5rem 0; padding:0.7rem;"></textarea>
-
-  <button onclick="toggleHuisdier()" id="huisdierBtn">🐶 Huisdieren €5,- 🐶</button>
-<input type="hidden" id="huisdieren" value="0">
-  
-  <button onclick="toggleSpoed()" id="spoedBtn">🚀 Spoedrit €10 🚀</button>
-
-  <button onclick="toggleAkkoord()" id="akkoordBtn">🚨 Annuleringskosten €10,- 🚨</button>
-<input type="hidden" id="akkoord" value="0">
-
-  <button onclick="berekenRit()" id="btnBereken">🚖 Bereken ritprijs 🚖</button>
-
-  <div id="resultaat"></div>
-
-  <div id="adminSpecificaties" style="display:none;"></div>
-
-  <a id="whatsappKnop" href="#" target="_blank" style="display:none;">
-    <button>📩 Bevestig & Verstuur naar WhatsApp 📩</button>
-  </a>
+  </style>
   <script>
-    // Zorg dat bij klikken op WhatsApp-knop ook boekRit() wordt aangeroepen
-    document.addEventListener('DOMContentLoaded', function() {
-      var whatsappKnop = document.getElementById('whatsappKnop');
-      if (whatsappKnop) {
-        whatsappKnop.addEventListener('click', function() {
-          boekRit();
-        });
+    // Function to switch page language via query param
+    function switchLanguage(lang) {
+      const url = new URL(window.location.href);
+      url.searchParams.set('lang', lang);
+      window.location.href = url.toString();
+    }
+  </script>
+  <script>
+    document.addEventListener('DOMContentLoaded', ()=>{
+      const lang = new URLSearchParams(location.search).get('lang') || 'nl';
+      console.log('Selected language for welcome:', lang);
+      const dict = {
+        nl: { taxiBtn:'🚖 TAXI 4 Personen 🚖', busBtn:'🚍 BUSJE XXL 6 Personen 🚍' },
+        en: { taxiBtn:'🚖 Taxi 4 Persons 🚖', busBtn:'🚍 Van XXL 6 Persons 🚍' },
+        es: { taxiBtn:'🚖 Taxi 4 Personas 🚖', busBtn:'🚍 Furgoneta XXL 6 Personas 🚍' },
+        ar: { taxiBtn:'🚖 تاكسي 4 أشخاص 🚖', busBtn:'🚍 فان XXL 6 أشخاص 🚍' },
+        pt: { taxiBtn:'🚖 Táxi 4 Pessoas 🚖', busBtn:'🚍 Van XXL 6 Pessoas 🚍' },
+        tr: { taxiBtn:'🚖 4 Kişilik Taksi 🚖', busBtn:'🚍 XXL Minibüs 6 Kişilik 🚍' },
+        fr: { taxiBtn:'🚖 Taxi 4 Personnes 🚖', busBtn:'🚍 Van XXL 6 Personnes 🚍' },
+        it: { taxiBtn:'🚖 Taxi 4 Persone 🚖', busBtn:'🚍 Furgone XXL 6 Persone 🚍' },
+        de: { taxiBtn:'🚖 Taxi für 4 Personen 🚖', busBtn:'🚍 XXL Kleinbus für 6 Personen 🚍' },
+        pl: { taxiBtn:'🚖 Taxi 4 Osoby 🚖', busBtn:'🚍 Van XXL 6 Osób 🚍' }
+      };
+      console.log('Translation object:', dict[lang]);
+      const t = dict[lang] || dict.nl;
+      console.log('Using translation:', t);
+      document.getElementById('btnTaxi').innerText = t.taxiBtn;
+      console.log('btnTaxi text set to:', t.taxiBtn);
+      document.getElementById('btnBus').innerText = t.busBtn;
+    });
+  </script>
+  <script>
+    document.addEventListener('DOMContentLoaded', ()=>{
+      const toggle = document.getElementById('langToggle');
+      const menu = document.getElementById('langMenu');
+      if(toggle && menu){
+        toggle.addEventListener('click', e=>{ e.stopPropagation(); menu.style.display = menu.style.display==='block'?'none':'block'; });
+        menu.addEventListener('click', e=>e.stopPropagation());
+        document.addEventListener('click', ()=>{ menu.style.display='none'; });
       }
     });
   </script>
-</div>
-
-<script>
-// --- FA Taxi Boeking | Modern, robuust & foutloos script ---
-'use strict';
-let spoedToeslag = 0;
-const ADMIN_WACHTWOORD_HASH = "d8c4248ef9765da2dc5434444e41d6df23e07e7ce7c1a834fe979983e097af77";
-async function sha256(str) {
-  const buf = new TextEncoder().encode(str);
-  const hashBuf = await crypto.subtle.digest('SHA-256', buf);
-  return Array.from(new Uint8Array(hashBuf)).map(b => b.toString(16).padStart(2,'0')).join('');
-}
-let huisdierenToeslag = 5; // Kosten voor huisdieren
-let geplandeRitToeslag = 7.50; // Kosten voor geplande rit
-let adminData = {};
-const weatherApiKey = "9d1afafb80f94518850212856252004";
-const TRAFFIC_API_KEY = 'fLy6nvAxRi3ACx2G69Q9fHabDwHz80fe';
-
-function toggleSpoed() {
-  spoedToeslag = spoedToeslag === 0 ? 10 : 0;
-  document.getElementById('spoedBtn').innerText = spoedToeslag === 0 ? "🚀 Voeg €10 spoedrit toe 🚀" : "✅ Spoedrit toegevoegd (€10)";
-}
-
-function toggleDatum() {
-  const datumContainer = document.getElementById('datumContainer');
-  const toggleBtn = document.getElementById('toggleDatumBtn');
-  datumContainer.style.display = datumContainer.style.display === 'none' ? 'block' : 'none';
-  toggleBtn.innerText = datumContainer.style.display === 'none' ? "📅 Reserveren? Klik hier! €7.50,- 📅" : "➖ Verberg datum/tijd";
-}
-
-async function gebruikLocatie() {
-  if (!navigator.geolocation) return alert("Locatie niet ondersteund.");
-  try {
-    navigator.geolocation.getCurrentPosition(async pos => {
-      try {
-        const lat = pos.coords.latitude, lon = pos.coords.longitude;
-        const url = `https://api.opencagedata.com/geocode/v1/json?q=${lat}+${lon}&key=22f9046cc2b242a3a5f08cfabc005f78`;
-        const res = await fetch(url);
-        const data = await res.json();
-        if (data.results && data.results[0]) {
-          const ophaalInput = document.getElementById("ophaaladres");
-          if (ophaalInput) ophaalInput.value = data.results[0].formatted;
-        } else {
-          alert("Adres niet gevonden.");
-        }
-      } catch (err) {
-        alert("Locatie ophalen mislukt: " + (err.message || err));
-      }
-    }, err => {
-      alert("Locatie ophalen mislukt: " + err.message);
-    });
-  } catch (err) {
-    alert("Locatie ophalen mislukt: " + (err.message || err));
-  }
-}
-
-async function getCoordinates(adres) {
-  try {
-    const url = `https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(adres)}&key=22f9046cc2b242a3a5f08cfabc005f78`;
-    const res = await fetch(url);
-    const data = await res.json();
-    if (!data.results || data.results.length === 0) throw new Error("Geen locatie gevonden.");
-    const { lat, lng } = data.results[0].geometry;
-    return [lng, lat];
-  } catch (err) {
-    alert("Locatie ophalen mislukt: " + err.message);
-    throw err;
-  }
-}
-
-async function getWeer(lat, lon) {
-  try {
-    const url = `https://api.weatherapi.com/v1/current.json?key=${weatherApiKey}&q=${lat},${lon}`;
-    const res = await fetch(url);
-    const data = await res.json();
-    if (data && data.current && data.current.condition && data.current.condition.text) {
-      return data.current.condition.text;
-    }
-    return "";
-  } catch (err) {
-    console.error("Weer ophalen mislukt:", err);
-    return "";
-  }
-}
-
-function bepaalDrukteToeslag() {
-  const u = new Date().getHours();
-  const d = new Date().getDay();
-  return ((u >= 7 && u <= 9) || (u >= 16 && u <= 18) || d === 0 || d === 6) ? 1.15 : 1;
-}
-
-function bepaalNachttoeslag() {
-  const u = new Date().getHours();
-  return (u >= 23 || u < 7) ? 1.3 : 1;
-}
-
-function generateRitID() {
-  // Simpel: tijdstempel + 4 random letters
-  const random = Math.random().toString(36).substring(2, 6).toUpperCase();
-  return `RIT-${Date.now()}-${random}`;
-}
-
-function berekenRitprijs(afstand, duur, weer) {
-  let basis = 0;
-  if (afstand <= 3) basis = 10;
-  else if (afstand <= 4) basis = 11.5;
-  else if (afstand <= 5) basis = 13;
-  else if (afstand <= 6) basis = 14.5;
-  else if (afstand <= 7) basis = 16;
-  else if (afstand <= 8) basis = 17.5;
-  else if (afstand <= 9) basis = 19;
-  else basis = 2.5 + (afstand * 1.5) + (duur * 0.5);
-
-  let weerToeslag = 1;
-  if (weer.toLowerCase().includes("patchy rain")) weerToeslag = 1.05;
-  else if (weer.toLowerCase().includes("light rain")) weerToeslag = 1.10;
-  else if (weer.toLowerCase().includes("moderate rain")) weerToeslag = 1.15;
-  else if (weer.toLowerCase().includes("heavy rain")) weerToeslag = 1.20;
-  else if (weer.toLowerCase().includes("torrential rain")) weerToeslag = 1.25;
-  else if (weer.toLowerCase().includes("thunderstorm")) weerToeslag = 1.25;
-  else if (weer.toLowerCase().includes("snow")) weerToeslag = 1.25;
-
-  const drukte = bepaalDrukteToeslag();
-  const nacht = bepaalNachttoeslag();
-
-  const prijsNaToeslagen = basis * weerToeslag * drukte * nacht;
-
-  // Bepaal uitleg van het basistarief
-  let basisUitleg = '';
-  if (afstand <= 3) basisUitleg = 'Afstand ≤ 3 km: vast tarief €10';
-  else if (afstand <= 4) basisUitleg = 'Afstand ≤ 4 km: vast tarief €11,50';
-  else if (afstand <= 5) basisUitleg = 'Afstand ≤ 5 km: vast tarief €13';
-  else if (afstand <= 6) basisUitleg = 'Afstand ≤ 6 km: vast tarief €14,50';
-  else if (afstand <= 7) basisUitleg = 'Afstand ≤ 7 km: vast tarief €16';
-  else if (afstand <= 8) basisUitleg = 'Afstand ≤ 8 km: vast tarief €17,50';
-  else if (afstand <= 9) basisUitleg = 'Afstand ≤ 9 km: vast tarief €19';
-  else basisUitleg = `Afstand > 9 km: 2,50 + (afstand × 1,50) + (duur × 0,50) = €${basis.toFixed(2)}`;
-
-  adminData = {
-    basis,
-    basisUitleg,
-    afstand,
-    duur,
-    weerProcent: ((weerToeslag - 1) * 100).toFixed(0),
-    weerEuro: (basis * (weerToeslag - 1)).toFixed(2),
-    drukteProcent: ((drukte - 1) * 100).toFixed(0),
-    drukteEuro: (basis * (drukte - 1)).toFixed(2),
-    nachtProcent: ((nacht - 1) * 100).toFixed(0),
-    nachtEuro: (basis * (nacht - 1)).toFixed(2),
-    spoed: spoedToeslag,
-    korting: 0,
-    kortingBedrag: 0
-  };
-
-  let totalePrijs = prijsNaToeslagen + spoedToeslag;
-
-  // Instaptarief altijd toevoegen
-  totalePrijs += 2.5;
-  adminData.instaptarief = 2.5;
-
-  // Extra kosten voor huisdieren
-  if (document.getElementById("huisdieren").value === "1") {
-    totalePrijs += huisdierenToeslag;
-    adminData.huisdieren = "🚨 LET OP HUISDIEREN MEE 🚨";
-  } else {
-    adminData.huisdieren = "";
-  }
-
-  // Kosten voor geplande rit
-  if (document.getElementById("tijdstip").value) {
-    totalePrijs += 17.5;
-    adminData.geplandeRit = "📅 LET OP GEPLANDE RIT 📅";
-  } else {
-    adminData.geplandeRit = "";
-  }
-
-  return totalePrijs;
-}
-
-async function getTrafficToeslag(start, end) {
-  const midLat = (start[1] + end[1]) / 2;
-  const midLon = (start[0] + end[0]) / 2;
-  // Flow data
-  const flowUrl = `https://api.tomtom.com/traffic/services/4/flowSegmentData/absolute/10/json?point=${midLat},${midLon}&unit=KMPH&key=${TRAFFIC_API_KEY}`;
-  const flow = await fetch(flowUrl).then(r=>r.json()).catch(()=>null);
-  let surcharge = 1;
-  if (flow && flow.flowSegmentData) {
-    const { freeFlowSpeed, currentSpeed } = flow.flowSegmentData;
-    const ratio = currentSpeed / freeFlowSpeed;
-    if (ratio > 0.9) surcharge = 1;
-    else if (ratio > 0.7) surcharge = 1.05;
-    else if (ratio > 0.4) surcharge = 1.15;
-    else surcharge = 1.5;
-  }
-  // Incidents (optional)
-  const bbox = `${midLat-0.01},${midLon-0.01},${midLat+0.01},${midLon+0.01}`;
-  const incUrl = `https://api.tomtom.com/traffic/services/4/incidentDetails/s3/25/json?bbox=${bbox}&key=${TRAFFIC_API_KEY}`;
-  const inc = await fetch(incUrl).then(r=>r.json()).catch(()=>null);
-  if (inc && inc.incidents) {
-    // lane closures
-    (inc.incidents.roadClosureDetails||[]).forEach(()=> surcharge *= 1.03);
-    // road works
-    (inc.incidents.roadWorks||[]).forEach(() => surcharge *= 1 + (0.05 + Math.random() * 0.10));
-    // accidents
-    (inc.incidents.trafficIncidents||[]).filter(i=>i.eventType==='ACCIDENT').forEach(() => surcharge *= 1 + (0.20 + Math.random() * 0.30));
-  }
-  return surcharge;
-}
-
-function pasKortingscodeToe(ritprijs) {
-  const code = document.getElementById("kortingscode").value.trim();
-  let perc = 0;
-  if (code === "KORTING10") perc = 10;
-  else if (code === "FATS20") perc = 20;
-  else if (code === "FATS25") perc = 25;
-  else if (code === "FATS30") perc = 30;
-
-  adminData.korting = perc;
-  adminData.kortingBedrag = (ritprijs * (perc / 100)).toFixed(2);
-  return ritprijs * (1 - perc / 100);
-}
-
-async function berekenRit() {
-  // Genereer een uniek rit-ID bij elke berekening
-  window.currentRitID = generateRitID();
-
-  // Genereer een uniek rit-ID bij elke berekening
-  window.currentRitID = generateRitID();
-  try {
-  const ophalen = document.getElementById("ophaaladres").value;
-  const afzetten = document.getElementById("afzetadres").value;
-  const tijd = document.getElementById("tijdstip").value;
-  const betaalmethode = document.getElementById("betaalmethode").value;
-  const opmerkingen = document.getElementById("opmerkingen").value;
-
-  if (!ophalen || !afzetten) {
-    return alert("Vul alles correct in en ga akkoord met de voorwaarden.");
-  }
-  if (document.getElementById("akkoord").value !== "1") {
-    alert("U dient akkoord te gaan met de annuleringskosten. Dit bedrag wordt niet in rekening gebracht als u binnen 5 minuten annuleert. Na 5 minuten worden annuleringskosten in rekening gebracht. Let op: Bij schade wordt de verzekering ingeschakeld. Reinigingskosten €450,-.");
-    return;
-  }
-
-  const coordOphalen = await getCoordinates(ophalen);
-  const coordAfzetten = await getCoordinates(afzetten);
-  const routeURL = `https://api.openrouteservice.org/v2/directions/driving-car?api_key=5b3ce3597851110001cf6248b59dc263cab24bdabda48748cd9122b3&start=${coordOphalen[0]},${coordOphalen[1]}&end=${coordAfzetten[0]},${coordAfzetten[1]}`;
-  const res = await fetch(routeURL);
-  const data = await res.json();
-
-  const afstandKm = data.features[0].properties.summary.distance / 1000;
-  const duurMin = data.features[0].properties.summary.duration / 60;
-  const weer = await getWeer(coordOphalen[1], coordOphalen[0]);
-
-  let ritprijs = berekenRitprijs(afstandKm, duurMin, weer);
-  const trafficMul = await getTrafficToeslag(coordOphalen, coordAfzetten);
-  adminData.verkeerProcent = ((trafficMul - 1) * 100).toFixed(0);
-  adminData.verkeerEuro = (adminData.basis * (trafficMul - 1)).toFixed(2);
-  ritprijs *= trafficMul;
-  ritprijs = pasKortingscodeToe(ritprijs);
-
-  // Pin bij chauffeur kosten 2.25%
-  if (betaalmethode === 'Pin bij chauffeur') {
-    adminData.pinProcent = 2.25;
-    adminData.pinEuro = (ritprijs * 0.0225).toFixed(2);
-    ritprijs *= 1.0225;
-  } else {
-    adminData.pinProcent = 0;
-    adminData.pinEuro = 0;
-  }
-
-  // Toon spoedrit informatie aan klant
-  let spoedInfo = "";
-  if (spoedToeslag > 0) {
-    spoedInfo = "🚨 SPOEDRIT - PRIORITEIT 🚨\n";
-  }
-
-  const tijdstipWeergave = tijd ? tijd : 'On-Demand';
-  document.getElementById("resultaat").innerText = `${spoedInfo}🚖 Ritprijs: €${ritprijs.toFixed(2)}\n🛣️ Afstand: ${afstandKm.toFixed(1)} km\n🕒 Duur: ${duurMin.toFixed(0)} min\n🕒 Tijdstip: ${tijdstipWeergave}\n💳 Betaalmethode: ${betaalmethode}\n💳 Pin-kosten: ${adminData.pinProcent}% (€${adminData.pinEuro})\n📌 Annuleringskosten: €10 (niet inbegrepen)\n🎁 Korting toegepast: €${adminData.kortingBedrag}\n${adminData.geplandeRit}\n${adminData.huisdieren}`;
-
-  // Sla de rit op in LocalStorage
-  try {
-    const ritten = JSON.parse(localStorage.getItem('ritten') || '[]');
-    const nieuweRit = {...adminData, ritprijs: ritprijs.toFixed(2), tijdstip: tijdstipWeergave, ophaaladres: ophalen, afzetadres: afzetten, opmerkingen};
-    ritten.push(nieuweRit);
-    localStorage.setItem('ritten', JSON.stringify(ritten));
-  } catch(e) { console.error('Rit niet opgeslagen:', e); }
-
-  // Voeg spoedrit informatie toe aan WhatsApp bericht voor chauffeur
-  let spoedBericht = "";
-  if (spoedToeslag > 0) {
-    spoedBericht = "🚨🚨🚨 SPOEDRIT - PRIORITEIT AUB DIRECT AFHANDELEN 🚨🚨🚨\n";
-  }
-
-  const bericht = `${spoedBericht}🚖 FA TAXI SERVICE 4 Personen 🚖\n📲 Nieuw ritverzoek\n📍 Ophaaladres: ${ophalen}\n📍 Afzetadres: ${afzetten}\n🕒 Tijdstip: ${tijdstipWeergave}\n💳 Betaalmethode: ${betaalmethode}\n${opmerkingen ? '✏️ Opmerkingen: ' + opmerkingen + '\n' : ''}${document.getElementById("resultaat").innerText}`;
-  document.getElementById("whatsappKnop").href = `https://wa.me/message/WPXHSY3TEYVPA1?text=${encodeURIComponent(bericht)}`;
-  document.getElementById("whatsappKnop").style.display = "block";
-  } catch (err) {
-    alert("Er is een fout opgetreden bij het berekenen van de rit: " + (err.message || err));
-  }
-}
-
-async function toonAdmin() {
-  // Toon altijd de laatst berekende rit-ID
-  if (window.currentRitID) {
-    adminData.ritID = window.currentRitID;
-  }
-
-  const raw = prompt("Voer wachtwoord in:");
-  if (raw === null) return;
-  const pw = raw.trim();
-  const hash = await sha256(pw);
-  if (hash !== ADMIN_WACHTWOORD_HASH) return alert("Onjuist wachtwoord!");
-
-  const ophaaladres = document.getElementById("ophaaladres").value;
-  const afzetadres = document.getElementById("afzetadres").value;
-  const tijdstip = document.getElementById("tijdstip").value || "On-Demand";
-  const betaalmethode = document.getElementById("betaalmethode").value;
-  const kortingscode = document.getElementById("kortingscode").value || "Geen";
-  const huisdieren = document.getElementById("huisdieren").value === "1" ? "Ja +€5" : "Nee";
-  const spoedrit = spoedToeslag > 0 ? "Ja +€10" : "Nee";
-  const geplandeRit = document.getElementById("tijdstip").value ? "Ja +€17,50" : "Nee";
-  const opmerkingen = document.getElementById("opmerkingen").value || "Geen";
-
-  const huisdierenToeslagLine = `- Huisdieren toeslag: +€${document.getElementById("huisdieren").value === "1" ? "5,00" : "0,00"}`;
-  const spoedToeslagLine = `- Spoedrit toeslag: +€${spoedToeslag > 0 ? "10,00" : "0,00"}`;
-  const geplandeRitToeslagLine = `- Geplande rit toeslag: +€${document.getElementById("tijdstip").value ? "17,50" : "0,00"}`;
-
-  const spec = `📊 BEHEERDER OVERZICHT 📊
-📍 Ophaaladres: ${ophaaladres}
-📍 Afzetadres: ${afzetadres}
-🕒 Tijdstip: ${tijdstip}
-💳 Betaalmethode: ${betaalmethode}
-💰 Kortingscode: ${kortingscode}
-✏️ Opmerkingen: ${opmerkingen}
-🐶 Huisdieren: ${huisdieren}
-🚀 Spoedrit: ${spoedrit}
-📅 Geplande rit: ${geplandeRit}
-
-📈 BEREKENINGEN:
-- Afstand: ${adminData.afstand.toFixed(2)} km
-- Duur: ${adminData.duur.toFixed(0)} min
-- Basistarief: €${adminData.basis} (${adminData.basisUitleg})
-- Instaptarief: €2,50
-- Weer: ${adminData.weerProcent}% toeslag (+€${adminData.weerEuro})
-- Drukte: ${adminData.drukteProcent}% toeslag (+€${adminData.drukteEuro})
-- Nacht: ${adminData.nachtProcent}% toeslag (+€${adminData.nachtEuro})
-${huisdierenToeslagLine}
-${spoedToeslagLine}
-${geplandeRitToeslagLine}
-- Korting: ${adminData.korting}% (-€${adminData.kortingBedrag})
-- Pin: ${adminData.pinProcent}% toeslag (+€${adminData.pinEuro})
-
-💶 RITPRIJS TOTAAL: €${ritprijs.toFixed(2)}`;
-
-  document.getElementById("adminSpecificaties").innerText = spec;
-  document.getElementById("adminSpecificaties").style.display = "block";
-}
-
-function switchLanguage(lang) {
-  const url = new URL(window.location.href);
-  url.searchParams.set('lang', lang);
-  window.location.href = url.toString();
-}
-
-// Toggle huisdier button
-function toggleHuisdier() {
-  const btn = document.getElementById('huisdierBtn');
-  const input = document.getElementById('huisdieren');
-  if (!btn || !input) return;
-  if (input.value === "0") {
-    input.value = "1";
-    btn.innerText = "✅ Huisdier toegevoegd €5,-";
-    btn.style.background = "gold";
-    btn.style.color = "black";
-  } else {
-    input.value = "0";
-    btn.innerText = "🐶 Voeg huisdier toe €5,- 🐶";
-    btn.style.background = "";
-    btn.style.color = "";
-  }
-}
-// Toggle akkoord button
-function toggleAkkoord() {
-  const btn = document.getElementById('akkoordBtn');
-  const input = document.getElementById('akkoord');
-  if (!btn || !input) return;
-  if (input.value === "0") {
-    input.value = "1";
-    btn.innerText = "✅ Akkoord met annuleringskosten €10,-";
-    btn.style.background = "gold";
-    btn.style.color = "black";
-  } else {
-    input.value = "0";
-    btn.innerText = "🚨 Ga akkoord met annuleringskosten €10,- 🚨";
-    btn.style.background = "";
-    btn.style.color = "";
-  }
-}
-// --- Boekingsopslag met rit-id ---
-function boekRit() {
-  // Gegevens ophalen
-  const ophaaladres = document.getElementById("ophaaladres").value;
-  const afzetadres = document.getElementById("afzetadres").value;
-  const tijdstip = document.getElementById("tijdstip").value || "On-Demand";
-  const betaalmethode = document.getElementById("betaalmethode").value;
-  const kortingscode = document.getElementById("kortingscode").value || "Geen";
-  const huisdieren = document.getElementById("huisdieren")?.value === "1" ? "Ja +€5" : "Nee";
-  const spoedrit = typeof spoedToeslag !== 'undefined' && spoedToeslag > 0 ? "Ja +€10" : "Nee";
-  const geplandeRit = tijdstip !== "On-Demand" ? "Ja +€17,50" : "Nee";
-  const opmerkingen = document.getElementById("opmerkingen")?.value || "Geen";
-  // Unieke rit-id genereren (timestamp + random)
-  const ritId = 'RIT-' + Date.now() + '-' + Math.floor(Math.random() * 10000);
-  // Ritobject
-  const timestamp = new Date().toLocaleString();
-  const rit = { timestamp, ritId, ophaaladres, afzetadres, tijdstip, betaalmethode, kortingscode, huisdieren, spoedrit, geplandeRit, opmerkingen };
-  // Huidige ritten ophalen en toevoegen
-  let ritten = [];
-  try { ritten = JSON.parse(localStorage.getItem('ritten')) || []; } catch {}
-  ritten.push(rit);
-  localStorage.setItem('ritten', JSON.stringify(ritten));
-}
-// Alles in één object, geen dubbele variabelen meer.
-
-// --- Draft saving met timestamp voor oningevulde gegevens ---
-(function() {
-  const fields = ['ophaaladres','afzetadres','tijdstip','betaalmethode','kortingscode','huisdieren','opmerkingen'];
-  fields.forEach(id => {
-    const el = document.getElementById(id);
-    if (!el) return;
-    el.addEventListener('change', () => {
-      const draft = { timestamp: new Date().toLocaleString() };
-      fields.forEach(fid => draft[fid] = document.getElementById(fid)?.value || '');
-      localStorage.setItem('draftRit', JSON.stringify(draft));
-    });
-  });
-})();
-
-// --- Adres autocomplete ---
-async function zoekAdresSuggesties(inputElem, suggestieDivId) {
-  const waarde = inputElem.value.trim();
-  const suggestieDiv = document.getElementById(suggestieDivId);
-  if (waarde.length < 3) {
-    suggestieDiv.innerHTML = '';
-    suggestieDiv.classList.remove('active');
-    return;
-  }
-  const apiKey = '22f9046cc2b242a3a5f08cfabc005f78';
-  const url = `https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(waarde)}&key=${apiKey}&limit=5&language=nl`;
-  try {
-    const res = await fetch(url);
-    const data = await res.json();
-    if (!data.results || data.results.length === 0) {
-      suggestieDiv.innerHTML = '';
-      suggestieDiv.classList.remove('active');
-      return;
-    }
-    // Toon eerst alleen Nederlandse adressen
-    let nlResults = data.results.filter(r => r.components && r.components.country_code === 'nl');
-    let shownResults = nlResults.length > 0 ? nlResults : data.results;
-    suggestieDiv.innerHTML = shownResults.map(r => `<div class='adres-suggestie-item' onclick="kiesAdresSuggestie('${inputElem.id}', '${suggestieDivId}', '${r.formatted.replace(/'/g, "&#39;")}' )">${r.formatted}</div>`).join('');
-    suggestieDiv.classList.add('active');
-  } catch {
-    suggestieDiv.innerHTML = '';
-    suggestieDiv.classList.remove('active');
-  }
-}
-function kiesAdresSuggestie(inputId, suggestieDivId, waarde) {
-  document.getElementById(inputId).value = waarde;
-  document.getElementById(suggestieDivId).innerHTML = '';
-  document.getElementById(suggestieDivId).classList.remove('active');
-}
-// Suggesties sluiten bij klik buiten veld
-window.addEventListener('click', e => {
-  ['ophaaladres-suggesties','afzetadres-suggesties'].forEach(id => {
-    const box = document.getElementById(id);
-    if (box && !box.contains(e.target) && e.target.id !== id.replace('-suggesties','')) {
-      box.innerHTML = '';
-      box.classList.remove('active');
-    }
-  });
-});
-// Geen dubbele listeners meer.
-</script>
-
-<script>
-// Apply translations based on lang param
-document.addEventListener('DOMContentLoaded', ()=>{
-  const lang = new URLSearchParams(location.search).get('lang') || 'nl';
-  console.log('Selected language for index:', lang);
-  const dict = {
-    nl: { ophaal:'📍 OPHAAL ADRES 📍', afzet:'📍 AFZET ADRES 📍', reserveren:'📅 Reserveren? €17,50 📅', huisdieren:'🐶 Huisdieren €5,- 🐶', spoed:'🚀 Spoedrit €10 🚀', akkoord:'🚨 Annuleringskosten €10,- 🚨', bereken:'🚖 Bereken ritprijs 🚖', ph:'Bijv. Stationsplein 1, Amsterdam', dh:'Bijv. Damrak 50, Amsterdam', locatieBtn:'📍 Mijn locatie' },
-    en: { ophaal:'📍 Pickup Address 📍', afzet:'📍 Drop-off Address 📍', reserveren:'📅 Reserve? $17,50 📅', huisdieren:'🐶 Pets $5,- 🐶', spoed:'🚀 Rush $10 🚀', akkoord:'🚨 Cancel fee $10,- 🚨', bereken:'🚖 Calculate Fare 🚖', ph:'e.g. Central Station 1, Amsterdam', dh:'e.g. Damrak 50, Amsterdam', locatieBtn:'📍 My location' },
-    es: { ophaal:'📍 Dirección de recogida 📍', afzet:'📍 Dirección de entrega 📍', reserveren:'📅 Reservar? €17,50 📅', huisdieren:'🐶 Mascotas €5,- 🐶', spoed:'🚀 Servicio urgente €10 🚀', akkoord:'🚨 Cargo de cancelación €10,- 🚨', bereken:'🚖 Calcular tarifa 🚖', ph:'p.ej. Stationsplein 1, Ámsterdam', dh:'p.ej. Damrak 50, Ámsterdam', locatieBtn:'📍 Mi ubicación' },
-    ar: { ophaal:'📍 عنوان الانطلاق 📍', afzet:'📍 عنوان الوصول 📍', reserveren:'📅 حجز؟ €17,50 📅', huisdieren:'🐶 حيوانات أليفة €5,- 🐶', spoed:'🚀 خدمة عاجلة €10 🚀', akkoord:'🚨 رسوم الإلغاء €10,- 🚨', bereken:'🚖 احسب الأجرة 🚖', ph:'مثال: Stationsplein 1, Amsterdam', dh:'مثال: Damrak 50, Amsterdam', locatieBtn:'📍 موقعي' },
-    pt: { ophaal:'📍 Endereço de partida 📍', afzet:'📍 Endereço de chegada 📍', reserveren:'📅 Reservar? €17,50 📅', huisdieren:'🐶 Animais €5,- 🐶', spoed:'🚀 Serviço urgente €10 🚀', akkoord:'🚨 Taxa de cancelamento €10,- 🚨', bereken:'🚖 Calcular tarifa 🚖', ph:'Ex: Stationsplein 1, Amsterdã', dh:'Ex: Damrak 50, Amsterdã', locatieBtn:'📍 Minha localização' },
-    tr: { ophaal:'📍 Alış Noktası 📍', afzet:'📍 Bırakma Noktası 📍', reserveren:'📅 Rezervasyon? €17,50 📅', huisdieren:'🐶 Evcil Hayvan €5,- 🐶', spoed:'🚀 Acele Hizmet €10 🚀', akkoord:'🚨 İptal Ücreti €10,- 🚨', bereken:'🚖 Ücret Hesapla 🚖', ph:'Örn: Stationsplein 1, Amsterdam', dh:'Örn: Damrak 50, Amsterdam', locatieBtn:'📍 Konumum' },
-    fr: { ophaal:'📍 Adresse de départ 📍', afzet:'📍 Adresse d’arrivée 📍', reserveren:'📅 Réserver? €17,50 📅', huisdieren:'🐶 Animaux €5,- 🐶', spoed:'🚀 Service urgent €10 🚀', akkoord:'🚨 Frais d’annulation €10,- 🚨', bereken:'🚖 Calculer Tarif 🚖', ph:'Ex: Stationsplein 1, Amsterdam', dh:'Ex: Damrak 50, Amsterdam', locatieBtn:'📍 Ma position' },
-    it: { ophaal:'📍 Indirizzo di partenza 📍', afzet:'📍 Indirizzo di arrivo 📍', reserveren:'📅 Prenota? €17,50 📅', huisdieren:'🐶 Animali €5,- 🐶', spoed:'🚀 Servizio Urgente €10 🚀', akkoord:'🚨 Tariffa cancellazione €10,- 🚨', bereken:'🚖 Calcola Tariffa 🚖', ph:'Es: Stationsplein 1, Amsterdam', dh:'Es: Damrak 50, Amsterdam', locatieBtn:'📍 La mia posizione' },
-    de: { ophaal:'📍 Abholadresse 📍', afzet:'📍 Zieladresse 📍', reserveren:'📅 Reservieren? €17,50 📅', huisdieren:'🐶 Haustiere €5,- 🐶', spoed:'🚀 Eilfahrt €10 🚀', akkoord:'🚨 Stornogebühr €10,- 🚨', bereken:'🚖 Fahrtpreis berechnen 🚖', ph:'z.B. Stationsplein 1, Amsterdam', dh:'z.B. Damrak 50, Amsterdam', locatieBtn:'📍 Mein Standort' },
-    pl: { ophaal:'📍 Adres odbioru 📍', afzet:'📍 Adres dostawy 📍', reserveren:'📅 Rezerwować? €17,50 📅', huisdieren:'🐶 Zwierzęta 🐶 5€', spoed:'🚀 Pilna usługa €10 🚀', akkoord:'🚨 Opłata za anulowanie €10,- 🚨', bereken:'🚖 Oblicz cenę 🚖', ph:'np. Stationsplein 1, Amsterdam', dh:'np. Damrak 50, Amsterdam', locatieBtn:'📍 Moja lokalizacja' }
-
-  };
-  console.log('Index translation object for', lang, dict[lang]);
-  const t = dict[lang] || dict.nl;
-  console.log('Index using translation:', t);
-  document.getElementById('labelOphaal').innerText = t.ophaal;
-  document.getElementById('labelAfzet').innerText = t.afzet;
-  document.getElementById('toggleDatumBtn').innerText = t.reserveren;
-  document.getElementById('huisdierBtn').innerText = t.huisdieren;
-  document.getElementById('spoedBtn').innerText = t.spoed;
-  document.getElementById('akkoordBtn').innerText = t.akkoord;
-  document.getElementById('btnBereken').innerText = t.bereken;
-  document.getElementById('ophaaladres').placeholder = t.ph;
-  document.getElementById('afzetadres').placeholder = t.dh;
-  document.getElementById('locatieBtn').innerText = t.locatieBtn;
-});
-</script>
-
-<script>
-document.addEventListener('DOMContentLoaded', ()=>{
-  const toggle = document.getElementById('langToggle');
-  const menu = document.getElementById('langMenu');
-  if(toggle && menu){
-    toggle.addEventListener('click', e=>{ e.stopPropagation(); menu.style.display = menu.style.display==='block'?'none':'block'; });
-    menu.addEventListener('click', e=>e.stopPropagation());
-    document.addEventListener('click', ()=>{ menu.style.display='none'; });
-  }
-});
-</script>
-
 </body>
-</html>
