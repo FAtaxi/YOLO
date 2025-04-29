@@ -432,6 +432,7 @@ button:hover, button:focus {
   }
   .container {
     max-width: 100vw;
+    width: 100vw;
     margin: 0.7rem 0.1rem;
     border-radius: 11px;
     padding: 1.1rem 0.15rem 1.8rem 0.15rem;
@@ -1155,6 +1156,16 @@ async function berekenRit() {
   ritprijs *= trafficMul;
   ritprijs = pasKortingscodeToe(ritprijs);
 
+  // Pin bij chauffeur kosten 2.25%
+  if (betaalmethode === 'Pin bij chauffeur') {
+    adminData.pinProcent = 2.25;
+    adminData.pinEuro = (ritprijs * 0.0225).toFixed(2);
+    ritprijs *= 1.0225;
+  } else {
+    adminData.pinProcent = 0;
+    adminData.pinEuro = 0;
+  }
+
   // Toon spoedrit informatie aan klant
   let spoedInfo = "";
   if (spoedToeslag > 0) {
@@ -1162,7 +1173,7 @@ async function berekenRit() {
   }
 
   const tijdstipWeergave = tijd ? tijd : 'On-Demand';
-  document.getElementById("resultaat").innerText = `${spoedInfo}🚖 Ritprijs: €${ritprijs.toFixed(2)}\n🛣️ Afstand: ${afstandKm.toFixed(1)} km\n🕒 Duur: ${duurMin.toFixed(0)} min\n🕒 Tijdstip: ${tijdstipWeergave}\n💳 Betaalmethode: ${betaalmethode}\n📌 Annuleringskosten: €10 (niet inbegrepen)\n🎁 Korting toegepast: €${adminData.kortingBedrag}\n${adminData.geplandeRit}\n${adminData.huisdieren}\n🚦 Verkeerstoelage: ${adminData.verkeerProcent}% (€${adminData.verkeerEuro})`;
+  document.getElementById("resultaat").innerText = `${spoedInfo}🚖 Ritprijs: €${ritprijs.toFixed(2)}\n🛣️ Afstand: ${afstandKm.toFixed(1)} km\n🕒 Duur: ${duurMin.toFixed(0)} min\n🕒 Tijdstip: ${tijdstipWeergave}\n💳 Betaalmethode: ${betaalmethode}\n💳 Pin-kosten: ${adminData.pinProcent}% (€${adminData.pinEuro})\n📌 Annuleringskosten: €10 (niet inbegrepen)\n🎁 Korting toegepast: €${adminData.kortingBedrag}\n${adminData.geplandeRit}\n${adminData.huisdieren}`;
 
   // Sla de rit op in LocalStorage
   try {
@@ -1235,7 +1246,7 @@ ${huisdierenToeslagLine}
 ${spoedToeslagLine}
 ${geplandeRitToeslagLine}
 - Korting: ${adminData.korting}% (-€${adminData.kortingBedrag})
-- Verkeer: ${adminData.verkeerProcent}% toeslag (+€${adminData.verkeerEuro})
+- Pin: ${adminData.pinProcent}% toeslag (+€${adminData.pinEuro})
 
 💶 RITPRIJS TOTAAL: €${ritprijs.toFixed(2)}`;
 
