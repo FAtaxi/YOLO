@@ -179,8 +179,8 @@
     <a href="admin.html" id="adminContainer" title="Beheerder" style="background:#111; border-radius:50%; width:38px; height:38px; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 8px #ffd70066; font-size:1.7rem; color:gold; border:2px solid gold; text-decoration:none;">🔒</a>
   </div>
   <div style="position: fixed; top: 16px; right: 16px; z-index: 100; display:flex; gap:0.5rem;">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/7/7c/Flag_of_Morocco.svg" onclick="switchLanguage('ar')" title="Marokko" style="width:30px; height:auto; cursor:pointer;">
     <img src="https://upload.wikimedia.org/wikipedia/commons/2/20/Flag_of_the_Netherlands.svg" onclick="switchLanguage('nl')" title="Nederlands" style="width:30px; height:auto; cursor:pointer;">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/7/77/Flag_of_Morocco.svg" onclick="switchLanguage('ar')" title="Marokko" style="width:30px; height:auto; cursor:pointer;">
     <img src="https://upload.wikimedia.org/wikipedia/commons/b/b4/Flag_of_Turkey.svg" onclick="switchLanguage('tr')" title="Türkçe" style="width:30px; height:auto; cursor:pointer;">
     <img src="https://upload.wikimedia.org/wikipedia/commons/c/c3/Flag_of_France.svg" onclick="switchLanguage('fr')" title="Français" style="width:30px; height:auto; cursor:pointer;">
     <img src="https://upload.wikimedia.org/wikipedia/commons/0/03/Flag_of_Italy.svg" onclick="switchLanguage('it')" title="Italiano" style="width:30px; height:auto; cursor:pointer;">
@@ -219,8 +219,8 @@
       <div class="subtitle">FA Taxi Service</div>
       <div class="subtitle">24/7 Service</div>
       <div class="button-group">
-        <button onclick="window.location.href='klant.html'">🚖 TAXI 4 Personen 🚖</button>
-        <button onclick="window.location.href='busjexxl.html'">🚍 BUSJE XXL 6 Personen 🚍</button>
+        <button id="btnTaxi" onclick="window.location.href='klant.html'">🚖 TAXI 4 Personen 🚖</button>
+        <button id="btnBus" onclick="window.location.href='busjexxl.html'">🚍 BUSJE XXL 6 Personen 🚍</button>
       </div>
     </div>
   </div>
@@ -299,4 +299,4 @@
       window.location.href = url.toString();
     }
   </script>
-</body>
+  <script>
