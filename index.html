@@ -232,15 +232,10 @@
     100% { opacity: 0; transform: translateX(calc(100vw + 380px)); }
   }
   .smoke-group {
-    animation: smoke-follow 8s linear infinite;
+    animation: taxi-ride 8s linear infinite;
     transform-origin: left center;
   }
-  @keyframes smoke-follow {
-    0% { opacity: 0; transform: translateX(-380px); }
-    5% { opacity: 1; }
-    95% { opacity: 1; }
-    100% { opacity: 0; transform: translateX(calc(100vw + 380px)); }
-  }
+  /* Geen aparte smoke-follow keyframes meer; de rookgroep volgt nu exact de taxi */
   .smoke1 {
     animation: smoke1-move 2.3s linear infinite;
   }
@@ -258,23 +253,23 @@
   }
   @keyframes smoke1-move {
     0% { opacity: 0.7; transform: scale(1,1); }
-    100% { opacity: 0; transform: scale(1.8,1.3) translateX(-110px); }
+    100% { opacity: 0; transform: scale(1.8,1.3); }
   }
   @keyframes smoke2-move {
     0% { opacity: 0.5; transform: scale(1,1); }
-    100% { opacity: 0; transform: scale(1.6,1.2) translateX(-100px); }
+    100% { opacity: 0; transform: scale(1.6,1.2); }
   }
   @keyframes smoke3-move {
     0% { opacity: 0.28; transform: scale(1,1); }
-    100% { opacity: 0; transform: scale(1.7,1.3) translateX(-120px); }
+    100% { opacity: 0; transform: scale(1.7,1.3); }
   }
   @keyframes smoke4-move {
     0% { opacity: 0.36; transform: scale(1,1); }
-    100% { opacity: 0; transform: scale(1.3,1.1) translateX(-90px); }
+    100% { opacity: 0; transform: scale(1.3,1.1); }
   }
   @keyframes smoke5-move {
     0% { opacity: 0.19; transform: scale(1,1); }
-    100% { opacity: 0; transform: scale(1.9,1.4) translateX(-130px); }
+    100% { opacity: 0; transform: scale(1.9,1.4); }
   }
 </style>
 </html>
