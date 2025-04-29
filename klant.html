@@ -866,6 +866,17 @@ button {
   <a id="whatsappKnop" href="#" target="_blank" style="display:none;">
     <button>📩 Bevestig & Verstuur naar WhatsApp 📩</button>
   </a>
+  <script>
+    // Zorg dat bij klikken op WhatsApp-knop ook boekRit() wordt aangeroepen
+    document.addEventListener('DOMContentLoaded', function() {
+      var whatsappKnop = document.getElementById('whatsappKnop');
+      if (whatsappKnop) {
+        whatsappKnop.addEventListener('click', function() {
+          boekRit();
+        });
+      }
+    });
+  </script>
 </div>
 
 <script>
