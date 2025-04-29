@@ -782,8 +782,6 @@ button {
 <body>
 
 <h1>FA Taxi Service</h1>
-  <h1>Taxi 4 personen</h1>
-  <h1>24/7 Service</h1>
 <div class="taxi-animation-container">
   <svg class="taxi-svg" viewBox="0 0 220 88" width="220" height="88">
     <!-- Rookpluimpjes -->
@@ -811,13 +809,16 @@ button {
 </div>
 <!-- Hoekknoppen -->
 <div style="position: fixed; top: 16px; left: 16px; z-index: 100;">
-  <div id="adminContainer" onclick="toonAdmin()" title="Beheerder" style="background:#111; border-radius:50%; width:38px; height:38px; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 8px #ffd70066; font-size: 1.7rem; color: gold; border:2px solid gold;">
-    🔒
-  </div>
+  <a href="admin.html" id="adminContainer" title="Beheerder" style="background:#111; border-radius:50%; width:38px; height:38px; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 8px #ffd70066; font-size: 1.7rem; color: gold; border:2px solid gold; text-decoration: none;">
+  🔒
+</a>
 </div>
 <div style="position: fixed; top: 16px; right: 16px; z-index: 100;">
   <img id="flag" src="https://upload.wikimedia.org/wikipedia/en/a/ae/Flag_of_the_United_Kingdom.svg" onclick="switchLanguage()" title="Switch to English" style="width:30px; height:auto; cursor:pointer;"/>
 </div>
+
+<h1>FA Taxi Service</h1>
+<h1>TAXI 4 Personen</h1>
 
 <div class="container">
   <label for="ophaaladres" id="labelOphaal">📍 OPHAAL ADRES 📍 </label>
@@ -847,15 +848,15 @@ button {
   <label for="kortingscode" id="labelKorting"> 💰 Kortingscode 💰  </label>
   <input type="text" id="kortingscode" placeholder="Voer uw kortingscode in" aria-label="Kortingscode" />
 
-  <label for="opmerkingen" id="labelOpmerkingen">✏️ Opmerkingen</label>
+  <label for="opmerkingen" id="labelOpmerkingen">✏️ Opmerkingen voor de klant</label>
   <textarea id="opmerkingen" placeholder="Bijvoorbeeld: extra instructies, bijzonderheden, etc." rows="2" style="resize:vertical; background:#222; color:#fff; border-radius:5px; width:100%; margin:0.5rem 0; padding:0.7rem;"></textarea>
 
-  <button onclick="toggleHuisdier()" id="huisdierBtn">🐶 Huisdieren €5,- 🐶</button>
+  <button onclick="toggleHuisdier()" id="huisdierBtn">🐶 Voeg huisdier toe €5,- 🐶</button>
 <input type="hidden" id="huisdieren" value="0">
   
-  <button onclick="toggleSpoed()" id="spoedBtn">🚀 Spoedrit €10 🚀</button>
+  <button onclick="toggleSpoed()" id="spoedBtn">🚀 Voeg €10 spoedrit toe 🚀</button>
 
-  <button onclick="toggleAkkoord()" id="akkoordBtn">🚨 Akkoord annuleringskosten €10,- 🚨</button>
+  <button onclick="toggleAkkoord()" id="akkoordBtn">🚨 Ga akkoord met annuleringskosten €10,- 🚨</button>
 <input type="hidden" id="akkoord" value="0">
 
   <button onclick="berekenRit()" id="btnBereken">🚖 Bereken ritprijs 🚖</button>
@@ -874,7 +875,7 @@ button {
 'use strict';
 let spoedToeslag = 0;
 let huisdierenToeslag = 5; // Kosten voor huisdieren
-let geplandeRitToeslag = 17.50; // Kosten voor geplande rit
+let geplandeRitToeslag = 7.50; // Kosten voor geplande rit
 let adminData = {};
 const weatherApiKey = "9d1afafb80f94518850212856252004";
 
@@ -887,7 +888,7 @@ function toggleDatum() {
   const datumContainer = document.getElementById('datumContainer');
   const toggleBtn = document.getElementById('toggleDatumBtn');
   datumContainer.style.display = datumContainer.style.display === 'none' ? 'block' : 'none';
-  toggleBtn.innerText = datumContainer.style.display === 'none' ? "📅 Reserveren? Klik hier! €17.50,- 📅" : "➖ Verberg datum/tijd";
+  toggleBtn.innerText = datumContainer.style.display === 'none' ? "📅 Reserveren? Klik hier! €7.50,- 📅" : "➖ Verberg datum/tijd";
 }
 
 async function gebruikLocatie() {
@@ -981,8 +982,22 @@ function berekenRitprijs(afstand, duur, weer) {
 
   const prijsNaToeslagen = basis * weerToeslag * drukte * nacht;
 
+  // Bepaal uitleg van het basistarief
+  let basisUitleg = '';
+  if (afstand <= 3) basisUitleg = 'Afstand ≤ 3 km: vast tarief €10';
+  else if (afstand <= 4) basisUitleg = 'Afstand ≤ 4 km: vast tarief €11,50';
+  else if (afstand <= 5) basisUitleg = 'Afstand ≤ 5 km: vast tarief €13';
+  else if (afstand <= 6) basisUitleg = 'Afstand ≤ 6 km: vast tarief €14,50';
+  else if (afstand <= 7) basisUitleg = 'Afstand ≤ 7 km: vast tarief €16';
+  else if (afstand <= 8) basisUitleg = 'Afstand ≤ 8 km: vast tarief €17,50';
+  else if (afstand <= 9) basisUitleg = 'Afstand ≤ 9 km: vast tarief €19';
+  else basisUitleg = `Afstand > 9 km: 2,50 + (afstand × 1,50) + (duur × 0,50) = €${basis.toFixed(2)}`;
+
   adminData = {
     basis,
+    basisUitleg,
+    afstand,
+    duur,
     weerProcent: ((weerToeslag - 1) * 100).toFixed(0),
     weerEuro: (basis * (weerToeslag - 1)).toFixed(2),
     drukteProcent: ((drukte - 1) * 100).toFixed(0),
@@ -996,6 +1011,10 @@ function berekenRitprijs(afstand, duur, weer) {
 
   let totalePrijs = prijsNaToeslagen + spoedToeslag;
 
+  // Instaptarief altijd toevoegen
+  totalePrijs += 2.5;
+  adminData.instaptarief = 2.5;
+
   // Extra kosten voor huisdieren
   if (document.getElementById("huisdieren").value === "1") {
     totalePrijs += huisdierenToeslag;
@@ -1006,7 +1025,7 @@ function berekenRitprijs(afstand, duur, weer) {
 
   // Kosten voor geplande rit
   if (document.getElementById("tijdstip").value) {
-    totalePrijs += geplandeRitToeslag;
+    totalePrijs += 17.5;
     adminData.geplandeRit = "📅 LET OP GEPLANDE RIT 📅";
   } else {
     adminData.geplandeRit = "";
@@ -1091,7 +1110,7 @@ function toonAdmin() {
   const kortingscode = document.getElementById("kortingscode").value || "Geen";
   const huisdieren = document.getElementById("huisdieren").value === "1" ? "Ja +€5" : "Nee";
   const spoedrit = spoedToeslag > 0 ? "Ja +€10" : "Nee";
-  const geplandeRit = document.getElementById("tijdstip").value ? "Ja +€17,50" : "Nee";
+  const geplandeRit = document.getElementById("tijdstip").value ? "Ja +€7,50" : "Nee";
   const opmerkingen = document.getElementById("opmerkingen").value || "Geen";
 
   const huisdierenToeslagLine = `- Huisdieren toeslag: +€${document.getElementById("huisdieren").value === "1" ? "5,00" : "0,00"}`;
@@ -1110,7 +1129,10 @@ function toonAdmin() {
 📅 Geplande rit: ${geplandeRit}
 
 📈 BEREKENINGEN:
-- Basisprijs: €${adminData.basis}
+- Afstand: ${adminData.afstand.toFixed(2)} km
+- Duur: ${adminData.duur.toFixed(0)} min
+- Basistarief: €${adminData.basis} (${adminData.basisUitleg})
+- Instaptarief: €2,50
 - Weer: ${adminData.weerProcent}% toeslag (+€${adminData.weerEuro})
 - Drukte: ${adminData.drukteProcent}% toeslag (+€${adminData.drukteEuro})
 - Nacht: ${adminData.nachtProcent}% toeslag (+€${adminData.nachtEuro})
@@ -1119,14 +1141,7 @@ ${spoedToeslagLine}
 ${geplandeRitToeslagLine}
 - Korting: ${adminData.korting}% (-€${adminData.kortingBedrag})
 
-💶 Ritprijs Totaal: €${(adminData.basis * 
-  (1 + parseFloat(adminData.weerProcent)/100) * 
-  (1 + parseFloat(adminData.drukteProcent)/100) * 
-  (1 + parseFloat(adminData.nachtProcent)/100) + 
-  parseFloat(adminData.spoed) +
-  (document.getElementById("huisdieren").value === "1" ? 5 : 0) +
-  (document.getElementById("tijdstip").value ? 17.5 : 0) - 
-  parseFloat(adminData.kortingBedrag)).toFixed(2)}`;
+💶 FINALE RITPRIJS: €${ritprijs.toFixed(2)}`;
 
   document.getElementById("adminSpecificaties").innerText = spec;
   document.getElementById("adminSpecificaties").style.display = "block";
@@ -1172,6 +1187,31 @@ function toggleAkkoord() {
     btn.style.color = "";
   }
 }
+// --- Boekingsopslag met rit-id ---
+function boekRit() {
+  // Gegevens ophalen
+  const ophaaladres = document.getElementById("ophaaladres").value;
+  const afzetadres = document.getElementById("afzetadres").value;
+  const tijdstip = document.getElementById("tijdstip").value || "Direct";
+  const betaalmethode = document.getElementById("betaalmethode").value;
+  const kortingscode = document.getElementById("kortingscode").value || "Geen";
+  const huisdieren = document.getElementById("huisdieren") ? (document.getElementById("huisdieren").value === "1" ? "Ja +€5" : "Nee") : "Nee";
+  const spoedrit = typeof spoedToeslag !== 'undefined' && spoedToeslag > 0 ? "Ja +€10" : "Nee";
+  const geplandeRit = document.getElementById("tijdstip") && document.getElementById("tijdstip").value ? "Ja +€7,50" : "Nee";
+  const opmerkingen = document.getElementById("opmerkingen") ? (document.getElementById("opmerkingen").value || "Geen") : "Geen";
+
+  // Unieke rit-id genereren (timestamp + random)
+  const ritId = 'RIT-' + Date.now() + '-' + Math.floor(Math.random() * 10000);
+
+  // Ritobject
+  const rit = { ritId, ophaaladres, afzetadres, tijdstip, betaalmethode, kortingscode, huisdieren, spoedrit, geplandeRit, opmerkingen };
+  // Huidige ritten ophalen en toevoegen
+  let ritten = [];
+  try { ritten = JSON.parse(localStorage.getItem('ritten')) || []; } catch {}
+  ritten.push(rit);
+  localStorage.setItem('ritten', JSON.stringify(ritten));
+}
+
 // --- Adres autocomplete ---
 async function zoekAdresSuggesties(inputElem, suggestieDivId) {
   const waarde = inputElem.value.trim();
