@@ -202,33 +202,52 @@
       </tbody>
     </table>
   </div>
+  <style>
+    .terugknop-admin {
+      display: inline-block;
+      margin: 24px 0 18px 0;
+      padding: 0.7em 1.6em;
+      background: linear-gradient(90deg, #fffbe6 0%, #ffd700 70%, #bfa100 100%);
+      color: #222;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      box-shadow: 0 2px 16px #ffd70033, 0 1px 8px #fff2;
+      font-size: 1.13rem;
+      text-decoration: none;
+      transition: background 0.17s, box-shadow 0.17s, transform 0.11s;
+      cursor: pointer;
+      position: relative;
+    }
+    .terugknop-admin:hover, .terugknop-admin:focus {
+      background: linear-gradient(90deg, #fffbe6 10%, #ffd700 80%, #bfa100 100%);
+      box-shadow: 0 4px 24px #ffd70066;
+      color: #000;
+      transform: scale(1.04);
+      outline: none;
+    }
+    .admin-info {
+      color: #ffd700;
+      background: #232526;
+      border-radius: 8px;
+      padding: 0.7em 1.2em;
+      margin-bottom: 1.2em;
+      font-size: 1.05rem;
+      text-align: center;
+      box-shadow: 0 1px 6px #ffd70022;
+    }
+  </style>
+
+  <div class="admin-info">
+    Je bent ingelogd als <b>admin</b>. Hieronder zie je het overzicht van alle geboekte ritten.<br>
+    <a href="index.html" class="terugknop-admin">← Terug naar boekingspagina</a>
+  </div>
+
   <script>
-    // --- Admin login & ritten tonen ---
-    const ADMIN_GEBRUIKERSNAAM = "Fouad";
-    const ADMIN_WACHTWOORD = "Ahllen2@";
-
-    // Loginformulier afhandeling
-    document.getElementById('loginForm').onsubmit = function(e) {
-      e.preventDefault();
-      const gebruikersnaam = document.getElementById('gebruikersnaam').value.trim();
-      const wachtwoord = document.getElementById('wachtwoord').value;
-      if (gebruikersnaam === ADMIN_GEBRUIKERSNAAM && wachtwoord === ADMIN_WACHTWOORD) {
-        document.getElementById('loginContainer').style.display = 'none';
-        document.getElementById('adminContent').style.display = 'block';
-        laadRitten();
-      } else {
-        document.getElementById('loginFout').style.display = 'block';
-      }
+    // --- Alleen ritten tonen, geen frontend-login meer ---
+    window.onload = function() {
+      laadRitten();
     };
-
-    // Enter key support voor snel inloggen
-    ['gebruikersnaam','wachtwoord'].forEach(id => {
-      document.getElementById(id).addEventListener('keydown', function(e) {
-        if (e.key === 'Enter') document.getElementById('loginForm').dispatchEvent(new Event('submit'));
-      });
-    });
-
-    // Toon ritten uit LocalStorage in de admin tabel
     function laadRitten() {
       const ritten = JSON.parse(localStorage.getItem('ritten') || '[]');
       const tbody = document.getElementById('rittenBody');
