@@ -15,7 +15,7 @@
     input:focus { border:2px solid #ffd700; box-shadow:0 0 10px #ffd70099; background:linear-gradient(120deg,#232526 40%,#ffd70022); color:#fff; }
     button { background:linear-gradient(90deg,#fffbe6 0%,#ffd700 70%,#bfa100 100%); color:#222; font-weight:bold; border:none; border-radius:8px; padding:0.7rem; cursor:pointer; transition:all 0.2s; }
     button:hover { filter:brightness(1.1); }
-    table { width:100%; border-collapse:collapse; margin-top:1.5rem; background:linear-gradient(120deg,#232526 60%,#191919 100%); color:#ffd700; border-radius:8px; overflow:hidden; }
+    table { width:100%; border-collapse:collapse; margin:1.5rem auto; background:linear-gradient(120deg,#232526 60%,#191919 100%); color:#ffd700; border-radius:8px; overflow:hidden; }
     th, td { border:1px solid #ffd70055; padding:0.5rem; text-align:left; }
     th { background:linear-gradient(90deg,#fffbe6 0%,#ffd700 100%); color:#191919; }
     tr:nth-child(even) { background:#232526; }
@@ -95,7 +95,7 @@
         tb.innerHTML = '<tr><td colspan="10" style="text-align:center;color:#888;">Nog geen ritten geboekt.</td></tr>';
         return;
       }
-      ritten.slice().reverse().forEach(r => {
+      ritten.slice().reverse().forEach((r, idx) => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
           <td>${r.ritId||r.ritID||''}</td>
@@ -107,9 +107,12 @@
           <td>${r.huisdieren||''}</td>
           <td>${r.spoedrit||r.spoed||''}</td>
           <td>${r.geplandeRit||''}</td>
-          <td><button onclick="alert('Details: '+ JSON.stringify(r,null,2))">Details</button></td>
+          <td><button type="button" class="detail-btn">Details</button></td>
         `;
         tb.appendChild(tr);
+        tr.querySelector('.detail-btn').addEventListener('click', () => {
+          alert('Details: ' + JSON.stringify(r, null, 2));
+        });
       });
     }
   </script>
