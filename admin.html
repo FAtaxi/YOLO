@@ -64,15 +64,20 @@
 
     document.getElementById('loginForm').onsubmit = async function(e) {
       e.preventDefault();
-      const pw = document.getElementById('wachtwoord').value;
+      const raw = document.getElementById('wachtwoord').value;
+      const pw = raw.trim();
+      console.log('Password raw:', raw, 'trimmed:', pw);
       const hash = await sha256(pw);
-      console.log('Login hash:', hash); // Added logging
+      console.log('Expected hash:', ADMIN_WACHTWOORD_HASH, 'Computed hash:', hash);
+      const errElm = document.getElementById('loginFout');
       if (hash === ADMIN_WACHTWOORD_HASH) {
+        errElm.style.display = 'none';
         document.getElementById('loginContainer').style.display = 'none';
         document.getElementById('adminContent').style.display = 'block';
         laadRitten();
       } else {
-        document.getElementById('loginFout').style.display = 'block';
+        errElm.style.display = 'block';
+        errElm.textContent = `Onjuist wachtwoord. Hash is ${hash}`;
       }
     };
 
