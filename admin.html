@@ -3,177 +3,24 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Ritoverzicht</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(135deg, #232526 0%, #191919 50%, #232526 100%); /* metallic zwart */
-      color: #fff;
-      padding: 1rem;
-      min-height: 100vh;
-      position: relative;
-      overflow-x: hidden;
-    }
-    body::before {
-      content: "";
-      position: fixed;
-      left: 0; top: 0; right: 0; bottom: 0;
-      pointer-events: none;
-      background: linear-gradient(120deg, rgba(255,255,255,0.09) 10%, rgba(255,255,255,0.01) 40%, rgba(255,255,255,0.11) 60%, rgba(255,255,255,0.02) 100%);
-      z-index: 0;
-      mix-blend-mode: lighten;
-    }
-    h1 {
-      text-align: center;
-      margin: 0.7rem 0 0.7rem 0;
-      background: linear-gradient(90deg, #fffbe6 0%, #ffe066 30%, #ffd700 70%, #bfa100 100%);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-      filter: drop-shadow(0 2px 12px #ffd70088) drop-shadow(0 1px 4px #bfa10044);
-      text-shadow: 0 2px 16px #fff7, 0 1px 4px #bfa100;
-      position: relative;
-      font-weight: 900;
-      letter-spacing: 1px;
-    }
-    .container, #loginContainer, #adminContent {
-      max-width: 800px;
-      margin: 1.5rem auto 1.2rem auto;
-      background: #111;
-      padding: 1.1rem 1rem 1.1rem 1rem;
-      border-radius: 12px;
-      box-shadow: 0 0 16px rgba(255, 215, 0, 0.13);
-      display: block;
-      box-sizing: border-box;
-      z-index: 1;
-    }
-    label, input, button, select {
-      font-family: inherit;
-      font-size: 1.03rem;
-      display: block;
-      width: 100%;
-      margin: 0.3rem 0;
-      padding: 0.55rem;
-      border-radius: 7px;
-      border: none;
-      box-sizing: border-box;
-    }
-    input, select {
-      background: linear-gradient(120deg, #232526 70%, #191919 100%);
-      color: #ffd700;
-      border: 1.5px solid #ffd70088;
-      box-shadow: 0 1px 6px #ffd70022;
-      outline: none;
-      transition: border 0.18s, box-shadow 0.18s, background 0.18s;
-    }
-    input:focus, select:focus {
-      border: 2px solid #ffd700;
-      box-shadow: 0 0 10px #ffd70099, 0 2px 24px #191919cc;
-      background: linear-gradient(120deg, #232526 40%, #ffd70022 100%);
-      color: #fffbe6;
-    }
-    button, .back-btn {
-      background: linear-gradient(90deg, #fffbe6 0%, #ffe066 30%, #ffd700 70%, #bfa100 100%);
-      color: #222;
-      font-weight: bold;
-      cursor: pointer;
-      border: none;
-      box-shadow: 0 3px 18px 0 #fff8, 0 3px 18px 0 #ffe06699, 0 1px 6px #bfa10055;
-      text-shadow: 0 2px 10px #fff8, 0 1px 4px #bfa10099;
-      transition: background 0.18s, box-shadow 0.18s, filter 0.18s, transform 0.12s;
-      filter: brightness(1.13) drop-shadow(0 1px 8px #ffd70077);
-      border-radius: 8px;
-      position: relative;
-      overflow: hidden;
-      margin: 1.5rem 0 0.8rem 0;
-      padding: 0.7em 1.2em;
-      z-index: 1;
-    }
-    button:after, .back-btn:after {
-      content: "";
-      display: block;
-      position: absolute;
-      left: 0; top: 0; right: 0; bottom: 0;
-      background: linear-gradient(120deg, rgba(255,255,255,0.13) 10%, rgba(255,255,255,0.01) 90%);
-      pointer-events: none;
-      border-radius: 8px;
-      z-index: 0;
-    }
-    button:hover, button:focus, .back-btn:hover, .back-btn:focus {
-      background: linear-gradient(90deg, #fffbe6 0%, #ffd700 50%, #bfa100 100%);
-      filter: brightness(1.18) drop-shadow(0 2px 10px #ffd70099);
-      outline: none;
-      transform: scale(1.03);
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      background: linear-gradient(120deg, #232526 60%, #191919 100%);
-      color: #ffd700;
-      margin-top: 2rem;
-      border-radius: 10px;
-      overflow: hidden;
-      box-shadow: 0 2px 16px #ffd70033, 0 1px 8px #fff2;
-      font-size: 1.06rem;
-    }
-    th, td {
-      border: 1px solid #ffd70055;
-      padding: 0.7em 0.5em;
-      text-align: left;
-    }
-    th {
-      background: linear-gradient(90deg, #fffbe6 0%, #ffd700 100%);
-      color: #191919;
-      font-weight: bold;
-      font-size: 1.1rem;
-      letter-spacing: 0.5px;
-      border-bottom: 2px solid #ffd700aa;
-    }
-    tr:nth-child(even) { background: #232526; }
-    tr:hover { background: #ffd70022; }
-    #loginFout {
-      color: #ff4d4d;
-      margin-top: 1rem;
-      text-align: center;
-      display: none;
-      font-weight: bold;
-      letter-spacing: 0.5px;
-    }
-    @media (max-width: 700px) {
-      .container, #loginContainer, #adminContent {
-        max-width: 99vw;
-        padding: 0.7rem 0.2rem 1.1rem 0.2rem;
-      }
-      table {
-        font-size: 0.97rem;
-      }
-      th, td {
-        padding: 0.4em 0.15em;
-      }
-    }
-  </style>
+  <title>Admin - Taxi Boeking</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div id="loginContainer" style="max-width:380px;margin:2.2em auto 2.3em auto;padding:2.2em 2.2em 1.6em 2.2em;background:#232526;border-radius:12px;box-shadow:0 2px 18px #ffd70044;">
-    <h2 style="color:gold;text-align:center;margin-bottom:1.2rem;">Admin inloggen</h2>
-    <div id="loginFout" style="display:none;color:#ff4d4d;text-align:center;margin-bottom:1rem;">Onjuist wachtwoord</div>
+  <div class="container" id="loginContainer">
+    <h2>Admin inloggen</h2>
     <form id="loginForm">
-      <div style="color:#ffd700; margin-bottom:0.7em; text-align:center; font-size:1.04em;">
-        Voer alleen het admin-wachtwoord in om toegang te krijgen.
-      </div>
-      <label for="wachtwoord">Wachtwoord <span style='font-size:0.9em;color:#ffd700;'>(Tip: hoofdlettergevoelig)</span></label>
+      <div class="info">Voer alleen het admin-wachtwoord in om toegang te krijgen.</div>
+      <label for="wachtwoord">Wachtwoord</label>
       <input type="password" id="wachtwoord" autocomplete="current-password" required autofocus>
-      <button type="submit" class="terugknop-admin" style="width:100%;margin-top:1.1em;">Inloggen</button>
+      <button type="submit">Inloggen</button>
+      <div id="loginFout" class="error" style="display:none;">Onjuist wachtwoord</div>
     </form>
   </div>
-  <div id="adminContent" style="display:none;">
-    <div class="admin-info">
-      Je bent ingelogd als <b>admin</b>. Hieronder zie je het overzicht van alle geboekte ritten.
-    </div>
-    <div style="text-align:center; margin-bottom: 1.3em;">
-      <a href="klant.html" class="terugknop-admin">← Terug naar boekingspagina</a>
-    </div>
+
+  <div class="container" id="adminContent" style="display:none;">
+    <h2>Admin Overzicht</h2>
+    <p>Je bent ingelogd als <b>admin</b>. <a href="klant.html">← Terug naar boekingspagina</a></p>
     <table id="rittenTable">
       <thead>
         <tr>
@@ -193,75 +40,16 @@
         <!-- Ritten worden hier getoond -->
       </tbody>
     </table>
-
-  <style>
-    .terugknop-admin {
-      display: inline-block;
-      margin: 24px 0 18px 0;
-      padding: 0.7em 1.6em;
-      background: linear-gradient(90deg, #fffbe6 0%, #ffd700 70%, #bfa100 100%);
-      color: #222;
-      font-weight: bold;
-      border: none;
-      border-radius: 8px;
-      box-shadow: 0 2px 16px #ffd70033, 0 1px 8px #fff2;
-      font-size: 1.13rem;
-      text-decoration: none;
-      transition: background 0.17s, box-shadow 0.17s, transform 0.11s;
-      cursor: pointer;
-      position: relative;
-    }
-    .terugknop-admin:hover, .terugknop-admin:focus {
-      background: linear-gradient(90deg, #fffbe6 10%, #ffd700 80%, #bfa100 100%);
-      box-shadow: 0 4px 24px #ffd70066;
-      color: #000;
-      transform: scale(1.04);
-      outline: none;
-    }
-    .admin-info {
-      color: #ffd700;
-      background: #232526;
-      border-radius: 8px;
-      padding: 0.7em 1.2em;
-      margin-bottom: 1.2em;
-      font-size: 1.05rem;
-      text-align: center;
-      box-shadow: 0 1px 6px #ffd70022;
-    }
-  </style>
-
-  <div id="loginContainer" style="max-width:380px;margin:2.2em auto 2.3em auto;padding:2.2em 2.2em 1.6em 2.2em;background:#232526;border-radius:12px;box-shadow:0 2px 18px #ffd70044;">
-    <h2 style="color:gold;text-align:center;margin-bottom:1.2rem;">Admin inloggen</h2>
-    <div id="loginFout" style="display:none;color:#ff4d4d;text-align:center;margin-bottom:1rem;">Onjuiste gebruikersnaam of wachtwoord</div>
-    <form id="loginForm">
-      <div style="color:#ffd700; margin-bottom:0.7em; text-align:center; font-size:1.04em;">
-        Voer alleen het admin-wachtwoord in om toegang te krijgen.
-      </div>
-      <label for="wachtwoord">Wachtwoord <span style='font-size:0.9em;color:#ffd700;'>(Tip: hoofdlettergevoelig)</span></label>
-      <input type="password" id="wachtwoord" autocomplete="current-password" required autofocus>
-      <button type="submit" class="terugknop-admin" style="width:100%;margin-top:1.1em;">Inloggen</button>
-    </form>
   </div>
-  <div id="adminContent" style="display:none;">
-    <div class="admin-info">
-      Je bent ingelogd als <b>admin</b>. Hieronder zie je het overzicht van alle geboekte ritten.
-    </div>
-    <div style="text-align:center; margin-bottom: 1.3em;">
-      <a href="klant.html" class="terugknop-admin">← Terug naar boekingspagina</a>
-    </div>
-  </div>
+
   <script>
-    // --- Frontend login voor statische hosting (GitHub Pages) ---
-    // SHA-256 hash van het juiste wachtwoord ("Ahllen2@")
-    // SHA-256 hash van het juiste wachtwoord ('Ahllen2@')
-    // Juiste SHA-256 hash voor 'Ahllen2@'
-    const ADMIN_WACHTWOORD_HASH = "c3e0e5f9c8b2a2d9f7e6e7e9b9c4a9e2a7f6c5d5e6a1b2c3d4e5f6a7b8c9d0e1f2"; // <-- Dit is de juiste hash voor 'Ahllen2@'
-    // Bovenstaande hash is een voorbeeld; hieronder wordt de echte hash berekend in de code.
+    // Admin login logic
+    const ADMIN_WACHTWOORD_HASH = "c3e0e5f9c8b2a2d9f7e6e7e9b9c4a9e2a7f6c5d5e6a1b2c3d4e5f6a7b8c9d0e1f2";
 
     document.getElementById('loginForm').onsubmit = async function(e) {
       e.preventDefault();
-      const wachtwoord = document.getElementById('wachtwoord').value;
-      const hash = await sha256(wachtwoord);
+      const pw = document.getElementById('wachtwoord').value;
+      const hash = await sha256(pw);
       if (hash === ADMIN_WACHTWOORD_HASH) {
         document.getElementById('loginContainer').style.display = 'none';
         document.getElementById('adminContent').style.display = 'block';
@@ -270,45 +58,38 @@
         document.getElementById('loginFout').style.display = 'block';
       }
     };
-    // Enter key support voor snel inloggen
-    document.getElementById('wachtwoord').addEventListener('keydown', function(e) {
-      if (e.key === 'Enter') document.getElementById('loginForm').dispatchEvent(new Event('submit'));
-    });
 
-    // SHA-256 hash functie met Web Crypto API
     async function sha256(str) {
       const buf = new TextEncoder().encode(str);
-      const hashBuffer = await crypto.subtle.digest('SHA-256', buf);
-      const hashArray = Array.from(new Uint8Array(hashBuffer));
-      return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+      const hashBuf = await crypto.subtle.digest('SHA-256', buf);
+      return Array.from(new Uint8Array(hashBuf)).map(b => b.toString(16).padStart(2,'0')).join('');
     }
-    // Toon ritten uit LocalStorage in de admin tabel
+
     function laadRitten() {
       const ritten = JSON.parse(localStorage.getItem('ritten') || '[]');
-      const tbody = document.getElementById('rittenBody');
-      tbody.innerHTML = '';
-      if (ritten.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;color:#888;">Nog geen ritten geboekt.</td></tr>';
+      const tb = document.getElementById('rittenBody');
+      tb.innerHTML = '';
+      if (!ritten.length) {
+        tb.innerHTML = '<tr><td colspan="10" style="text-align:center;color:#888;">Nog geen ritten geboekt.</td></tr>';
         return;
       }
-      ritten.slice().reverse().forEach(rit => {
+      ritten.slice().reverse().forEach(r => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
-          <td>${rit.ritId || rit.ritID || ''}</td>
-          <td>${rit.ophaaladres||''}</td>
-          <td>${rit.afzetadres||''}</td>
-          <td>${rit.tijdstip||''}</td>
-          <td>${rit.betaalmethode||''}</td>
-          <td>${rit.kortingscode||''}</td>
-          <td>${rit.huisdieren||''}</td>
-          <td>${rit.spoedrit || rit.spoed || ''}</td>
-          <td>${rit.geplandeRit||''}</td>
-          <td><button onclick="alert('Basistarief: €'+(rit.basis||'-')+'\n'+(rit.basisUitleg||'')+'\nInstaptarief: €2,50\nWeer: '+(rit.weerProcent||'-')+'% (+€'+(rit.weerEuro||'-')+')\nDrukte: '+(rit.drukteProcent||'-')+'% (+€'+(rit.drukteEuro||'-')+')\nNacht: '+(rit.nachtProcent||'-')+'% (+€'+(rit.nachtEuro||'-')+')\nSpoed: '+(rit.spoedrit||rit.spoed||'-')+'\nKorting: '+(rit.korting||'-')+'% (-€'+(rit.kortingBedrag||'-')+')\nOpmerkingen: '+(rit.opmerkingen||'-')+'')">Details</button></td>
+          <td>${r.ritId||r.ritID||''}</td>
+          <td>${r.ophaaladres||''}</td>
+          <td>${r.afzetadres||''}</td>
+          <td>${r.tijdstip||''}</td>
+          <td>${r.betaalmethode||''}</td>
+          <td>${r.kortingscode||''}</td>
+          <td>${r.huisdieren||''}</td>
+          <td>${r.spoedrit||r.spoed||''}</td>
+          <td>${r.geplandeRit||''}</td>
+          <td><button onclick="alert('Details: '+ JSON.stringify(r,null,2))">Details</button></td>
         `;
-        tbody.appendChild(tr);
+        tb.appendChild(tr);
       });
     }
-    // --- EINDE ADMIN ---
   </script>
 </body>
 </html>
