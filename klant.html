@@ -1,21 +1,20 @@
 <!DOCTYPE html>
 <html lang="nl">
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
- 
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
   <title>FA Taxi Boeking</title>
   <style>
+    /* --- BASIS STYLING --- */
     body {
   margin: 0;
   font-family: 'Segoe UI', sans-serif;
-  background: linear-gradient(135deg, #232526 0%, #191919 50%, #232526 100%); /* metallic zwart */
+  background: linear-gradient(135deg, #232526 0%, #191919 50%, #232526 100%);
   color: #fff;
   padding: 1rem;
-  position: relative;
   min-height: 100vh;
   overflow-x: hidden;
+  position: relative;
 }
 body::before {
   content: "";
@@ -26,16 +25,9 @@ body::before {
   z-index: 0;
   mix-blend-mode: lighten;
 }
-
-body::before {
-  content: "";
-  position: fixed;
-  left: 0; top: 0; right: 0; bottom: 0;
-  pointer-events: none;
-  background: linear-gradient(120deg, rgba(255,255,255,0.09) 10%, rgba(255,255,255,0.01) 40%, rgba(255,255,255,0.11) 60%, rgba(255,255,255,0.02) 100%);
-  z-index: 0;
+/* Dubbele body::before verwijderd */
 }
-    h1 {
+h1 {
   text-align: center;
   margin: 0.7rem 0 0.7rem 0;
   background: linear-gradient(90deg, #fffbe6 0%, #ffe066 30%, #ffd700 70%, #bfa100 100%);
@@ -48,46 +40,47 @@ body::before {
   font-weight: 900;
   letter-spacing: 1px;
 }
-    h1::after {
-      content: "";
-      display: block;
-      position: absolute;
-      left: 30%; top: 20%;
-      width: 40%; height: 35%;
-      background: linear-gradient(120deg, rgba(255,255,255,0.32) 0%, rgba(255,255,255,0.01) 80%);
-      pointer-events: none;
-      border-radius: 40%;
-      z-index: 1;
-    }
-    .container {
+h1::after {
+  content: "";
+  display: block;
+  position: absolute;
+  left: 30%; top: 20%;
+  width: 40%; height: 35%;
+  background: linear-gradient(120deg, rgba(255,255,255,0.32) 0%, rgba(255,255,255,0.01) 80%);
+  pointer-events: none;
+  border-radius: 40%;
+  z-index: 1;
+}
+/* Dubbele h1-styling verwijderd */
+.container {
   max-width: 420px;
   margin: 1rem auto 0.7rem auto;
   background: #111;
   padding: 1.1rem 1rem 1.1rem 1rem;
   border-radius: 10px;
   box-shadow: 0 0 10px rgba(255, 215, 0, 0.18);
-  display: block;
   box-sizing: border-box;
 }
+/* Dubbele .container-styling verwijderd */
     input, button, label, select, textarea {
-  font-family: inherit;
-
-  display: block;
-  width: 100%;
-  margin: 0.3rem 0;
-  padding: 0.55rem;
-  border: none;
-  border-radius: 5px;
-  font-size: 0.97rem;
-}
+      font-family: inherit;
+      display: block;
+      width: 100%;
+      margin: 0.3rem 0;
+      padding: 0.55rem;
+      border: none;
+      border-radius: 5px;
+      font-size: 0.97rem;
+    }
     input, select, textarea {
-  background: linear-gradient(120deg, #232526 70%, #191919 100%);
-  color: #ffd700;
-  border: 1.5px solid #ffd70088;
-  box-shadow: 0 1px 6px #ffd70022;
-  outline: none;
-  transition: border 0.18s, box-shadow 0.18s, background 0.18s;
-}
+      background: linear-gradient(120deg, #232526 70%, #191919 100%);
+      color: #ffd700;
+      border: 1.5px solid #ffd70088;
+      box-shadow: 0 1px 6px #ffd70022;
+      outline: none;
+      transition: border 0.18s, box-shadow 0.18s, background 0.18s;
+    }
+    /* Dubbele input/select/textarea styling verwijderd */
 input:focus, select:focus, textarea:focus {
   border: 2px solid #ffd700;
   box-shadow: 0 0 10px #ffd70099, 0 2px 24px #191919cc;
@@ -782,7 +775,7 @@ button {
 <body>
 
 <h1>FA TAXI Service</h1>
-<h1>TAXI 4 Personen</h1>
+<h2 style="text-align:center; margin-top:-0.7rem; color:gold; font-size:1.1rem; letter-spacing:1px;">TAXI 4 Personen</h2>
 <div class="taxi-animation-container">
   <svg class="taxi-svg" viewBox="0 0 220 88" width="220" height="88">
     <!-- Rookpluimpjes -->
@@ -1223,21 +1216,23 @@ function toggleAkkoord() {
 // --- Boekingsopslag met rit-id ---
 function boekRit() {
   // Gegevens ophalen
-  const ophaaladres = document.getElementById("ophaaladres").value;
-  const afzetadres = document.getElementById("afzetadres").value;
-  const tijdstip = document.getElementById("tijdstip").value || "On-Demand";
-  const betaalmethode = document.getElementById("betaalmethode").value;
-  const kortingscode = document.getElementById("kortingscode").value || "Geen";
-  const huisdieren = document.getElementById("huisdieren") ? (document.getElementById("huisdieren").value === "1" ? "Ja +€5" : "Nee") : "Nee";
-  const spoedrit = typeof spoedToeslag !== 'undefined' && spoedToeslag > 0 ? "Ja +€10" : "Nee";
-  const geplandeRit = document.getElementById("tijdstip") && document.getElementById("tijdstip").value ? "Ja +€17,50" : "Nee";
-  const opmerkingen = document.getElementById("opmerkingen") ? (document.getElementById("opmerkingen").value || "Geen") : "Geen";
-
   // Unieke rit-id genereren (timestamp + random)
   const ritId = 'RIT-' + Date.now() + '-' + Math.floor(Math.random() * 10000);
 
   // Ritobject
-  const rit = { ritId, ophaaladres, afzetadres, tijdstip, betaalmethode, kortingscode, huisdieren, spoedrit, geplandeRit, opmerkingen };
+  const rit = {
+    ritId,
+    ophaaladres,
+    afzetadres,
+    tijdstip,
+    betaalmethode,
+    kortingscode,
+    huisdieren: document.getElementById("huisdieren").value === "1" ? "Ja +€5" : "Nee",
+    spoedrit: typeof spoedToeslag !== 'undefined' && spoedToeslag > 0 ? "Ja +€10" : "Nee",
+    geplandeRit: document.getElementById("tijdstip").value ? "Ja +€17,50" : "Nee",
+    opmerkingen: document.getElementById("opmerkingen").value || "Geen"
+  };
+
   // Huidige ritten ophalen en toevoegen
   let ritten = [];
   try { ritten = JSON.parse(localStorage.getItem('ritten')) || []; } catch {}
