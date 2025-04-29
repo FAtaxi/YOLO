@@ -795,6 +795,7 @@ button {
   <img src="https://upload.wikimedia.org/wikipedia/commons/b/ba/Flag_of_Germany.svg" onclick="switchLanguage('de')" title="Deutsch" style="width:30px; height:auto; cursor:pointer;">
   <img src="https://upload.wikimedia.org/wikipedia/commons/1/12/Flag_of_Poland.svg" onclick="switchLanguage('pl')" title="Polski" style="width:30px; height:auto; cursor:pointer;">
   <img src="https://upload.wikimedia.org/wikipedia/en/a/ae/Flag_of_the_United_Kingdom.svg" onclick="switchLanguage('en')" title="English" style="width:30px; height:auto; cursor:pointer;">
+  <img src="https://upload.wikimedia.org/wikipedia/commons/5/5c/Flag_of_Portugal.svg" onclick="switchLanguage('pt')" title="Português" style="width:30px; height:auto; cursor:pointer;">
 </div>
 
 <h1>FA TAXI Service</h1>
@@ -1331,10 +1332,12 @@ window.addEventListener('click', e => {
 document.addEventListener('DOMContentLoaded', ()=>{
   const lang = new URLSearchParams(location.search).get('lang') || 'nl';
   const dict = {
-    nl: { ophaal:'📍 OPHAAL ADRES 📍', afzet:'📍 AFZET ADRES 📍', reserveren:'📅 Reserveren? €17.50,- 📅', huisdieren:'🐶 Huisdieren €5,- 🐶', spoed:'🚀 Spoedrit €10 🚀', akkoord:'🚨 Annuleringskosten €10,- 🚨', bereken:'🚖 Bereken ritprijs 🚖', ph:'Bijv. Stationsplein 1, Amsterdam', dh:'Bijv. Damrak 50, Amsterdam' },
-    en: { ophaal:'📍 Pickup Address 📍', afzet:'📍 Drop-off Address 📍', reserveren:'📅 Reserve? $17.50,- 📅', huisdieren:'🐶 Pets $5,- 🐶', spoed:'🚀 Rush $10 🚀', akkoord:'🚨 Cancel fee $10,- 🚨', bereken:'🚖 Calculate Fare 🚖', ph:'e.g. Central Station 1, Amsterdam', dh:'e.g. Damrak 50, Amsterdam' },
-    es: { ophaal:'📍 Dirección de recogida 📍', afzet:'📍 Dirección de bajada 📍', reserveren:'📅 Reservar? €17.50,- 📅', huisdieren:'🐶 Mascotas €5,- 🐶', spoed:'🚀 Servicio urgente €10 🚀', akkoord:'🚨 Cargo de cancelación €10,- 🚨', bereken:'🚖 Calcular tarifa 🚖', ph:'p.ej. Stationsplein 1, Ámsterdam', dh:'p.ej. Damrak 50, Ámsterdam' }
-    // add other languages...
+    nl: { ophaal:'📍 OPHAAL ADRES 📍', afzet:'📍 AFZET ADRES 📍', reserveren:'📅 Reserveren? €17,50 📅', huisdieren:'🐶 Huisdieren €5,- 🐶', spoed:'🚀 Spoedrit €10 🚀', akkoord:'🚨 Annuleringskosten €10,- 🚨', bereken:'🚖 Bereken ritprijs 🚖', ph:'Bijv. Stationsplein 1, Amsterdam', dh:'Bijv. Damrak 50, Amsterdam' },
+    en: { ophaal:'📍 Pickup Address 📍', afzet:'📍 Drop-off Address 📍', reserveren:'📅 Reserve? $17,50 📅', huisdieren:'🐶 Pets $5,- 🐶', spoed:'🚀 Rush $10 🚀', akkoord:'🚨 Cancel fee $10,- 🚨', bereken:'🚖 Calculate Fare 🚖', ph:'e.g. Central Station 1, Amsterdam', dh:'e.g. Damrak 50, Amsterdam' },
+    es: { ophaal:'📍 Dirección de recogida 📍', afzet:'📍 Dirección de entrega 📍', reserveren:'📅 Reservar? €17,50 📅', huisdieren:'🐶 Mascotas €5,- 🐶', spoed:'🚀 Servicio urgente €10 🚀', akkoord:'🚨 Cargo de cancelación €10,- 🚨', bereken:'🚖 Calcular tarifa 🚖', ph:'p.ej. Stationsplein 1, Ámsterdam', dh:'p.ej. Damrak 50, Ámsterdam' },
+    ar: { ophaal:'📍 عنوان الانطلاق 📍', afzet:'📍 عنوان الوصول 📍', reserveren:'📅 حجز؟ €17,50 📅', huisdieren:'🐶 حيوانات أليفة €5,- 🐶', spoed:'🚀 خدمة عاجلة €10 🚀', akkoord:'🚨 رسوم الإلغاء €10,- 🚨', bereken:'🚖 احسب الأجرة 🚖', ph:'مثال: Stationsplein 1, Amsterdam', dh:'مثال: Damrak 50, Amsterdam' },
+    pt: { ophaal:'📍 Endereço de partida 📍', afzet:'📍 Endereço de chegada 📍', reserveren:'📅 Reservar? €17,50 📅', huisdieren:'🐶 Animais €5,- 🐶', spoed:'🚀 Serviço urgente €10 🚀', akkoord:'🚨 Taxa de cancelamento €10,- 🚨', bereken:'🚖 Calcular tarifa 🚖', ph:'Ex: Stationsplein 1, Amsterdã', dh:'Ex: Damrak 50, Amsterdã' }
+
   };
   const t = dict[lang] || dict.nl;
   document.getElementById('labelOphaal').innerText = t.ophaal;
