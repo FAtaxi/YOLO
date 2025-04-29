@@ -303,6 +303,7 @@
   <script>
     document.addEventListener('DOMContentLoaded', ()=>{
       const lang = new URLSearchParams(location.search).get('lang') || 'nl';
+      console.log('Selected language for welcome:', lang);
       const dict = {
         nl: { taxiBtn:'🚖 TAXI 4 Personen 🚖', busBtn:'🚍 BUSJE XXL 6 Personen 🚍' },
         en: { taxiBtn:'🚖 Taxi 4 Persons 🚖', busBtn:'🚍 Van XXL 6 Persons 🚍' },
@@ -315,8 +316,11 @@
         de: { taxiBtn:'🚖 Taxi für 4 Personen 🚖', busBtn:'🚍 XXL Kleinbus für 6 Personen 🚍' },
         pl: { taxiBtn:'🚖 Taxi 4 Osoby 🚖', busBtn:'🚍 Van XXL 6 Osób 🚍' }
       };
+      console.log('Translation object:', dict[lang]);
       const t = dict[lang] || dict.nl;
+      console.log('Using translation:', t);
       document.getElementById('btnTaxi').innerText = t.taxiBtn;
+      console.log('btnTaxi text set to:', t.taxiBtn);
       document.getElementById('btnBus').innerText = t.busBtn;
     });
   </script>
