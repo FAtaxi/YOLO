@@ -307,3 +307,17 @@
         nl: { taxiBtn:'🚖 TAXI 4 Personen 🚖', busBtn:'🚍 BUSJE XXL 6 Personen 🚍' },
         en: { taxiBtn:'🚖 Taxi 4 Persons 🚖', busBtn:'🚍 Van XXL 6 Persons 🚍' },
         es: { taxiBtn:'🚖 Taxi 4 Personas 🚖', busBtn:'🚍 Furgoneta XXL 6 Personas 🚍' },
+        ar: { taxiBtn:'🚖 تاكسي 4 أشخاص 🚖', busBtn:'🚍 فان XXL 6 أشخاص 🚍' },
+        pt: { taxiBtn:'🚖 Táxi 4 Pessoas 🚖', busBtn:'🚍 Van XXL 6 Pessoas 🚍' },
+        tr: { taxiBtn:'🚖 4 Kişilik Taksi 🚖', busBtn:'🚍 XXL Minibüs 6 Kişilik 🚍' },
+        fr: { taxiBtn:'🚖 Taxi 4 Personnes 🚖', busBtn:'🚍 Van XXL 6 Personnes 🚍' },
+        it: { taxiBtn:'🚖 Taxi 4 Persone 🚖', busBtn:'🚍 Furgone XXL 6 Persone 🚍' },
+        de: { taxiBtn:'🚖 Taxi für 4 Personen 🚖', busBtn:'🚍 XXL Kleinbus für 6 Personen 🚍' },
+        pl: { taxiBtn:'🚖 Taxi 4 Osoby 🚖', busBtn:'🚍 Van XXL 6 Osób 🚍' }
+      };
+      const t = dict[lang] || dict.nl;
+      document.getElementById('btnTaxi').innerText = t.taxiBtn;
+      document.getElementById('btnBus').innerText = t.busBtn;
+    });
+  </script>
+</body>
