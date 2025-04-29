@@ -22,6 +22,7 @@
     tr:nth-child(even) { background:#232526; }
     tr:hover { background:#ffd70022; }
   </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
   <div class="container" id="loginContainer">
@@ -120,8 +121,41 @@
           <td><button type="button" class="detail-btn">Details</button></td>
         `;
         tb.appendChild(tr);
+        // Create hidden detail row
+        const detailTr = document.createElement('tr');
+        detailTr.classList.add('details-row');
+        detailTr.style.display = 'none';
+        const detailTd = document.createElement('td');
+        detailTd.colSpan = 10;
+        detailTd.style.background = '#191919';
+        detailTd.style.color = '#fff';
+        detailTd.style.fontFamily = 'monospace';
+        detailTd.style.padding = '0.5rem';
+        detailTd.innerText = JSON.stringify(r, null, 2) + '\n';
+        // Download PDF
+        const pdfBtn = document.createElement('button');
+        pdfBtn.textContent = 'Download PDF';
+        pdfBtn.style.margin = '0.5rem 0.5rem 0 0';
+        pdfBtn.addEventListener('click', () => {
+          const { jsPDF } = window.jspdf;
+          const doc = new jsPDF();
+          doc.text(JSON.stringify(r, null, 2), 10, 10);
+          doc.save(`rit-${r.ritId}.pdf`);
+        });
+        detailTd.appendChild(pdfBtn);
+        // Email PDF via server
+        const emailBtn = document.createElement('button');
+        emailBtn.textContent = 'Email PDF';
+        emailBtn.addEventListener('click', async () => {
+          await fetch('/email-rit', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(r) });
+          alert('E-mail verzonden');
+        });
+        detailTd.appendChild(emailBtn);
+        detailTr.appendChild(detailTd);
+        tb.appendChild(detailTr);
+        // Toggle detail row
         tr.querySelector('.detail-btn').addEventListener('click', () => {
-          alert('Details: ' + JSON.stringify(r, null, 2));
+          detailTr.style.display = detailTr.style.display === 'none' ? 'table-row' : 'none';
         });
       });
     }
