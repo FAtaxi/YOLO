@@ -810,7 +810,7 @@ button {
 <!-- Hoekknoppen -->
 <div style="position: fixed; top: 16px; left: 16px; z-index: 100;">
   <a href="admin.html" id="adminContainer" title="Beheerder" style="background:#111; border-radius:50%; width:38px; height:38px; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 8px #ffd70066; font-size: 1.7rem; color: gold; border:2px solid gold; text-decoration: none;">
-  🔒
+   🔒
 </a>
 </div>
 <div style="position: fixed; top: 16px; right: 16px; z-index: 100;">
@@ -957,6 +957,12 @@ function bepaalNachttoeslag() {
   return (u >= 23 || u < 7) ? 1.3 : 1;
 }
 
+function generateRitID() {
+  // Simpel: tijdstempel + 4 random letters
+  const random = Math.random().toString(36).substring(2, 6).toUpperCase();
+  return `RIT-${Date.now()}-${random}`;
+}
+
 function berekenRitprijs(afstand, duur, weer) {
   let basis = 0;
   if (afstand <= 3) basis = 10;
@@ -1048,6 +1054,11 @@ function pasKortingscodeToe(ritprijs) {
 }
 
 async function berekenRit() {
+  // Genereer een uniek rit-ID bij elke berekening
+  window.currentRitID = generateRitID();
+
+  // Genereer een uniek rit-ID bij elke berekening
+  window.currentRitID = generateRitID();
   try {
   const ophalen = document.getElementById("ophaaladres").value;
   const afzetten = document.getElementById("afzetadres").value;
@@ -1085,6 +1096,14 @@ async function berekenRit() {
   const tijdstipWeergave = tijd ? tijd : 'On-Demand';
   document.getElementById("resultaat").innerText = `${spoedInfo}🚖 Ritprijs: €${ritprijs.toFixed(2)}\n🛣️ Afstand: ${afstandKm.toFixed(1)} km\n🕒 Duur: ${duurMin.toFixed(0)} min\n🕒 Tijdstip: ${tijdstipWeergave}\n💳 Betaalmethode: ${betaalmethode}\n📌 Annuleringskosten: €10 (niet inbegrepen)\n🎁 Korting toegepast: €${adminData.kortingBedrag}\n${adminData.geplandeRit}\n${adminData.huisdieren}`;
 
+  // Sla de rit op in LocalStorage
+  try {
+    const ritten = JSON.parse(localStorage.getItem('ritten') || '[]');
+    const nieuweRit = {...adminData, ritprijs: ritprijs.toFixed(2), tijdstip: tijdstipWeergave, ophaaladres: ophalen, afzetadres: afzetten, opmerkingen};
+    ritten.push(nieuweRit);
+    localStorage.setItem('ritten', JSON.stringify(ritten));
+  } catch(e) { console.error('Rit niet opgeslagen:', e); }
+
   // Voeg spoedrit informatie toe aan WhatsApp bericht voor chauffeur
   let spoedBericht = "";
   if (spoedToeslag > 0) {
@@ -1100,6 +1119,11 @@ async function berekenRit() {
 }
 
 function toonAdmin() {
+  // Toon altijd de laatst berekende rit-ID
+  if (window.currentRitID) {
+    adminData.ritID = window.currentRitID;
+  }
+
   const wachtwoord = prompt("Voer wachtwoord in:");
   if (wachtwoord !== "Ahllen2@") return alert("Onjuist wachtwoord!");
 
@@ -1192,7 +1216,7 @@ function boekRit() {
   // Gegevens ophalen
   const ophaaladres = document.getElementById("ophaaladres").value;
   const afzetadres = document.getElementById("afzetadres").value;
-  const tijdstip = document.getElementById("tijdstip").value || "On-Demand";
+  const tijdstip = document.getElementById("tijdstip").value || "Direct";
   const betaalmethode = document.getElementById("betaalmethode").value;
   const kortingscode = document.getElementById("kortingscode").value || "Geen";
   const huisdieren = document.getElementById("huisdieren") ? (document.getElementById("huisdieren").value === "1" ? "Ja +€5" : "Nee") : "Nee";
