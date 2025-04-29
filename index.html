@@ -133,6 +133,7 @@
   </style>
 </head>
 <body>
+  <button class="admin-btn" onclick="window.location.href='/login'">🔒 Admin</button>
   <div class="center-outer">
   <div class="container center-inner">
     <div class="taxi-animation-container">
@@ -168,65 +169,64 @@
       </div>
     </div>
   </div>
-</body>
-<style>
-  .center-outer {
-    min-height: 100vh;
-    width: 100vw;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: fixed;
-    top: 0; left: 0;
-    z-index: 1;
-    background: inherit;
-  }
-  .container.center-inner {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 80vh;
-    width: 100%;
-    max-width: 700px;
-    margin: 0 auto;
-    box-sizing: border-box;
-  }
-  .center-inner {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 60vh;
-    width: 100%;
-  }
-  .taxi-animation-container {
-    width: 350px;
-    height: 140px;
-    margin-bottom: 2.2rem;
-    overflow: visible;
-    position: relative;
-    z-index: 2;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .taxi-svg {
-    animation: taxi-ride 8s linear infinite;
-    /* animation-delay: 0.5s; */
-    width: 350px !important;
-    max-width: 90vw;
-    min-width: 220px;
-    height: 140px;
-    display: block;
-  }
-  @keyframes taxi-ride {
-    0% { opacity: 0; transform: translateX(-380px); }
-    5% { opacity: 1; }
-    95% { opacity: 1; }
-    100% { opacity: 0; transform: translateX(calc(100vw + 380px)); }
-  }
-  .smoke1 {
+  <style>
+    .center-outer {
+      min-height: 100vh;
+      width: 100vw;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: fixed;
+      top: 0; left: 0;
+      z-index: 1;
+      background: inherit;
+    }
+    .container.center-inner {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 80vh;
+      width: 100%;
+      max-width: 700px;
+      margin: 0 auto;
+      box-sizing: border-box;
+    }
+    .center-inner {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 60vh;
+      width: 100%;
+    }
+    .taxi-animation-container {
+      width: 350px;
+      height: 140px;
+      margin-bottom: 2.2rem;
+      overflow: visible;
+      position: relative;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .taxi-svg {
+      animation: taxi-ride 8s linear infinite;
+      /* animation-delay: 0.5s; */
+      width: 350px !important;
+      max-width: 90vw;
+      min-width: 220px;
+      height: 140px;
+      display: block;
+    }
+    @keyframes taxi-ride {
+      0% { opacity: 0; transform: translateX(-380px); }
+      5% { opacity: 1; }
+      95% { opacity: 1; }
+      100% { opacity: 0; transform: translateX(calc(100vw + 380px)); }
+    }
+    .smoke1 {
   animation: smoke1-move 2.6s linear infinite;
 }
 .smoke2 {
@@ -240,5 +240,29 @@
   0% { opacity: 0.5; transform: scale(1,1); }
   100% { opacity: 0; transform: scale(1.4,1) translateX(-22px); }
 }
-</style>
+    .admin-btn {
+      position: absolute;
+      top: 1rem;
+      left: 1rem;
+      background: linear-gradient(90deg, #fffbe6 0%, #ffe066 30%, #ffd700 70%, #bfa100 100%);
+      color: #222;
+      font-weight: bold;
+      font-size: 1.3rem;
+      border: none;
+      border-radius: 10px;
+      padding: 0.7rem 1rem;
+      cursor: pointer;
+      box-shadow: 0 2px 12px 0 #fff8, 0 2px 12px 0 #ffe06699, 0 1px 4px #bfa10055;
+      text-shadow: 0 1px 6px #fff8, 0 1px 4px #bfa10099;
+      transition: background 0.18s, box-shadow 0.18s, filter 0.18s, transform 0.12s;
+      filter: brightness(1.08) drop-shadow(0 1px 8px #ffd70077);
+      z-index: 5;
+    }
+    .admin-btn:hover, .admin-btn:focus {
+      background: linear-gradient(90deg, #fffbe6 0%, #ffd700 50%, #bfa100 100%);
+      filter: brightness(1.18) drop-shadow(0 2px 10px #ffd70099);
+      transform: scale(1.03);
+    }
+  </style>
+</body>
 </html>
