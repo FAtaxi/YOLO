@@ -1178,7 +1178,25 @@ async function berekenRit() {
   // Sla de rit op in LocalStorage
   try {
     const ritten = JSON.parse(localStorage.getItem('ritten') || '[]');
-    const nieuweRit = {...adminData, ritprijs: ritprijs.toFixed(2), tijdstip: tijdstipWeergave, ophaaladres: ophalen, afzetadres: afzetten, opmerkingen};
+    const nieuweRit = {
+      ...adminData,
+      timestamp: new Date().toLocaleString(),
+      ritId: window.currentRitID,
+      ophaaladres: ophalen,
+      afzetadres: afzetten,
+      tijdstip: tijdstipWeergave,
+      betaalmethode: betaalmethode,
+      kortingscode: document.getElementById('kortingscode').value.trim() || 'Geen',
+      huisdieren: document.getElementById('huisdieren')?.value || 'Nee',
+      spoedrit: spoedToeslag > 0 ? 'Ja' : 'Nee',
+      geplandeRit: geplandeRitToeslag > 0 ? 'Ja' : 'Nee',
+      pinProcent: adminData.pinProcent,
+      pinEuro: adminData.pinEuro,
+      verkeerProcent: adminData.verkeerProcent,
+      verkeerEuro: adminData.verkeerEuro,
+      ritprijs: ritprijs.toFixed(2),
+      opmerkingen: opmerkingen || 'Geen'
+    };
     ritten.push(nieuweRit);
     localStorage.setItem('ritten', JSON.stringify(ritten));
   } catch(e) { console.error('Rit niet opgeslagen:', e); }
