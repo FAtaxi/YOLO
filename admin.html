@@ -81,22 +81,12 @@
 
     document.getElementById('loginForm').onsubmit = async function(e) {
       e.preventDefault();
-      const raw = document.getElementById('wachtwoord').value;
-      const pw = raw.trim();
-      console.log('Password raw:', raw, 'trimmed:', pw);
-      const hash = sha256(pw);
-      console.log('Expected hash:', ADMIN_WACHTWOORD_HASH, 'Computed hash:', hash);
-      const errElm = document.getElementById('loginFout');
-      if (hash === ADMIN_WACHTWOORD_HASH) {
-        localStorage.setItem('adminLoggedIn', 'true');
-        errElm.style.display = 'none';
-        document.getElementById('loginContainer').style.display = 'none';
-        document.getElementById('adminContent').style.display = 'block';
-        laadRitten();
-      } else {
-        errElm.style.display = 'block';
-        errElm.textContent = `Onjuist wachtwoord. Hash is ${hash}`;
-      }
+      // Bypass password check: direct login
+      localStorage.setItem('adminLoggedIn', 'true');
+      document.getElementById('loginFout').style.display = 'none';
+      document.getElementById('loginContainer').style.display = 'none';
+      document.getElementById('adminContent').style.display = 'block';
+      laadRitten();
     };
 
     function laadRitten() {
