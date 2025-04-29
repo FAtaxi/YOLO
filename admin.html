@@ -6,8 +6,8 @@
   <title>Admin - Taxi Boeking</title>
   <!-- Link tag above removed because styles are inline -->
   <style>
-    body { margin:0; font-family:'Segoe UI',sans-serif; background:linear-gradient(135deg,#232526 0%,#191919 50%,#232526 100%); color:#fff; padding:1rem; }
-    .container { max-width:600px; margin:2rem auto; background:#232526; border-radius:12px; box-shadow:0 2px 18px #ffd70044; padding:2rem; }
+    body { margin:0; font-family:'Segoe UI',sans-serif; background:linear-gradient(135deg,#232526 0%,#191919 50%,#232526 100%); color:#fff; padding:0.5rem; }
+    .container { max-width:95vw; margin:1rem auto; background:#232526; border-radius:12px; box-shadow:0 2px 18px #ffd70044; padding:1rem; }
     .container#adminContent { max-width: none; width: 100%; margin:2rem 0; padding:2rem 1rem; }
     h2 { color:gold; text-align:center; margin-bottom:1rem; }
     .info, .admin-info { color:#ffd700; margin-bottom:1rem; text-align:center; }
@@ -16,11 +16,15 @@
     input:focus { border:2px solid #ffd700; box-shadow:0 0 10px #ffd70099; background:linear-gradient(120deg,#232526 40%,#ffd70022); color:#fff; }
     button { background:linear-gradient(90deg,#fffbe6 0%,#ffd700 70%,#bfa100 100%); color:#222; font-weight:bold; border:none; border-radius:8px; padding:0.7rem; cursor:pointer; transition:all 0.2s; }
     button:hover { filter:brightness(1.1); }
-    table { width: 80%; border-collapse:collapse; margin:1.5rem 0 1.5rem 0; background:linear-gradient(120deg,#232526 60%,#191919 100%); color:#ffd700; border-radius:8px; overflow:hidden; }
+    table { width: 100%; border-collapse:collapse; margin:1.5rem 0; background:linear-gradient(120deg,#232526 60%,#191919 100%); color:#ffd700; border-radius:8px; }
     th, td { border:1px solid #ffd70055; padding:0.5rem; text-align:left; }
     th { background:linear-gradient(90deg,#fffbe6 0%,#ffd700 100%); color:#191919; }
     tr:nth-child(even) { background:#232526; }
     tr:hover { background:#ffd70022; }
+    @media (max-width: 600px) {
+      label, input, button, th, td { font-size: 0.9rem; }
+      button { padding: 0.8rem; }
+    }
   </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sha256/0.9.0/sha256.min.js" integrity="sha512-0ZmXuTW+YCylrUeQQT9lbbGAGzH813C+/2SfiTXy+ABe9F33hy0H5u5N50Cm9y6F4+GFAUyMXTEbMq9hhlRU+g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
@@ -41,6 +45,7 @@
     <h2>Admin Overzicht</h2>
     <p>Je bent ingelogd als <b>admin</b>. <button type="button" onclick="window.location.href='klant.html'">← Terug naar boekingspagina</button></p>
     <div class="admin-info"><button type="button" id="logoutBtn">Uitloggen</button></div>
+    <div style="overflow-x:auto;">
     <table id="rittenTable">
       <thead>
         <tr>
@@ -61,7 +66,7 @@
         <!-- Ritten worden hier getoond -->
       </tbody>
     </table>
-  </div>
+    </div>
 
   <script>
     // Admin login logic
