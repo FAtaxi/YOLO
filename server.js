@@ -146,13 +146,17 @@ app.post('/api/pay', async (req, res) => {
       amount: { currency: 'EUR', value: Number(amount).toFixed(2) },
       description,
       method: 'ideal',
-      redirectUrl: 'https://yolo-n9xa.onrender.com/betaalstatus.html', // tijdelijke URL, want payment.id is nog niet bekend
-      webhookUrl: 'https://yolo-n9xa.onrender.com/api/webhook' // Render backend webhook
+      // Eerst een generieke redirectUrl, daarna direct updaten met payment.id
+      redirectUrl: 'https://yolo-n9xa.onrender.com/betaalstatus.html',
+      webhookUrl: 'https://yolo-n9xa.onrender.com/api/webhook'
     });
-    // Nu hebben we payment.id, dus bouw de juiste redirectUrl
+    // Update de payment met de juiste redirectUrl zodat Mollie na afronden terugstuurt met id
     const redirectUrl = `https://yolo-n9xa.onrender.com/betaalstatus.html?id=${payment.id}`;
-    // Update de payment met de juiste redirectUrl (optioneel, alleen als Mollie dat ondersteunt)
-    // await mollie.payments.update(payment.id, { redirectUrl });
+    try {
+      await mollie.payments.update(payment.id, { redirectUrl });
+    } catch (e) {
+      console.error('Kon Mollie redirectUrl niet updaten:', e.message);
+    }
     console.log('DEBUG: Mollie payment.id:', payment.id);
     console.log('DEBUG: Mollie redirectUrl die hoort bij deze betaling:', redirectUrl);
     res.json({ checkoutUrl: payment.getCheckoutUrl() });
@@ -187,8 +191,4 @@ app.post('/api/webhook', express.json(), (req, res) => {
   // Je kunt hier logging toevoegen of de betalingstatus verwerken
   console.log('Webhook ontvangen van Mollie:', req.body);
   res.status(200).send('ok');
-});
-
-app.listen(PORT, () => {
-  console.log(`Server gestart op http://localhost:${PORT}`);
 });
