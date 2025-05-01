@@ -1603,7 +1603,7 @@ button {
   </div>
 
   <label for="afzetadres" id="labelAfzet">📍 AFZET ADRES 📍</label>
-  <div class="input-wrapper">
+  <div class="input-wrapper" style="position:relative; width:100%;">
     <input 
       type="text" 
       id="afzetadres" 
@@ -1613,7 +1613,7 @@ button {
       aria-label="Afzetadres" 
       required 
     />
-    <div id="afzetadres-suggesties" class="adres-suggesties"></div>
+    <div id="afzetadres-suggesties" class="adres-suggesties" style="position:absolute; top:100%; left:0; width:100%; z-index:10;"></div>
   </div>
 
   <button type="button" onclick="toggleDatum()" id="toggleDatumBtn" aria-controls="datumContainer" aria-expanded="false">📅 Reserveren? €17.50,- 📅</button>
@@ -1706,15 +1706,12 @@ function updateWhatsappKnopVisibility() {
     // Alleen tonen als betaling geslaagd (bijv. op betaalstatus pagina na redirect)
     if (localStorage.getItem('betalingGeslaagd') === '1') {
       bevestigContainer.style.display = '';
-      whatsappKnop.style.display = '';
       whatsappBtn.disabled = false;
       whatsappBtn.setAttribute('aria-disabled','false');
       whatsappBtn.tabIndex = 0;
       whatsappBtn.style.pointerEvents = 'auto';
     } else {
       bevestigContainer.style.display = 'none';
-      whatsappKnop.style.display = 'none';
-      whatsappBtn.style.display = 'none';
       whatsappBtn.disabled = true;
       whatsappBtn.setAttribute('aria-disabled','true');
       whatsappBtn.tabIndex = -1;
@@ -1723,8 +1720,6 @@ function updateWhatsappKnopVisibility() {
   } else {
     // Bij alle andere methodes altijd tonen
     bevestigContainer.style.display = '';
-    whatsappKnop.style.display = '';
-    whatsappBtn.style.display = '';
     whatsappBtn.disabled = false;
     whatsappBtn.setAttribute('aria-disabled','false');
     whatsappBtn.tabIndex = 0;
