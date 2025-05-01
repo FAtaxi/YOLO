@@ -1642,19 +1642,9 @@ button {
   <a id="whatsappKnop" href="#" target="_blank" style="display:none;">
     <button>📩 Bevestig & Verstuur naar WhatsApp 📩</button>
   </a>
-  <script>
-    // Zorg dat bij klikken op WhatsApp-knop ook boekRit() wordt aangeroepen
-    document.addEventListener('DOMContentLoaded', function() {
-      var whatsappKnop = document.getElementById('whatsappKnop');
-      if (whatsappKnop) {
-        whatsappKnop.addEventListener('click', function() {
-          boekRit();
-        });
-      }
-    });
-  </script>
 </div>
 
+<!-- Zet ALLE scripts vlak voor </body> -->
 <script>
 // --- FA Taxi Boeking | Modern, robuust & foutloos script ---
 'use strict';
@@ -1700,6 +1690,16 @@ async function sha256(str) {
   const hashBuf = await crypto.subtle.digest('SHA-256', buf);
   return Array.from(new Uint8Array(hashBuf)).map(b => b.toString(16).padStart(2,'0')).join('');
 }
+// WhatsApp-knop activeert boekRit
+window.addEventListener('DOMContentLoaded', function() {
+  var whatsappKnop = document.getElementById('whatsappKnop');
+  if (whatsappKnop) {
+    whatsappKnop.addEventListener('click', function() {
+      boekRit();
+    });
+  }
+});
+</script>
 let huisdierenToeslag = 5; // Kosten voor huisdieren
 let geplandeRitToeslag = 7.50; // Kosten voor geplande rit
 let adminData = {};
@@ -2242,7 +2242,16 @@ async function zoekAdresSuggesties(inputElem, suggestieDivId) {
     // Toon eerst alleen Nederlandse adressen
     let nlResults = data.results.filter(r => r.components && r.components.country_code === 'nl');
     let shownResults = nlResults.length > 0 ? nlResults : data.results;
-    suggestieDiv.innerHTML = shownResults.map(r => `<div class='adres-suggestie-item' onclick="kiesAdresSuggestie('${inputElem.id}', '${suggestieDivId}', '${r.formatted.replace(/'/g, "&#39;")}' )">${r.formatted}</div>`).join('');
+    // Helper om JS-string veilig te escapen voor HTML attribuut
+    function escapeHtmlAttr(str) {
+      return String(str)
+        .replace(/'/g, "&#39;")
+        .replace(/\\/g, "\\\\")
+        .replace(/\n/g, " ")
+        .replace(/\r/g, " ")
+        .replace(/\"/g, '&quot;');
+    }
+    suggestieDiv.innerHTML = shownResults.map(r => `<div class='adres-suggestie-item' onclick="kiesAdresSuggestie('${inputElem.id}', '${suggestieDivId}', '${escapeHtmlAttr(r.formatted)}')">${r.formatted}</div>`).join('');
     suggestieDiv.classList.add('active');
   } catch {
     suggestieDiv.innerHTML = '';
