@@ -2221,7 +2221,7 @@ window.addEventListener('DOMContentLoaded', () => {
     if (!lastPrice) return alert('Bereken eerst de ritprijs');
     const description = `Taxi rit ${window.currentRitID}`;
     try {
-      const res = await fetch('/api/pay', {
+      const res = await fetch('https://yolo-n9xa.onrender.com/api/pay', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ amount: lastPrice, description })
