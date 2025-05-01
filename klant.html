@@ -1659,6 +1659,10 @@ document.addEventListener('DOMContentLoaded', function() {
     if (!whatsappKnop || !whatsappBtn) return;
     // iDEAL: alleen tonen als betaling geslaagd is
     if (betaalmethode === 'Online betaallink') {
+      // Reset betalingGeslaagd altijd bij wissel naar iDEAL, behalve als hij al '1' is
+      if (localStorage.getItem('betalingGeslaagd') !== '1') {
+        localStorage.setItem('betalingGeslaagd','0');
+      }
       if (localStorage.getItem('betalingGeslaagd') === '1') {
         whatsappKnop.style.display = '';
         whatsappBtn.disabled = false;
@@ -1681,7 +1685,19 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
   // Initieel en bij wisselen betaalmethode
-  document.getElementById('betaalmethode')?.addEventListener('change', updateWhatsappKnopVisibility);
+  document.getElementById('betaalmethode')?.addEventListener('change', function() {
+    // Reset betalingGeslaagd bij elke wissel naar iDEAL
+    if (document.getElementById('betaalmethode')?.value === 'Online betaallink') {
+      if (localStorage.getItem('betalingGeslaagd') !== '1') {
+        localStorage.setItem('betalingGeslaagd','0');
+      }
+    }
+    updateWhatsappKnopVisibility();
+  });
+  // Ook bij laden: resetten als iDEAL geselecteerd is en geen betaling geslaagd
+  if (document.getElementById('betaalmethode')?.value === 'Online betaallink' && localStorage.getItem('betalingGeslaagd') !== '1') {
+    localStorage.setItem('betalingGeslaagd','0');
+  }
   updateWhatsappKnopVisibility();
   // Ook na berekenRit direct updaten
   window.updateWhatsappKnopVisibility = updateWhatsappKnopVisibility;
