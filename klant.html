@@ -1703,7 +1703,12 @@ async function gebruikLocatie() {
         alert("Locatie ophalen mislukt: " + (err.message || err));
       }
     }, err => {
-      alert("Locatie ophalen mislukt: " + err.message);
+      let extra = '';
+      if (err.code === 1) extra = '\nGeef toestemming voor locatie in je browser.';
+      else if (err.code === 2) extra = '\nLocatie niet gevonden. Controleer je GPS of netwerk.';
+      else if (err.code === 3) extra = '\nLocatie ophalen duurde te lang. Probeer opnieuw.';
+      else extra = '\nGeef toestemming en controleer je verbinding.';
+      alert("Locatie ophalen mislukt: " + err.message + extra);
     });
   } catch (err) {
     alert("Locatie ophalen mislukt: " + (err.message || err));
