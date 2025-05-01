@@ -1896,10 +1896,9 @@ async function getTrafficToeslag(start, end) {
     else if (ratio > 0.4) surcharge = 1.15;
     else surcharge = 1.5;
   }
-  // Incidents (dynamische tile)
-  const tile = deg2tile(midLat, midLon, 10); // zoom 10
-  const incUrl = `https://api.tomtom.com/traffic/services/4/incidentDetails/s3/${tile.zoom}/${tile.x}/${tile.y}/json?key=${TRAFFIC_API_KEY}`;
-  console.log('TomTom incidentDetails tile:', tile, 'URL:', incUrl);
+  // Incidents (vaste tile voor NL)
+  const incUrl = `https://api.tomtom.com/traffic/services/4/incidentDetails/s3/10/4/5/json?key=${TRAFFIC_API_KEY}`;
+  console.log('TomTom incidentDetails vaste tile: /10/4/5 URL:', incUrl);
   const incResp = await fetch(incUrl);
   if (!incResp.ok) {
     const errorText = await incResp.text();
