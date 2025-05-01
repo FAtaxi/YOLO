@@ -7,7 +7,12 @@ const PORT = process.env.PORT || 3001;
 
 // CORS headers toestaan voor lokale dev en fataxi.github.io
 app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', 'https://fataxi.github.io');
+  const allowedOrigins = ['https://fataxi.github.io', 'https://yolo-n9xa.onrender.com'];
+  const origin = req.headers.origin;
+  if (allowedOrigins.includes(origin)) {
+    res.header('Access-Control-Allow-Origin', origin);
+  }
+
   res.header('Access-Control-Allow-Methods', 'GET,OPTIONS');
   res.header('Access-Control-Allow-Headers', 'Content-Type');
   if (req.method === 'OPTIONS') return res.sendStatus(200);
