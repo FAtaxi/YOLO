@@ -1888,8 +1888,7 @@ async function getTrafficToeslag(start, end) {
     else surcharge = 1.5;
   }
   // Incidents (optional)
-  const bbox = `50.750,3.350,53.550,7.200`; // Hele Nederland
-  const incUrl = `https://api.tomtom.com/traffic/services/4/incidentDetails/s3/10/json?bbox=${bbox}&key=${TRAFFIC_API_KEY}`;
+  const incUrl = `https://api.tomtom.com/traffic/services/4/incidentDetails/s3/10/4/5/json?key=${TRAFFIC_API_KEY}`; // Heel Nederland tile
   const incResp = await fetch(incUrl);
   if (!incResp.ok) {
     console.error('TomTom incidentDetails API error:', incResp.status, await incResp.text());
