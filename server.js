@@ -153,6 +153,14 @@ app.post('/api/pay', async (req, res) => {
   }
 });
 
+// CORS preflight handler voor /api/pay
+app.options('/api/pay', (req, res) => {
+  res.header('Access-Control-Allow-Origin', 'https://fataxi.github.io');
+  res.header('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type');
+  res.sendStatus(204);
+});
+
 // Mollie webhook endpoint
 app.post('/api/webhook', express.json(), (req, res) => {
   // Je kunt hier logging toevoegen of de betalingstatus verwerken
