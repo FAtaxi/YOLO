@@ -1443,5 +1443,16 @@ document.addEventListener('DOMContentLoaded', ()=>{
 </script>
 
 <script>
-document.addEventListener('DOMContentLoaded', ()=>{
+window.addEventListener('DOMContentLoaded', () => {
   const toggle = document.getElementById('langToggle');
+  const menu = document.getElementById('langMenu');
+  if (!toggle || !menu) return;
+  toggle.addEventListener('click', e => {
+    e.stopPropagation();
+    menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+  });
+  menu.addEventListener('click', e => e.stopPropagation());
+  document.addEventListener('click', () => { menu.style.display = 'none'; });
+});
+</script>
+</body>
