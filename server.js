@@ -41,7 +41,10 @@ app.use(session({
 }));
 
 // Statische bestanden serveren (klant.html, admin.html, etc.)
-app.use(express.static(path.join(__dirname, '..')));
+// Statische bestanden uit de projectroot én backend-map serveren
+app.use(express.static(path.resolve(__dirname, '..')));
+app.use(express.static(path.resolve(__dirname)));
+
 
 // Middleware: beveilig admin.html
 app.use('/admin.html', (req, res, next) => {
