@@ -135,8 +135,8 @@ app.post('/api/pay', async (req, res) => {
       amount: { currency: 'EUR', value: Number(amount).toFixed(2) },
       description,
       method: 'ideal',
-      redirectUrl: 'https://www.fa-taxi.nl/bedankt.html', // pas aan naar jouw bedankpagina
-      webhookUrl: 'https://www.fa-taxi.nl/api/webhook' // pas aan naar jouw backend webhook
+      redirectUrl: 'https://yolo-n9xa.onrender.com/bedankt.html', // Render bedankt-pagina
+      webhookUrl: 'https://yolo-n9xa.onrender.com/api/webhook' // Render backend webhook
     });
     res.json({ checkoutUrl: payment.getCheckoutUrl() });
   } catch (err) {
