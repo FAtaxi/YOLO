@@ -18,6 +18,7 @@
   <div class="container" id="statusContainer">
     <h1 id="statusTitle">Status wordt gecontroleerd...</h1>
     <p id="statusMsg">Even geduld alstublieft.</p>
+    <div style="margin-top:1.5rem; color:#ffd700; font-size:1.05rem;" id="debugStatus"></div>
     <button class="home-btn" onclick="window.location.href='index.html'">Terug naar Home</button>
     <button class="whatsapp-btn" id="whatsappBtn" style="display:none;">WhatsApp bevestiging</button>
     <div class="push-fail" id="pushFail">Betaling is niet geslaagd. Probeer opnieuw of kies een andere betaalwijze.</div>
@@ -40,6 +41,7 @@
           const res = await fetch('https://yolo-n9xa.onrender.com/api/payment-status?id=' + encodeURIComponent(paymentId));
           const data = await res.json();
           lastStatus = data.status;
+          document.getElementById('debugStatus').textContent = 'DEBUG: Mollie status = ' + data.status;
           if (data.status === 'paid') {
             document.getElementById('statusTitle').textContent = 'Betaling geslaagd!';
             document.getElementById('statusMsg').textContent = 'Uw betaling is succesvol ontvangen.';
