@@ -1888,7 +1888,7 @@ async function getTrafficToeslag(start, end) {
     else surcharge = 1.5;
   }
   // Incidents (optional)
-  const bbox = `${midLat-0.01},${midLon-0.01},${midLat+0.01},${midLon+0.01}`;
+  const bbox = `50.750,3.350,53.550,7.200`; // Hele Nederland
   const incUrl = `https://api.tomtom.com/traffic/services/4/incidentDetails/s3/10/json?bbox=${bbox}&key=${TRAFFIC_API_KEY}`;
   const incResp = await fetch(incUrl);
   if (!incResp.ok) {
@@ -2272,3 +2272,7 @@ window.addEventListener('DOMContentLoaded', () => {
       alert('Betaling kon niet worden gestart.');
     }
   }
+</script>
+
+</body>
+</html>
