@@ -1,36 +1,21 @@
-// NDW Proxy: Haal actuele files op uit NDW open data, converteer CSV naar JSON en serveer als API
-const express = require('express');
-const fetch = require('node-fetch');
-const csv = require('csvtojson');
-const app = express();
-const PORT = process.env.PORT || 3001;
-
-// NDW actuele files CSV feed
-const NDW_CSV_URL = 'https://opendata.ndw.nu/files_ndw.csv.gz';
-
-const zlib = require('zlib');
-
-app.get('/api/ndwfiles', async (req, res) => {
-  try {
-    // Haal de .gz file op
-    const ndwResp = await fetch(NDW_CSV_URL);
-    if (!ndwResp.ok) return res.status(502).json({error: 'NDW feed niet bereikbaar'});
-    const zipped = await ndwResp.buffer();
-    // Unzip
-    zlib.gunzip(zipped, async (err, buffer) => {
-      if (err) return res.status(500).json({error: 'GZIP decompressie mislukt'});
-      // CSV naar JSON
-      const csvStr = buffer.toString('utf-8');
-      const json = await csv().fromString(csvStr);
-      // Optioneel: filter lege entries
-      const filtered = json.filter(f => f.latitude && f.longitude);
-      res.json(filtered);
-    });
-  } catch (e) {
-    res.status(500).json({error: 'NDW proxy error', details: e.message});
-  }
-});
-
-app.listen(PORT, () => {
-  console.log('NDW proxy running on port', PORT);
-});
+klant.html:2232 Selected language for index: nl
+klant.html:2246 Index translation object for nl {ophaal: '📍 OPHAAL ADRES 📍', afzet: '📍 AFZET ADRES 📍', reserveren: '📅 Reserveren? €17,50 📅', huisdieren: '🐶 Huisdieren €5,- 🐶', spoed: '🚀 Spoedrit €10 🚀', …}
+klant.html:2248 Index using translation: {ophaal: '📍 OPHAAL ADRES 📍', afzet: '📍 AFZET ADRES 📍', reserveren: '📅 Reserveren? €17,50 📅', huisdieren: '🐶 Huisdieren €5,- 🐶', spoed: '🚀 Spoedrit €10 🚀', …}
+klant.html:1 Access to fetch at 'http://localhost:3001/api/ndwfiles' from origin 'https://fataxi.github.io' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource. If an opaque response serves your needs, set the request's mode to 'no-cors' to fetch the resource with CORS disabled.
+klant.html:1906 
+            
+            
+           GET http://localhost:3001/api/ndwfiles net::ERR_FAILED 502 (Bad Gateway)
+getTrafficToeslag @ klant.html:1906
+await in getTrafficToeslag
+berekenRit @ klant.html:1973
+await in berekenRit
+onclick @ klant.html:1634
+klant.html:1921 NDW incidenten ophalen mislukt TypeError: Failed to fetch
+    at getTrafficToeslag (klant.html:1906:27)
+    at async berekenRit (klant.html:1973:22)
+getTrafficToeslag @ klant.html:1921
+await in getTrafficToeslag
+berekenRit @ klant.html:1973
+await in berekenRit
+onclick @ klant.html:1634
