@@ -1692,15 +1692,18 @@ function updateWhatsappKnopVisibility() {
     if (bevestigContainer) bevestigContainer.style.display = 'none';
     return;
   }
-  // Altijd verbergen bij IDEAL, behalve als betaling geslaagd is
+  // Container alleen tonen bij Tikkie, Pin bij chauffeur, Contant
   if (betaalmethode === IDEAL_VAL) {
+    // Alleen tonen als betaling geslaagd (bijv. op betaalstatus pagina na redirect)
     if (localStorage.getItem('betalingGeslaagd') === '1') {
+      bevestigContainer.style.display = '';
       whatsappKnop.style.display = '';
       whatsappBtn.disabled = false;
       whatsappBtn.setAttribute('aria-disabled','false');
       whatsappBtn.tabIndex = 0;
       whatsappBtn.style.pointerEvents = 'auto';
     } else {
+      bevestigContainer.style.display = 'none';
       whatsappKnop.style.display = 'none';
       whatsappBtn.disabled = true;
       whatsappBtn.setAttribute('aria-disabled','true');
@@ -1708,6 +1711,8 @@ function updateWhatsappKnopVisibility() {
       whatsappBtn.style.pointerEvents = 'none';
     }
   } else {
+    // Bij alle andere methodes altijd tonen
+    bevestigContainer.style.display = '';
     whatsappKnop.style.display = '';
     whatsappBtn.disabled = false;
     whatsappBtn.setAttribute('aria-disabled','false');
