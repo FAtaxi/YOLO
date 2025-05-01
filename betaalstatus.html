@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Betalingsstatus | FA Taxi Service</title>
+  <style>
+    body { background: #191919; color: #fff; font-family: 'Segoe UI', sans-serif; text-align: center; padding: 0; margin: 0; }
+    .container { max-width: 500px; margin: 8vh auto; background: #222; border-radius: 24px; box-shadow: 0 0 32px #ffd70055; padding: 3rem 2rem; }
+    h1 { color: #ffd700; font-size: 2.2rem; margin-bottom: 1.2rem; }
+    p { font-size: 1.2rem; margin-bottom: 2.2rem; }
+    .home-btn, .whatsapp-btn { background: linear-gradient(90deg, #fffbe6 0%, #ffd700 70%, #bfa100 100%); color: #222; font-weight: bold; font-size: 1.1rem; border: none; border-radius: 10px; padding: 0.7rem 2.2rem; cursor: pointer; box-shadow: 0 2px 12px 0 #fff8, 0 2px 12px 0 #ffe06699, 0 1px 4px #bfa10055; text-shadow: 0 1px 6px #fff8, 0 1px 4px #bfa10099; margin-top: 2rem; transition: background 0.18s, box-shadow 0.18s, filter 0.18s, transform 0.12s; filter: brightness(1.08); display: inline-block; margin-right: 1rem; }
+    .home-btn:hover, .whatsapp-btn:hover { background: linear-gradient(90deg, #fffbe6 0%, #ffd700 50%, #bfa100 100%); filter: brightness(1.18); }
+    .push-fail { background: #ff4d4d; color: #fff; border-radius: 8px; padding: 1rem; margin-top: 1.2rem; font-size: 1.1rem; display: none; }
+  </style>
+</head>
+<body>
+  <div class="container" id="statusContainer">
+    <h1 id="statusTitle">Status wordt gecontroleerd...</h1>
+    <p id="statusMsg">Even geduld alstublieft.</p>
+    <button class="home-btn" onclick="window.location.href='index.html'">Terug naar Home</button>
+    <button class="whatsapp-btn" id="whatsappBtn" style="display:none;">WhatsApp bevestiging</button>
+    <div class="push-fail" id="pushFail">Betaling is niet geslaagd. Probeer opnieuw of kies een andere betaalwijze.</div>
+  </div>
+  <script>
+    // Functie om Mollie payment status op te vragen
+    async function checkPayment() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const paymentId = urlParams.get('id');
+      if (!paymentId) {
+        document.getElementById('statusTitle').textContent = 'Geen betaling gevonden';
+        document.getElementById('statusMsg').textContent = 'Er is geen betalings-ID gevonden.';
+        return;
+      }
+      try {
+        const res = await fetch('https://yolo-n9xa.onrender.com/api/payment-status?id=' + encodeURIComponent(paymentId));
+        const data = await res.json();
+        if (data.status === 'paid') {
+          document.getElementById('statusTitle').textContent = 'Betaling geslaagd!';
+          document.getElementById('statusMsg').textContent = 'Uw betaling is succesvol ontvangen.';
+          // Toon WhatsApp knop
+          document.getElementById('whatsappBtn').style.display = 'inline-block';
+          document.getElementById('whatsappBtn').onclick = function() {
+            const msg = encodeURIComponent('Mijn taxi-rit is betaald via iDEAL. Graag bevestiging van mijn reservering.');
+            window.open('https://wa.me/31612345678?text=' + msg, '_blank');
+          }
+        } else {
+          document.getElementById('statusTitle').textContent = 'Betaling niet geslaagd';
+          document.getElementById('statusMsg').textContent = 'Uw betaling is niet gelukt. Probeer opnieuw of kies een andere betaalwijze.';
+          document.getElementById('pushFail').style.display = 'block';
+          setTimeout(()=>{
+            window.location.href = 'klant.html';
+          }, 5500);
+        }
+      } catch (e) {
+        document.getElementById('statusTitle').textContent = 'Fout bij controleren betaling';
+        document.getElementById('statusMsg').textContent = 'Probeer het later opnieuw.';
+        document.getElementById('pushFail').style.display = 'block';
+        setTimeout(()=>{
+          window.location.href = 'klant.html';
+        }, 5500);
+      }
+    }
+    checkPayment();
+  </script>
+</body>
+</html>
