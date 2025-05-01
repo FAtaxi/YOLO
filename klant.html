@@ -1684,10 +1684,8 @@ function updateWhatsappKnopVisibility() {
   const whatsappKnop = $id('whatsappKnop');
   const whatsappBtn = whatsappKnop?.querySelector('button');
   if (!whatsappKnop || !whatsappBtn) return;
+  // Altijd verbergen bij IDEAL, behalve als betaling geslaagd is
   if (betaalmethode === IDEAL_VAL) {
-    if (localStorage.getItem('betalingGeslaagd') !== '1') {
-      localStorage.setItem('betalingGeslaagd','0');
-    }
     if (localStorage.getItem('betalingGeslaagd') === '1') {
       whatsappKnop.style.display = '';
       whatsappBtn.disabled = false;
@@ -1709,6 +1707,7 @@ function updateWhatsappKnopVisibility() {
     whatsappBtn.style.pointerEvents = 'auto';
   }
 }
+
 
 document.addEventListener('DOMContentLoaded', function() {
   // Reset betalingGeslaagd als iDEAL geselecteerd bij laden
