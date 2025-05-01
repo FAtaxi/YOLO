@@ -75,20 +75,26 @@
                   rit = JSON.parse(localStorage.getItem('draftRit'));
                 }
               } catch {}
-              // Bouw bericht op
-              let bericht = '✅ Mijn taxi-rit is betaald via iDEAL.\n';
-              bericht += 'Graag bevestiging van mijn reservering.\n';
+              // Bouw WhatsApp emoji-bericht op
+              let bericht = '🚖 FA TAXI SERVICE 4 Personen 🚖';
+              bericht += '\n\n📲 Nieuw ritverzoek';
               if (rit) {
-                bericht += '\n--- Ritgegevens ---';
-                if (rit.ritId) bericht += `\nRit-ID: ${rit.ritId}`;
-                if (rit.ophaaladres) bericht += `\nOphaaladres: ${rit.ophaaladres}`;
-                if (rit.afzetadres) bericht += `\nBestemming: ${rit.afzetadres}`;
-                if (rit.tijdstip) bericht += `\nTijdstip: ${rit.tijdstip}`;
-                if (rit.betaalmethode) bericht += `\nBetaalmethode: ${rit.betaalmethode}`;
-                if (rit.kortingscode) bericht += `\nKortingscode: ${rit.kortingscode}`;
-                if (rit.huisdieren && rit.huisdieren !== '0') bericht += `\nHuisdieren: Ja`;
-                if (rit.opmerkingen) bericht += `\nOpmerkingen: ${rit.opmerkingen}`;
+                if (rit.ritId) bericht += `\n🆔 Rit-ID: ${rit.ritId}`;
+                if (rit.ophaaladres) bericht += `\n📍 Ophaaladres: ${rit.ophaaladres}`;
+                if (rit.afzetadres) bericht += `\n📍 Afzetadres: ${rit.afzetadres}`;
+                if (rit.tijdstip) bericht += `\n🕒 Tijdstip: ${rit.tijdstip}`;
+                if (rit.betaalmethode) bericht += `\n💳 Betaalmethode: ${rit.betaalmethode}`;
+                if (rit.prijs) bericht += `\n🚖 Ritprijs: €${rit.prijs}`;
+                if (rit.afstand) bericht += `\n🛣️ Afstand: ${rit.afstand}`;
+                if (rit.duur) bericht += `\n🕒 Duur: ${rit.duur}`;
+                if (rit.pinkosten) bericht += `\n💳 Pin-kosten: ${rit.pinkosten}`;
+                if (rit.annuleringskosten) bericht += `\n📌 Annuleringskosten: ${rit.annuleringskosten}`;
+                if (rit.korting) bericht += `\n🎁 Korting toegepast: ${rit.korting}`;
+                if (rit.kortingscode) bericht += `\n🏷️ Kortingscode: ${rit.kortingscode}`;
+                if (rit.huisdieren && rit.huisdieren !== '0') bericht += `\n🐶 Huisdieren: Ja`;
+                if (rit.opmerkingen) bericht += `\n🗒️ Opmerkingen: ${rit.opmerkingen}`;
               }
+              bericht += '\n\n✅ Betaald via iDEAL (geslaagd)';
               const msg = encodeURIComponent(bericht);
               window.open('https://wa.me/+31647972301?text=' + msg, '_blank');
             }
