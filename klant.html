@@ -1640,8 +1640,8 @@ button {
   <div id="adminSpecificaties" style="display:none;"></div>
 
   <a id="whatsappKnop" href="https://wa.me/message/WPXHSY3TEYVPA1" target="_blank" style="display:none;">
-  <button>📩 Bevestig & Verstuur naar WhatsApp 📩</button>
-</a>
+    <button>📩 Bevestig & Verstuur naar WhatsApp 📩</button>
+  </a>
 </div>
 
 <!-- Zet ALLE scripts vlak voor </body> -->
@@ -1651,6 +1651,23 @@ button {
 
 // --- DraftRit automatisch terugzetten bij laden pagina ---
 document.addEventListener('DOMContentLoaded', function() {
+  // WhatsApp-knop tonen/verbergen op basis van betaalmethode en betaalstatus
+  function updateWhatsappKnopVisibility() {
+    const betaalmethode = document.getElementById('betaalmethode')?.value;
+    const whatsappKnop = document.getElementById('whatsappKnop');
+    // Check of betaling geslaagd is (via localStorage, set op betaalstatus.html)
+    const betalingGeslaagd = localStorage.getItem('betalingGeslaagd') === '1';
+    if (betaalmethode === 'Online betaallink') {
+      // Alleen tonen als betaling geslaagd is
+      whatsappKnop.style.display = betalingGeslaagd ? '' : 'none';
+    } else {
+      whatsappKnop.style.display = '';
+    }
+  }
+  // Initieel en bij wisselen betaalmethode
+  document.getElementById('betaalmethode')?.addEventListener('change', updateWhatsappKnopVisibility);
+  updateWhatsappKnopVisibility();
+
   try {
     const draft = JSON.parse(localStorage.getItem('draftRit'));
     if (draft) {
