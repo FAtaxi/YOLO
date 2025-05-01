@@ -1682,8 +1682,13 @@ function updateWhatsappKnopVisibility() {
   const IDEAL_VAL = 'IDEAL Online-Betaal-Link';
   const betaalmethode = $id('betaalmethode')?.value;
   const whatsappKnop = $id('whatsappKnop');
-  const whatsappBtn = whatsappKnop?.querySelector('button');
-  if (!whatsappKnop || !whatsappBtn) return;
+  // WhatsApp-knop is een <a> met een <button> erin
+  const whatsappBtn = whatsappKnop && whatsappKnop.querySelector('button');
+  // Altijd standaard verbergen als element niet bestaat
+  if (!whatsappKnop || !whatsappBtn) {
+    if (whatsappKnop) whatsappKnop.style.display = 'none';
+    return;
+  }
   // Altijd verbergen bij IDEAL, behalve als betaling geslaagd is
   if (betaalmethode === IDEAL_VAL) {
     if (localStorage.getItem('betalingGeslaagd') === '1') {
@@ -1707,6 +1712,7 @@ function updateWhatsappKnopVisibility() {
     whatsappBtn.style.pointerEvents = 'auto';
   }
 }
+
 
 
 document.addEventListener('DOMContentLoaded', function() {
