@@ -2244,6 +2244,8 @@ function toggleAkkoord() {
 }
 // --- Boekingsopslag met rit-id ---
 function boekRit() {
+  // Reset betaalstatus voor nieuwe rit
+  localStorage.setItem('betalingGeslaagd', '0');
   // Gegevens ophalen
   const ophaaladres = document.getElementById("ophaaladres").value;
   const afzetadres = document.getElementById("afzetadres").value;
