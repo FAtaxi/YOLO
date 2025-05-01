@@ -1681,8 +1681,17 @@ function $id(id) { return document.getElementById(id); }
 
 // WhatsApp-knop tonen/verbergen (herbruikbaar)
 function updateWhatsappKnopVisibility() {
-  const IDEAL_VAL = 'IDEAL Online-Betaal-Link';
+  // Toon/verberg iDEAL-betaalknop altijd correct
+  const idealBtn = $id('idealPayBtn');
   const betaalmethode = $id('betaalmethode')?.value;
+  if (idealBtn) {
+    if (betaalmethode === 'IDEAL Online-Betaal-Link') {
+      idealBtn.style.display = '';
+    } else {
+      idealBtn.style.display = 'none';
+    }
+  }
+  const IDEAL_VAL = 'IDEAL Online-Betaal-Link';
   // WhatsApp-knop is een <a> met een <button> erin
   const bevestigContainer = $id('bevestigContainer') || $id('whatsappKnop');
   const whatsappKnop = $id('whatsappKnop');
