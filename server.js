@@ -4,6 +4,7 @@ const path = require('path');
 const PDFDocument = require('pdfkit');
 const nodemailer = require('nodemailer');
 const { createMollieClient } = require('@mollie/api-client');
+const cors = require('cors');
 
 // Gebruik test-API-key uit env of hardcoded (alleen voor test!)
 const mollie = createMollieClient({
@@ -18,6 +19,13 @@ app.use((req, res, next) => {
   res.removeHeader('Content-Security-Policy');
   next();
 });
+
+// CORS instellen voor frontend op GitHub Pages
+app.use(cors({
+  origin: 'https://fataxi.github.io',
+  methods: ['GET', 'POST', 'OPTIONS'],
+  credentials: false
+}));
 
 // Eenvoudige gebruikersnaam en wachtwoord (alleen op de server zichtbaar)
 const ADMIN_USER = 'admin';
@@ -143,6 +151,13 @@ app.post('/api/pay', async (req, res) => {
     console.error('Mollie betaling error:', err);
     res.status(500).json({ error: 'Mollie betaling mislukt' });
   }
+});
+
+// Mollie webhook endpoint
+app.post('/api/webhook', express.json(), (req, res) => {
+  // Je kunt hier logging toevoegen of de betalingstatus verwerken
+  console.log('Webhook ontvangen van Mollie:', req.body);
+  res.status(200).send('ok');
 });
 
 app.listen(PORT, () => {
