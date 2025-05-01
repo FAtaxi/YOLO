@@ -1658,6 +1658,40 @@ button {
 <script>
 // --- FA Taxi Boeking | Modern, robuust & foutloos script ---
 'use strict';
+
+// --- DraftRit automatisch terugzetten bij laden pagina ---
+document.addEventListener('DOMContentLoaded', function() {
+  try {
+    const draft = JSON.parse(localStorage.getItem('draftRit'));
+    if (draft) {
+      const fields = ['ophaaladres','afzetadres','tijdstip','betaalmethode','kortingscode','huisdieren','opmerkingen'];
+      fields.forEach(function(id) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        if (id === 'huisdieren') {
+          el.value = draft[id] || '0';
+          // Eventueel ook de knop visueel aanpassen
+          const btn = document.getElementById('huisdierBtn');
+          if (btn) {
+            if (el.value === '1') {
+              btn.innerText = '✅ Huisdier toegevoegd €5,-';
+              btn.style.background = 'gold';
+              btn.style.color = 'black';
+            } else {
+              btn.innerText = '🐶 Huisdieren €5,- 🐶';
+              btn.style.background = '';
+              btn.style.color = '';
+            }
+          }
+        } else if (id === 'opmerkingen') {
+          el.value = draft[id] || '';
+        } else {
+          el.value = draft[id] || '';
+        }
+      });
+    }
+  } catch {}
+});
 let spoedToeslag = 0;
 let lastPrice = 0; // voor iDEAL betaling
 const ADMIN_WACHTWOORD_HASH = "d8c4248ef9765da2dc5434444e41d6df23e07e7ce7c1a834fe979983e097af77";
