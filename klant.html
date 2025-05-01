@@ -1899,9 +1899,11 @@ async function getTrafficToeslag(start, end) {
   // Incidents (dynamische tile)
   const tile = deg2tile(midLat, midLon, 10); // zoom 10
   const incUrl = `https://api.tomtom.com/traffic/services/4/incidentDetails/s3/${tile.zoom}/${tile.x}/${tile.y}/json?key=${TRAFFIC_API_KEY}`;
+  console.log('TomTom incidentDetails tile:', tile, 'URL:', incUrl);
   const incResp = await fetch(incUrl);
   if (!incResp.ok) {
-    console.error('TomTom incidentDetails API error:', incResp.status, await incResp.text());
+    const errorText = await incResp.text();
+    console.error('TomTom incidentDetails API error:', incResp.status, errorText, 'Tile:', tile, 'URL:', incUrl);
   }
   const inc = incResp.ok ? await incResp.json() : null;
   if (inc && inc.incidents) {
