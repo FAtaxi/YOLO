@@ -1640,7 +1640,7 @@ button {
   <div id="adminSpecificaties" style="display:none;"></div>
 
   <a id="whatsappKnop" href="https://wa.me/message/WPXHSY3TEYVPA1" target="_blank" style="display:none;">
-    <button>📩 Bevestig & Verstuur naar WhatsApp 📩</button>
+    <button disabled aria-disabled="true" tabindex="-1" style="pointer-events:none;">📩 Bevestig & Verstuur naar WhatsApp 📩</button>
   </a>
 </div>
 
@@ -1656,28 +1656,35 @@ document.addEventListener('DOMContentLoaded', function() {
     const betaalmethode = document.getElementById('betaalmethode')?.value;
     const whatsappKnop = document.getElementById('whatsappKnop');
     const whatsappBtn = whatsappKnop?.querySelector('button');
-    // Reset betalingGeslaagd bij wisselen betaalmethode
+    if (!whatsappKnop || !whatsappBtn) return;
+    // iDEAL: alleen tonen als betaling geslaagd is
     if (betaalmethode === 'Online betaallink') {
-      localStorage.setItem('betalingGeslaagd','0');
-      // Alleen tonen als betaling geslaagd is
       if (localStorage.getItem('betalingGeslaagd') === '1') {
         whatsappKnop.style.display = '';
-        whatsappBtn && (whatsappBtn.disabled = false);
-        whatsappBtn && (whatsappBtn.style.pointerEvents = 'auto');
+        whatsappBtn.disabled = false;
+        whatsappBtn.setAttribute('aria-disabled','false');
+        whatsappBtn.tabIndex = 0;
+        whatsappBtn.style.pointerEvents = 'auto';
       } else {
         whatsappKnop.style.display = 'none';
-        whatsappBtn && (whatsappBtn.disabled = true);
-        whatsappBtn && (whatsappBtn.style.pointerEvents = 'none');
+        whatsappBtn.disabled = true;
+        whatsappBtn.setAttribute('aria-disabled','true');
+        whatsappBtn.tabIndex = -1;
+        whatsappBtn.style.pointerEvents = 'none';
       }
     } else {
       whatsappKnop.style.display = '';
-      whatsappBtn && (whatsappBtn.disabled = false);
-      whatsappBtn && (whatsappBtn.style.pointerEvents = 'auto');
+      whatsappBtn.disabled = false;
+      whatsappBtn.setAttribute('aria-disabled','false');
+      whatsappBtn.tabIndex = 0;
+      whatsappBtn.style.pointerEvents = 'auto';
     }
   }
   // Initieel en bij wisselen betaalmethode
   document.getElementById('betaalmethode')?.addEventListener('change', updateWhatsappKnopVisibility);
   updateWhatsappKnopVisibility();
+  // Ook na berekenRit direct updaten
+  window.updateWhatsappKnopVisibility = updateWhatsappKnopVisibility;
 
   try {
     const draft = JSON.parse(localStorage.getItem('draftRit'));
