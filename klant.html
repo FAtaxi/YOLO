@@ -1705,6 +1705,7 @@ function updateWhatsappKnopVisibility() {
     } else {
       bevestigContainer.style.display = 'none';
       whatsappKnop.style.display = 'none';
+      whatsappBtn.style.display = 'none'; // Forceer ook de button te verbergen
       whatsappBtn.disabled = true;
       whatsappBtn.setAttribute('aria-disabled','true');
       whatsappBtn.tabIndex = -1;
