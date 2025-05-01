@@ -142,15 +142,19 @@ app.post('/api/pay', async (req, res) => {
   const { amount, description } = req.body;
   if (!amount || !description) return res.status(400).json({ error: 'Ongeldige aanvraag' });
   try {
-    const redirectUrl = `https://yolo-n9xa.onrender.com/betaalstatus.html?id=${payment.id}`;
-    console.log('DEBUG: Mollie redirectUrl die wordt meegestuurd:', redirectUrl);
     const payment = await mollie.payments.create({
       amount: { currency: 'EUR', value: Number(amount).toFixed(2) },
       description,
       method: 'ideal',
-      redirectUrl,
+      redirectUrl: 'https://yolo-n9xa.onrender.com/betaalstatus.html', // tijdelijke URL, want payment.id is nog niet bekend
       webhookUrl: 'https://yolo-n9xa.onrender.com/api/webhook' // Render backend webhook
     });
+    // Nu hebben we payment.id, dus bouw de juiste redirectUrl
+    const redirectUrl = `https://yolo-n9xa.onrender.com/betaalstatus.html?id=${payment.id}`;
+    // Update de payment met de juiste redirectUrl (optioneel, alleen als Mollie dat ondersteunt)
+    // await mollie.payments.update(payment.id, { redirectUrl });
+    console.log('DEBUG: Mollie payment.id:', payment.id);
+    console.log('DEBUG: Mollie redirectUrl die hoort bij deze betaling:', redirectUrl);
     res.json({ checkoutUrl: payment.getCheckoutUrl() });
   } catch (err) {
     console.error('Mollie betaling error:', err);
