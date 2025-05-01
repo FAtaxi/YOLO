@@ -1907,18 +1907,12 @@ async function getTrafficToeslag(start, end) {
     if (ndwResp.ok) {
       const ndwData = await ndwResp.json();
       // ndwData is een lijst van files met locatie, lengte, etc.
-      // Zoek file(s) in de buurt van het midden van de rit (midLat, midLon)
-      const maxDistanceKm = 10; // alleen files binnen 10 km meenemen
-      const filesNearby = (ndwData || []).filter(f => {
-        if (!f.latitude || !f.longitude) return false;
-        const dLat = Math.abs(f.latitude - midLat);
-        const dLon = Math.abs(f.longitude - midLon);
-        // Simpele afstandscheck (voor demo)
-        return dLat < 0.1 && dLon < 0.15; // ca. 10 km
-      });
-      if (filesNearby.length > 0) {
-        // Verhoog toeslag afhankelijk van aantal en lengte files
-        surcharge *= 1 + (0.10 * filesNearby.length); // 10% per file in de buurt
+      // Neem ALLE actuele files in Nederland mee
+      const allFiles = (ndwData || []).filter(f => f.latitude && f.longitude);
+      console.log('Aantal actuele files in Nederland:', allFiles.length);
+      if (allFiles.length > 0) {
+        // Verhoog toeslag afhankelijk van het totaal aantal files in Nederland
+        surcharge *= 1 + (0.01 * allFiles.length); // 1% per file in NL
       }
     } else {
       console.warn('NDW incidenten niet beschikbaar', ndwResp.status);
