@@ -1691,26 +1691,13 @@ function updateWhatsappKnopVisibility() {
       idealBtn.style.display = 'none';
     }
   }
-  const IDEAL_VAL = 'IDEAL Online-Betaal-Link';
   const bevestigContainer = $id('bevestigContainer');
-  const whatsappBtn = $id('whatsappKnop')?.querySelector('button');
-  if (!bevestigContainer || !whatsappBtn) {
-    if (bevestigContainer) bevestigContainer.style.display = 'none';
-    return;
-  }
-  // Alleen tonen als NIET IDEAL, of als IDEAL én betaling geslaagd
-  if (betaalmethode !== IDEAL_VAL || localStorage.getItem('betalingGeslaagd') === '1') {
-    bevestigContainer.style.display = '';
-    whatsappBtn.disabled = false;
-    whatsappBtn.setAttribute('aria-disabled','false');
-    whatsappBtn.tabIndex = 0;
-    whatsappBtn.style.pointerEvents = 'auto';
-  } else {
-    bevestigContainer.style.display = 'none';
-    whatsappBtn.disabled = true;
-    whatsappBtn.setAttribute('aria-disabled','true');
-    whatsappBtn.tabIndex = -1;
-    whatsappBtn.style.pointerEvents = 'none';
+  if (bevestigContainer) {
+    if (betaalmethode === 'IDEAL Online-Betaal-Link' && localStorage.getItem('betalingGeslaagd') !== '1') {
+      bevestigContainer.style.display = 'none';
+    } else {
+      bevestigContainer.style.display = '';
+    }
   }
 }
 
