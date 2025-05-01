@@ -1896,23 +1896,37 @@ async function getTrafficToeslag(start, end) {
     else if (ratio > 0.4) surcharge = 1.15;
     else surcharge = 1.5;
   }
-  // Incidents (vaste tile voor NL)
-  const incUrl = `https://api.tomtom.com/traffic/services/4/incidentDetails/s3/10/4/5/json?key=${TRAFFIC_API_KEY}`;
-  console.log('TomTom incidentDetails vaste tile: /10/4/5 URL:', incUrl);
-  const incResp = await fetch(incUrl);
-  if (!incResp.ok) {
-    const errorText = await incResp.text();
-    console.error('TomTom incidentDetails API error:', incResp.status, errorText, 'Tile:', tile, 'URL:', incUrl);
+  // Incidenten via NDW Open Data (gratis, Nederland)
+  // NDW fileinformatie: https://opendata.ndw.nu/files_ndw.csv.gz (CSV) of https://opendata.ndw.nu/trafficspeed.xml.gz (XML)
+  // Voorbeeld: we gebruiken de NDW actuele files als JSON via een proxy (of backend), want CORS blokkeert directe fetch naar .gz
+  // DEMO: hieronder een fetch naar een NDW JSON-proxy (vervang door je eigen backend/proxy voor productie)
+  try {
+    // Dit is een voorbeeld-API. Voor productie: maak een eigen backend-proxy die NDW-data omzet naar JSON!
+    const ndwUrl = 'https://api.allorigins.win/raw?url=https://opendata.ndw.nu/files_ndw.json';
+    const ndwResp = await fetch(ndwUrl);
+    if (ndwResp.ok) {
+      const ndwData = await ndwResp.json();
+      // ndwData is een lijst van files met locatie, lengte, etc.
+      // Zoek file(s) in de buurt van het midden van de rit (midLat, midLon)
+      const maxDistanceKm = 10; // alleen files binnen 10 km meenemen
+      const filesNearby = (ndwData || []).filter(f => {
+        if (!f.latitude || !f.longitude) return false;
+        const dLat = Math.abs(f.latitude - midLat);
+        const dLon = Math.abs(f.longitude - midLon);
+        // Simpele afstandscheck (voor demo)
+        return dLat < 0.1 && dLon < 0.15; // ca. 10 km
+      });
+      if (filesNearby.length > 0) {
+        // Verhoog toeslag afhankelijk van aantal en lengte files
+        surcharge *= 1 + (0.10 * filesNearby.length); // 10% per file in de buurt
+      }
+    } else {
+      console.warn('NDW incidenten niet beschikbaar', ndwResp.status);
+    }
+  } catch (err) {
+    console.warn('NDW incidenten ophalen mislukt', err);
   }
-  const inc = incResp.ok ? await incResp.json() : null;
-  if (inc && inc.incidents) {
-    // lane closures
-    (inc.incidents.roadClosureDetails||[]).forEach(()=> surcharge *= 1.03);
-    // road works
-    (inc.incidents.roadWorks||[]).forEach(() => surcharge *= 1 + (0.05 + Math.random() * 0.10));
-    // accidents
-    (inc.incidents.trafficIncidents||[]).filter(i=>i.eventType==='ACCIDENT').forEach(() => surcharge *= 1 + (0.20 + Math.random() * 0.30));
-  }
+
   return surcharge;
 }
 
