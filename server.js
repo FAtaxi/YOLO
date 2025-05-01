@@ -13,6 +13,12 @@ const mollie = createMollieClient({
 const app = express();
 const PORT = 3000;
 
+// Middleware om Content-Security-Policy header te verwijderen
+app.use((req, res, next) => {
+  res.removeHeader('Content-Security-Policy');
+  next();
+});
+
 // Eenvoudige gebruikersnaam en wachtwoord (alleen op de server zichtbaar)
 const ADMIN_USER = 'admin';
 const ADMIN_PASS = 'Ahllen2@';
