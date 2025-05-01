@@ -1588,7 +1588,7 @@ button {
 </div>
 <!-- Hoekknoppen -->
   <label for="ophaaladres" id="labelOphaal">📍 OPHAAL ADRES 📍 </label>
-  <div class="input-wrapper">
+  <div class="input-wrapper" style="position:relative; width:100%;">
     <input 
       type="text" 
       id="ophaaladres" 
@@ -1598,7 +1598,7 @@ button {
       aria-label="Ophaaladres" 
       required 
     />
-    <div id="ophaaladres-suggesties" class="adres-suggesties"></div>
+    <div id="ophaaladres-suggesties" class="adres-suggesties" style="position:absolute; top:100%; left:0; width:100%; z-index:10;"></div>
     <button type="button" onclick="gebruikLocatie()" id="locatieBtn">📍 Mijn locatie</button>
   </div>
 
@@ -1692,38 +1692,25 @@ function updateWhatsappKnopVisibility() {
     }
   }
   const IDEAL_VAL = 'IDEAL Online-Betaal-Link';
-  // WhatsApp-knop is een <a> met een <button> erin
-  const bevestigContainer = $id('bevestigContainer') || $id('whatsappKnop');
-  const whatsappKnop = $id('whatsappKnop');
-  const whatsappBtn = whatsappKnop && whatsappKnop.querySelector('button');
-  // Altijd standaard verbergen als element niet bestaat
-  if (!bevestigContainer || !whatsappKnop || !whatsappBtn) {
+  const bevestigContainer = $id('bevestigContainer');
+  const whatsappBtn = $id('whatsappKnop')?.querySelector('button');
+  if (!bevestigContainer || !whatsappBtn) {
     if (bevestigContainer) bevestigContainer.style.display = 'none';
     return;
   }
-  // Container alleen tonen bij Tikkie, Pin bij chauffeur, Contant
-  if (betaalmethode === IDEAL_VAL) {
-    // Alleen tonen als betaling geslaagd (bijv. op betaalstatus pagina na redirect)
-    if (localStorage.getItem('betalingGeslaagd') === '1') {
-      bevestigContainer.style.display = '';
-      whatsappBtn.disabled = false;
-      whatsappBtn.setAttribute('aria-disabled','false');
-      whatsappBtn.tabIndex = 0;
-      whatsappBtn.style.pointerEvents = 'auto';
-    } else {
-      bevestigContainer.style.display = 'none';
-      whatsappBtn.disabled = true;
-      whatsappBtn.setAttribute('aria-disabled','true');
-      whatsappBtn.tabIndex = -1;
-      whatsappBtn.style.pointerEvents = 'none';
-    }
-  } else {
-    // Bij alle andere methodes altijd tonen
+  // Alleen tonen als NIET IDEAL, of als IDEAL én betaling geslaagd
+  if (betaalmethode !== IDEAL_VAL || localStorage.getItem('betalingGeslaagd') === '1') {
     bevestigContainer.style.display = '';
     whatsappBtn.disabled = false;
     whatsappBtn.setAttribute('aria-disabled','false');
     whatsappBtn.tabIndex = 0;
     whatsappBtn.style.pointerEvents = 'auto';
+  } else {
+    bevestigContainer.style.display = 'none';
+    whatsappBtn.disabled = true;
+    whatsappBtn.setAttribute('aria-disabled','true');
+    whatsappBtn.tabIndex = -1;
+    whatsappBtn.style.pointerEvents = 'none';
   }
 }
 
@@ -1742,38 +1729,38 @@ document.addEventListener('DOMContentLoaded', function() {
   });
   updateWhatsappKnopVisibility();
   window.updateWhatsappKnopVisibility = updateWhatsappKnopVisibility;
-
-  try {
-    const draft = JSON.parse(localStorage.getItem('draftRit'));
-    if (draft) {
-      const fields = ['ophaaladres','afzetadres','tijdstip','betaalmethode','kortingscode','huisdieren','opmerkingen'];
-      fields.forEach(function(id) {
-        const el = document.getElementById(id);
-        if (!el) return;
-        if (id === 'huisdieren') {
-          el.value = draft[id] || '0';
-          // Eventueel ook de knop visueel aanpassen
-          const btn = document.getElementById('huisdierBtn');
-          if (btn) {
-            if (el.value === '1') {
-              btn.innerText = '✅ Huisdier toegevoegd €5,-';
-              btn.style.background = 'gold';
-              btn.style.color = 'black';
-            } else {
-              btn.innerText = '🐶 Huisdieren €5,- 🐶';
-              btn.style.background = '';
-              btn.style.color = '';
-            }
-          }
-        } else if (id === 'opmerkingen') {
-          el.value = draft[id] || '';
-        } else {
-          el.value = draft[id] || '';
-        }
-      });
-    }
-  } catch {}
 });
+
+try {
+  const draft = JSON.parse(localStorage.getItem('draftRit'));
+  if (draft) {
+    Object.keys(draft).forEach(id => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      if (id === 'huisdieren') {
+        el.value = draft[id] || '0';
+        // Eventueel ook de knop visueel aanpassen
+        const btn = document.getElementById('huisdierBtn');
+        if (btn) {
+          if (el.value === '1') {
+            btn.innerText = '✅ Huisdier toegevoegd €5,-';
+            btn.style.background = 'gold';
+            btn.style.color = 'black';
+          } else {
+            btn.innerText = '🐶 Huisdieren €5,- 🐶';
+            btn.style.background = '';
+            btn.style.color = '';
+          }
+        }
+      } else if (id === 'opmerkingen') {
+        el.value = draft[id] || '';
+      } else {
+        el.value = draft[id] || '';
+      }
+    });
+  }
+} catch (e) { }
+
 let spoedToeslag = 0;
 let lastPrice = 0; // voor iDEAL betaling
 const ADMIN_WACHTWOORD_HASH = "d8c4248ef9765da2dc5434444e41d6df23e07e7ce7c1a834fe979983e097af77";
@@ -2167,13 +2154,9 @@ async function berekenRit() {
   // WhatsApp-knop zichtbaarheid ALLEEN via updateWhatsappKnopVisibility()
   if (typeof updateWhatsappKnopVisibility === 'function') updateWhatsappKnopVisibility();
 
-  // toon iDEAL knop voor Online betaallink
+  // iDEAL knop wordt altijd via updateWhatsappKnopVisibility geregeld
   lastPrice = ritprijs;
-  if (betaalmethode === 'IDEAL Online-Betaal-Link') {
-    document.getElementById('idealPayBtn').style.display = 'block';
-  } else {
-    document.getElementById('idealPayBtn').style.display = 'none';
-  }
+
   } catch (err) {
     alert("Er is een fout opgetreden bij het berekenen van de rit: " + (err.message || err));
   }
