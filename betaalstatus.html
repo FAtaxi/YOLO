@@ -31,6 +31,22 @@
       if (!paymentId) {
         document.getElementById('statusTitle').textContent = 'Geen betaling gevonden';
         document.getElementById('statusMsg').textContent = 'Er is geen betalings-ID gevonden.';
+        // Toon knoppen voor opnieuw betalen of terug
+        const container = document.getElementById('statusContainer');
+        const opnieuwBtn = document.createElement('button');
+        opnieuwBtn.className = 'home-btn';
+        opnieuwBtn.textContent = 'Opnieuw proberen';
+        opnieuwBtn.onclick = function() {
+          window.location.href = 'klant.html'; // Of: window.history.back();
+        };
+        const terugBtn = document.createElement('button');
+        terugBtn.className = 'home-btn';
+        terugBtn.textContent = 'Terug naar boekingspagina';
+        terugBtn.onclick = function() {
+          window.location.href = 'klant.html';
+        };
+        container.appendChild(opnieuwBtn);
+        container.appendChild(terugBtn);
         return;
       }
       let tries = 0;
@@ -54,11 +70,24 @@
           }
           if (['failed', 'canceled', 'expired'].includes(data.status)) {
             document.getElementById('statusTitle').textContent = 'Betaling niet geslaagd';
-            document.getElementById('statusMsg').textContent = 'Uw betaling is niet gelukt. Probeer opnieuw of kies een andere betaalwijze.';
+            document.getElementById('statusMsg').textContent = 'Uw betaling is niet gelukt. U kunt het direct opnieuw proberen of terug naar de boekingspagina.';
             document.getElementById('pushFail').style.display = 'block';
-            setTimeout(()=>{
+            // Toon knoppen voor opnieuw betalen of terug
+            const container = document.getElementById('statusContainer');
+            const opnieuwBtn = document.createElement('button');
+            opnieuwBtn.className = 'home-btn';
+            opnieuwBtn.textContent = 'Opnieuw proberen';
+            opnieuwBtn.onclick = function() {
+              window.location.href = 'klant.html'; // Of: window.history.back();
+            };
+            const terugBtn = document.createElement('button');
+            terugBtn.className = 'home-btn';
+            terugBtn.textContent = 'Terug naar boekingspagina';
+            terugBtn.onclick = function() {
               window.location.href = 'klant.html';
-            }, 5500);
+            };
+            container.appendChild(opnieuwBtn);
+            container.appendChild(terugBtn);
             return;
           }
           // Bij open/pending: nogmaals proberen
