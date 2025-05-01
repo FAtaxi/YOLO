@@ -24,7 +24,7 @@
   </div>
   <script>
     // Functie om Mollie payment status op te vragen
-    async function checkPayment() {
+    async function checkPayment(maxTries = 5, delayMs = 2000) {
       const urlParams = new URLSearchParams(window.location.search);
       const paymentId = urlParams.get('id');
       if (!paymentId) {
@@ -32,34 +32,56 @@
         document.getElementById('statusMsg').textContent = 'Er is geen betalings-ID gevonden.';
         return;
       }
-      try {
-        const res = await fetch('https://yolo-n9xa.onrender.com/api/payment-status?id=' + encodeURIComponent(paymentId));
-        const data = await res.json();
-        if (data.status === 'paid') {
-          document.getElementById('statusTitle').textContent = 'Betaling geslaagd!';
-          document.getElementById('statusMsg').textContent = 'Uw betaling is succesvol ontvangen.';
-          // Toon WhatsApp knop
-          document.getElementById('whatsappBtn').style.display = 'inline-block';
-          document.getElementById('whatsappBtn').onclick = function() {
-            const msg = encodeURIComponent('Mijn taxi-rit is betaald via iDEAL. Graag bevestiging van mijn reservering.');
-            window.open('https://wa.me/31612345678?text=' + msg, '_blank');
+      let tries = 0;
+      let lastStatus = '';
+      async function poll() {
+        tries++;
+        try {
+          const res = await fetch('https://yolo-n9xa.onrender.com/api/payment-status?id=' + encodeURIComponent(paymentId));
+          const data = await res.json();
+          lastStatus = data.status;
+          if (data.status === 'paid') {
+            document.getElementById('statusTitle').textContent = 'Betaling geslaagd!';
+            document.getElementById('statusMsg').textContent = 'Uw betaling is succesvol ontvangen.';
+            document.getElementById('whatsappBtn').style.display = 'inline-block';
+            document.getElementById('whatsappBtn').onclick = function() {
+              const msg = encodeURIComponent('Mijn taxi-rit is betaald via iDEAL. Graag bevestiging van mijn reservering.');
+              window.open('https://wa.me/31612345678?text=' + msg, '_blank');
+            }
+            return;
           }
-        } else {
-          document.getElementById('statusTitle').textContent = 'Betaling niet geslaagd';
-          document.getElementById('statusMsg').textContent = 'Uw betaling is niet gelukt. Probeer opnieuw of kies een andere betaalwijze.';
+          if (['failed', 'canceled', 'expired'].includes(data.status)) {
+            document.getElementById('statusTitle').textContent = 'Betaling niet geslaagd';
+            document.getElementById('statusMsg').textContent = 'Uw betaling is niet gelukt. Probeer opnieuw of kies een andere betaalwijze.';
+            document.getElementById('pushFail').style.display = 'block';
+            setTimeout(()=>{
+              window.location.href = 'klant.html';
+            }, 5500);
+            return;
+          }
+          // Bij open/pending: nogmaals proberen
+          if (tries < maxTries) {
+            document.getElementById('statusTitle').textContent = 'Betaling wordt verwerkt...';
+            document.getElementById('statusMsg').textContent = 'We controleren uw betaling. Even geduld alstublieft.';
+            setTimeout(poll, delayMs);
+          } else {
+            document.getElementById('statusTitle').textContent = 'Betaling niet bevestigd';
+            document.getElementById('statusMsg').textContent = 'We konden de status van uw betaling niet bevestigen ('+lastStatus+'). Neem contact op of probeer opnieuw.';
+            document.getElementById('pushFail').style.display = 'block';
+            setTimeout(()=>{
+              window.location.href = 'klant.html';
+            }, 6000);
+          }
+        } catch (e) {
+          document.getElementById('statusTitle').textContent = 'Fout bij controleren betaling';
+          document.getElementById('statusMsg').textContent = 'Probeer het later opnieuw.';
           document.getElementById('pushFail').style.display = 'block';
           setTimeout(()=>{
             window.location.href = 'klant.html';
           }, 5500);
         }
-      } catch (e) {
-        document.getElementById('statusTitle').textContent = 'Fout bij controleren betaling';
-        document.getElementById('statusMsg').textContent = 'Probeer het later opnieuw.';
-        document.getElementById('pushFail').style.display = 'block';
-        setTimeout(()=>{
-          window.location.href = 'klant.html';
-        }, 5500);
       }
+      poll();
     }
     checkPayment();
   </script>
