@@ -142,11 +142,13 @@ app.post('/api/pay', async (req, res) => {
   const { amount, description } = req.body;
   if (!amount || !description) return res.status(400).json({ error: 'Ongeldige aanvraag' });
   try {
+    const redirectUrl = `https://yolo-n9xa.onrender.com/betaalstatus.html?id=${payment.id}`;
+    console.log('DEBUG: Mollie redirectUrl die wordt meegestuurd:', redirectUrl);
     const payment = await mollie.payments.create({
       amount: { currency: 'EUR', value: Number(amount).toFixed(2) },
       description,
       method: 'ideal',
-      redirectUrl: `https://yolo-n9xa.onrender.com/betaalstatus.html?id=${payment.id}`, // Dynamische statuspagina
+      redirectUrl,
       webhookUrl: 'https://yolo-n9xa.onrender.com/api/webhook' // Render backend webhook
     });
     res.json({ checkoutUrl: payment.getCheckoutUrl() });
@@ -174,3 +176,15 @@ app.get('/api/payment-status', async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: 'Status ophalen mislukt' });
   }
+});
+
+// Mollie webhook endpoint
+app.post('/api/webhook', express.json(), (req, res) => {
+  // Je kunt hier logging toevoegen of de betalingstatus verwerken
+  console.log('Webhook ontvangen van Mollie:', req.body);
+  res.status(200).send('ok');
+});
+
+app.listen(PORT, () => {
+  console.log(`Server gestart op http://localhost:${PORT}`);
+});
