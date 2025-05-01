@@ -1901,8 +1901,8 @@ async function getTrafficToeslag(start, end) {
   // Voorbeeld: we gebruiken de NDW actuele files als JSON via een proxy (of backend), want CORS blokkeert directe fetch naar .gz
   // DEMO: hieronder een fetch naar een NDW JSON-proxy (vervang door je eigen backend/proxy voor productie)
   try {
-    // Dit is een voorbeeld-API. Voor productie: maak een eigen backend-proxy die NDW-data omzet naar JSON!
-    const ndwUrl = 'https://api.allorigins.win/raw?url=https://opendata.ndw.nu/files_ndw.json';
+    // Haal NDW files op via eigen backend (proxy)
+    const ndwUrl = 'http://localhost:3001/api/ndwfiles';
     const ndwResp = await fetch(ndwUrl);
     if (ndwResp.ok) {
       const ndwData = await ndwResp.json();
