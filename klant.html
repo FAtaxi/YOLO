@@ -1872,6 +1872,15 @@ function berekenRitprijs(afstand, duur, weer) {
   return totalePrijs;
 }
 
+// Function to convert latitude and longitude to tile coordinates (TMS/Slippy Map)
+function deg2tile(lat_deg, lon_deg, zoom) {
+  const lat_rad = Math.PI * lat_deg / 180;
+  const n = Math.pow(2.0, zoom);
+  const xtile = Math.floor((lon_deg + 180.0) / 360.0 * n);
+  const ytile = Math.floor((1.0 - Math.log(Math.tan(lat_rad) + (1 / Math.cos(lat_rad))) / Math.PI) / 2.0 * n);
+  return { x: xtile, y: ytile, zoom: zoom };
+}
+
 async function getTrafficToeslag(start, end) {
   const midLat = (start[1] + end[1]) / 2;
   const midLon = (start[0] + end[0]) / 2;
@@ -1887,8 +1896,9 @@ async function getTrafficToeslag(start, end) {
     else if (ratio > 0.4) surcharge = 1.15;
     else surcharge = 1.5;
   }
-  // Incidents (optional)
-  const incUrl = `https://api.tomtom.com/traffic/services/4/incidentDetails/s3/10/4/5/json?key=${TRAFFIC_API_KEY}`; // Heel Nederland tile
+  // Incidents (dynamische tile)
+  const tile = deg2tile(midLat, midLon, 10); // zoom 10
+  const incUrl = `https://api.tomtom.com/traffic/services/4/incidentDetails/s3/${tile.zoom}/${tile.x}/${tile.y}/json?key=${TRAFFIC_API_KEY}`;
   const incResp = await fetch(incUrl);
   if (!incResp.ok) {
     console.error('TomTom incidentDetails API error:', incResp.status, await incResp.text());
@@ -1904,6 +1914,7 @@ async function getTrafficToeslag(start, end) {
   }
   return surcharge;
 }
+
 
 function pasKortingscodeToe(ritprijs) {
   const code = document.getElementById("kortingscode").value.trim();
