@@ -1763,14 +1763,14 @@ function generateRitID() {
 
 function berekenRitprijs(afstand, duur, weer) {
   let basis = 0;
-  if (afstand <= 3) basis = 10;
-  else if (afstand <= 4) basis = 11.5;
-  else if (afstand <= 5) basis = 13;
-  else if (afstand <= 6) basis = 14.5;
-  else if (afstand <= 7) basis = 16;
-  else if (afstand <= 8) basis = 17.5;
-  else if (afstand <= 9) basis = 19;
-  else basis = 2.5 + (afstand * 1.5) + (duur * 0.5);
+  if (afstand <= 3) basis = 15;
+  else if (afstand <= 4) basis = 17.5;
+  else if (afstand <= 5) basis = 20;
+  else if (afstand <= 6) basis = 22.5;
+  else if (afstand <= 7) basis = 25;
+  else if (afstand <= 8) basis = 27.5;
+  else if (afstand <= 9) basis = 30;
+  else basis = 3.5 + (afstand * 2.5) + (duur * 0.5);
 
   let weerToeslag = 1;
   if (weer.toLowerCase().includes("patchy rain")) weerToeslag = 1.05;
