@@ -3,6 +3,12 @@ const session = require('express-session');
 const path = require('path');
 const PDFDocument = require('pdfkit');
 const nodemailer = require('nodemailer');
+const { createMollieClient } = require('@mollie/api-client');
+
+// Gebruik test-API-key uit env of hardcoded (alleen voor test!)
+const mollie = createMollieClient({
+  apiKey: 'test_BzzwVfz5eDbPn5HCHKKt2DDHzSHEk7'
+});
 
 const app = express();
 const PORT = 3000;
@@ -20,7 +26,7 @@ app.use(session({
   cookie: { maxAge: 60 * 60 * 1000 } // 1 uur
 }));
 
-// Statische bestanden serveren (index.html, admin.html, etc.)
+// Statische bestanden serveren (klant.html, admin.html, etc.)
 app.use(express.static(path.join(__dirname, '..')));
 
 // Middleware: beveilig admin.html
@@ -112,6 +118,25 @@ app.post('/email-rit', (req, res) => {
   });
   doc.text(`Rit details:\n${JSON.stringify(rit, null, 2)}`);
   doc.end();
+});
+
+// Endpoint: Start iDEAL betaling
+app.post('/api/pay', async (req, res) => {
+  const { amount, description } = req.body;
+  if (!amount || !description) return res.status(400).json({ error: 'Ongeldige aanvraag' });
+  try {
+    const payment = await mollie.payments.create({
+      amount: { currency: 'EUR', value: Number(amount).toFixed(2) },
+      description,
+      method: 'ideal',
+      redirectUrl: 'https://www.fa-taxi.nl/bedankt.html', // pas aan naar jouw bedankpagina
+      webhookUrl: 'https://www.fa-taxi.nl/api/webhook' // pas aan naar jouw backend webhook
+    });
+    res.json({ checkoutUrl: payment.getCheckoutUrl() });
+  } catch (err) {
+    console.error('Mollie betaling error:', err);
+    res.status(500).json({ error: 'Mollie betaling mislukt' });
+  }
 });
 
 app.listen(PORT, () => {
