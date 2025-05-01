@@ -1587,49 +1587,73 @@ button {
   </svg>
 </div>
 <!-- Hoekknoppen -->
-
-
-<div class="container">
   <label for="ophaaladres" id="labelOphaal">📍 OPHAAL ADRES 📍 </label>
-  <div class="input-wrapper" style="position:relative; width:100%;">
-    <input type="text" id="ophaaladres" placeholder="Bijv. Stationsplein 1, Amsterdam" autocomplete="off" oninput="zoekAdresSuggesties(this, 'ophaaladres-suggesties')" aria-label="Ophaaladres" required />
-    <div id="ophaaladres-suggesties" class="adres-suggesties" style="position:absolute; top:100%; left:0; width:100%; right:auto;"></div>
-    <button onclick="gebruikLocatie()" id="locatieBtn" style="margin:0.5rem 0;">📍 Mijn locatie</button>
-  </div>
-  <label for="afzetadres" id="labelAfzet">📍 AFZET ADRES 📍</label>
-  <div class="input-wrapper" style="position:relative; width:100%;">
-    <input type="text" id="afzetadres" placeholder="Bijv. Damrak 50, Amsterdam" autocomplete="off" oninput="zoekAdresSuggesties(this, 'afzetadres-suggesties')" aria-label="Afzetadres" required />
-    <div id="afzetadres-suggesties" class="adres-suggesties" style="position:absolute; top:100%; left:0; width:100%; right:auto;"></div>
+  <div class="input-wrapper">
+    <input 
+      type="text" 
+      id="ophaaladres" 
+      placeholder="Bijv. Stationsplein 1, Amsterdam" 
+      autocomplete="off" 
+      oninput="zoekAdresSuggesties(this, 'ophaaladres-suggesties')" 
+      aria-label="Ophaaladres" 
+      required 
+    />
+    <div id="ophaaladres-suggesties" class="adres-suggesties"></div>
+    <button type="button" onclick="gebruikLocatie()" id="locatieBtn">📍 Mijn locatie</button>
   </div>
 
-  <button onclick="toggleDatum()" id="toggleDatumBtn" aria-controls="datumContainer" aria-expanded="false">📅 Reserveren? €17.50,- 📅</button>
+  <label for="afzetadres" id="labelAfzet">📍 AFZET ADRES 📍</label>
+  <div class="input-wrapper">
+    <input 
+      type="text" 
+      id="afzetadres" 
+      placeholder="Bijv. Damrak 50, Amsterdam" 
+      autocomplete="off" 
+      oninput="zoekAdresSuggesties(this, 'afzetadres-suggesties')" 
+      aria-label="Afzetadres" 
+      required 
+    />
+    <div id="afzetadres-suggesties" class="adres-suggesties"></div>
+  </div>
+
+  <button type="button" onclick="toggleDatum()" id="toggleDatumBtn" aria-controls="datumContainer" aria-expanded="false">📅 Reserveren? €17.50,- 📅</button>
 
   <div id="datumContainer">
-    <label for="tijdstip" id="labelTijdstip">🕒 Gewenst tijdstip 🕒 </label>
+    <label for="tijdstip" id="labelTijdstip">🕒 Gewenst tijdstip 🕒</label>
     <input type="datetime-local" id="tijdstip" aria-label="Gewenst tijdstip" />
   </div>
 
   <label for="betaalmethode" id="labelBetaal">💳 Kies een betaalmethode 💳</label>
   <select id="betaalmethode" aria-label="Betaalmethode" required>
-    <option value="Online betaallink">🌐 IDEAL</option>
-    <option value="Tikkie">🔗 Tikkie (online Betaal-Link)</option>
+    <option value="IDEAL Online-Betaal-Link">🌐 IDEAL Online-Betaal-Link</option>
+    <option value="Tikkie">🔗 Tikkie</option>
     <option value="Pin bij chauffeur">💳 Pin bij chauffeur</option>
     <option value="Contant">💶 Contant</option>
   </select>
 
-  <label for="kortingscode" id="labelKorting"> 💰 Kortingscode 💰  </label>
-  <input type="text" id="kortingscode" placeholder="Voer uw kortingscode in" aria-label="Kortingscode" />
+  <label for="kortingscode" id="labelKorting">💰 Kortingscode 💰</label>
+  <input 
+    type="text" 
+    id="kortingscode" 
+    placeholder="Voer uw kortingscode in" 
+    aria-label="Kortingscode" 
+  />
 
   <label for="opmerkingen" id="labelOpmerkingen">✏️ Opmerkingen ✏️</label>
-  <textarea id="opmerkingen" placeholder="Bijvoorbeeld: helpen met bagage, bijzonderheden, etc." rows="2" style="resize:vertical; background:#222; color:#fff; border-radius:5px; width:100%; margin:0.5rem 0; padding:0.7rem;"></textarea>
+  <textarea 
+    id="opmerkingen" 
+    placeholder="Bijvoorbeeld: helpen met bagage, bijzonderheden, etc." 
+    rows="2"
+    style="resize:vertical; background:#222; color:#fff; border-radius:5px; width:100%; margin:0.5rem 0; padding:0.7rem;"
+  ></textarea>
 
-  <button onclick="toggleHuisdier()" id="huisdierBtn">🐶 Huisdieren €5,- 🐶</button>
-<input type="hidden" id="huisdieren" value="0">
-  
-  <button onclick="toggleSpoed()" id="spoedBtn">🚀 Spoedrit €10 🚀</button>
+  <button type="button" onclick="toggleHuisdier()" id="huisdierBtn">🐶 Huisdieren €5,- 🐶</button>
+  <input type="hidden" id="huisdieren" value="0">
+
+  <button type="button" onclick="toggleSpoed()" id="spoedBtn">🚀 Spoedrit €10 🚀</button>
 
   <button onclick="toggleAkkoord()" id="akkoordBtn">🚨 Annuleringskosten €10,- 🚨</button>
-<input type="hidden" id="akkoord" value="0">
+  <input type="hidden" id="akkoord" value="0">
 
   <button onclick="berekenRit()" id="btnBereken">🚖 Bereken ritprijs 🚖</button>
 
@@ -1650,56 +1674,54 @@ button {
 'use strict';
 
 // --- DraftRit automatisch terugzetten bij laden pagina ---
-document.addEventListener('DOMContentLoaded', function() {
-  // WhatsApp-knop tonen/verbergen op basis van betaalmethode en betaalstatus
-  function updateWhatsappKnopVisibility() {
-    const betaalmethode = document.getElementById('betaalmethode')?.value;
-    const whatsappKnop = document.getElementById('whatsappKnop');
-    const whatsappBtn = whatsappKnop?.querySelector('button');
-    if (!whatsappKnop || !whatsappBtn) return;
-    // iDEAL: alleen tonen als betaling geslaagd is
-    if (betaalmethode === 'Online betaallink') {
-      // Reset betalingGeslaagd altijd bij wissel naar iDEAL, behalve als hij al '1' is
-      if (localStorage.getItem('betalingGeslaagd') !== '1') {
-        localStorage.setItem('betalingGeslaagd','0');
-      }
-      if (localStorage.getItem('betalingGeslaagd') === '1') {
-        whatsappKnop.style.display = '';
-        whatsappBtn.disabled = false;
-        whatsappBtn.setAttribute('aria-disabled','false');
-        whatsappBtn.tabIndex = 0;
-        whatsappBtn.style.pointerEvents = 'auto';
-      } else {
-        whatsappKnop.style.display = 'none';
-        whatsappBtn.disabled = true;
-        whatsappBtn.setAttribute('aria-disabled','true');
-        whatsappBtn.tabIndex = -1;
-        whatsappBtn.style.pointerEvents = 'none';
-      }
-    } else {
+// Hulpfunctie voor snelle ID-selectie
+function $id(id) { return document.getElementById(id); }
+
+// WhatsApp-knop tonen/verbergen (herbruikbaar)
+function updateWhatsappKnopVisibility() {
+  const IDEAL_VAL = 'IDEAL Online-Betaal-Link';
+  const betaalmethode = $id('betaalmethode')?.value;
+  const whatsappKnop = $id('whatsappKnop');
+  const whatsappBtn = whatsappKnop?.querySelector('button');
+  if (!whatsappKnop || !whatsappBtn) return;
+  if (betaalmethode === IDEAL_VAL) {
+    if (localStorage.getItem('betalingGeslaagd') !== '1') {
+      localStorage.setItem('betalingGeslaagd','0');
+    }
+    if (localStorage.getItem('betalingGeslaagd') === '1') {
       whatsappKnop.style.display = '';
       whatsappBtn.disabled = false;
       whatsappBtn.setAttribute('aria-disabled','false');
       whatsappBtn.tabIndex = 0;
       whatsappBtn.style.pointerEvents = 'auto';
+    } else {
+      whatsappKnop.style.display = 'none';
+      whatsappBtn.disabled = true;
+      whatsappBtn.setAttribute('aria-disabled','true');
+      whatsappBtn.tabIndex = -1;
+      whatsappBtn.style.pointerEvents = 'none';
     }
+  } else {
+    whatsappKnop.style.display = '';
+    whatsappBtn.disabled = false;
+    whatsappBtn.setAttribute('aria-disabled','false');
+    whatsappBtn.tabIndex = 0;
+    whatsappBtn.style.pointerEvents = 'auto';
   }
-  // Initieel en bij wisselen betaalmethode
-  document.getElementById('betaalmethode')?.addEventListener('change', function() {
-    // Reset betalingGeslaagd bij elke wissel naar iDEAL
-    if (document.getElementById('betaalmethode')?.value === 'Online betaallink') {
-      if (localStorage.getItem('betalingGeslaagd') !== '1') {
-        localStorage.setItem('betalingGeslaagd','0');
-      }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  // Reset betalingGeslaagd als iDEAL geselecteerd bij laden
+  if ($id('betaalmethode')?.value === 'IDEAL Online-Betaal-Link' && localStorage.getItem('betalingGeslaagd') !== '1') {
+    localStorage.setItem('betalingGeslaagd','0');
+  }
+  $id('betaalmethode')?.addEventListener('change', function() {
+    if ($id('betaalmethode')?.value === 'IDEAL Online-Betaal-Link' && localStorage.getItem('betalingGeslaagd') !== '1') {
+      localStorage.setItem('betalingGeslaagd','0');
     }
     updateWhatsappKnopVisibility();
   });
-  // Ook bij laden: resetten als iDEAL geselecteerd is en geen betaling geslaagd
-  if (document.getElementById('betaalmethode')?.value === 'Online betaallink' && localStorage.getItem('betalingGeslaagd') !== '1') {
-    localStorage.setItem('betalingGeslaagd','0');
-  }
   updateWhatsappKnopVisibility();
-  // Ook na berekenRit direct updaten
   window.updateWhatsappKnopVisibility = updateWhatsappKnopVisibility;
 
   try {
@@ -2127,7 +2149,7 @@ async function berekenRit() {
 
   // toon iDEAL knop voor Online betaallink
   lastPrice = ritprijs;
-  if (betaalmethode === 'IDEAL') {
+  if (betaalmethode === 'IDEAL Online-Betaal-Link') {
     document.getElementById('idealPayBtn').style.display = 'block';
   } else {
     document.getElementById('idealPayBtn').style.display = 'none';
