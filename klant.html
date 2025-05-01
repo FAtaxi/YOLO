@@ -1919,7 +1919,7 @@ async function getTrafficToeslag(start, end) {
       console.warn('NDW fetch timeout of error:', err.message);
       ndwResp = null;
     }
-    if (ndwResp.ok) {
+    if (ndwResp && ndwResp.ok) {
       const ndwData = await ndwResp.json();
       // ndwData is een lijst van files met locatie, lengte, etc.
       // Zoek alleen files in de buurt van de route (tussen ophaal en afzet)
