@@ -63,7 +63,33 @@
             document.getElementById('statusMsg').textContent = 'Uw betaling is succesvol ontvangen.';
             document.getElementById('whatsappBtn').style.display = 'inline-block';
             document.getElementById('whatsappBtn').onclick = function() {
-              const msg = encodeURIComponent('Mijn taxi-rit is betaald via iDEAL. Graag bevestiging van mijn reservering.');
+              // Haal ritgegevens uit localStorage
+              let rit = null;
+              try {
+                // Probeer de laatste rit uit 'ritten' (array met afgeronde ritten)
+                const ritten = JSON.parse(localStorage.getItem('ritten'));
+                if (Array.isArray(ritten) && ritten.length > 0) {
+                  rit = ritten[ritten.length - 1];
+                } else {
+                  // Anders: neem concept uit 'draftRit'
+                  rit = JSON.parse(localStorage.getItem('draftRit'));
+                }
+              } catch {}
+              // Bouw bericht op
+              let bericht = '✅ Mijn taxi-rit is betaald via iDEAL.\n';
+              bericht += 'Graag bevestiging van mijn reservering.\n';
+              if (rit) {
+                bericht += '\n--- Ritgegevens ---';
+                if (rit.ritId) bericht += `\nRit-ID: ${rit.ritId}`;
+                if (rit.ophaaladres) bericht += `\nOphaaladres: ${rit.ophaaladres}`;
+                if (rit.afzetadres) bericht += `\nBestemming: ${rit.afzetadres}`;
+                if (rit.tijdstip) bericht += `\nTijdstip: ${rit.tijdstip}`;
+                if (rit.betaalmethode) bericht += `\nBetaalmethode: ${rit.betaalmethode}`;
+                if (rit.kortingscode) bericht += `\nKortingscode: ${rit.kortingscode}`;
+                if (rit.huisdieren && rit.huisdieren !== '0') bericht += `\nHuisdieren: Ja`;
+                if (rit.opmerkingen) bericht += `\nOpmerkingen: ${rit.opmerkingen}`;
+              }
+              const msg = encodeURIComponent(bericht);
               window.open('https://wa.me/+31647972301?text=' + msg, '_blank');
             }
             return;
