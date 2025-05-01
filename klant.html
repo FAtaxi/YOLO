@@ -1889,8 +1889,12 @@ async function getTrafficToeslag(start, end) {
   }
   // Incidents (optional)
   const bbox = `${midLat-0.01},${midLon-0.01},${midLat+0.01},${midLon+0.01}`;
-  const incUrl = `https://api.tomtom.com/traffic/services/4/incidentDetails/s3/25/json?bbox=${bbox}&key=${TRAFFIC_API_KEY}`;
-  const inc = await fetch(incUrl).then(r=>r.json()).catch(()=>null);
+  const incUrl = `https://api.tomtom.com/traffic/services/4/incidentDetails/s3/10/json?bbox=${bbox}&key=${TRAFFIC_API_KEY}`;
+  const incResp = await fetch(incUrl);
+  if (!incResp.ok) {
+    console.error('TomTom incidentDetails API error:', incResp.status, await incResp.text());
+  }
+  const inc = incResp.ok ? await incResp.json() : null;
   if (inc && inc.incidents) {
     // lane closures
     (inc.incidents.roadClosureDetails||[]).forEach(()=> surcharge *= 1.03);
@@ -2268,7 +2272,3 @@ window.addEventListener('DOMContentLoaded', () => {
       alert('Betaling kon niet worden gestart.');
     }
   }
-</script>
-
-</body>
-</html>
