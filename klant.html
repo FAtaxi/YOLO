@@ -1693,11 +1693,8 @@ function updateWhatsappKnopVisibility() {
   }
   const bevestigContainer = $id('bevestigContainer');
   if (bevestigContainer) {
-    if (betaalmethode === 'IDEAL Online-Betaal-Link' && localStorage.getItem('betalingGeslaagd') !== '1') {
-      bevestigContainer.style.display = 'none';
-    } else {
-      bevestigContainer.style.display = '';
-    }
+    const hide = (betaalmethode === 'IDEAL Online-Betaal-Link' && localStorage.getItem('betalingGeslaagd') !== '1');
+    bevestigContainer.style.setProperty('display', hide ? 'none' : '', 'important');
   }
 }
 
