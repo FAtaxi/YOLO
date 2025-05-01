@@ -1903,7 +1903,21 @@ async function getTrafficToeslag(start, end) {
   try {
     // Haal NDW files op via eigen backend (proxy)
     const ndwUrl = 'http://localhost:3001/api/ndwfiles';
-    const ndwResp = await fetch(ndwUrl);
+    // Timeout wrapper voor fetch
+    async function fetchWithTimeout(resource, options = {}) {
+      const { timeout = 1000 } = options;
+      return Promise.race([
+        fetch(resource, options),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), timeout))
+      ]);
+    }
+    let ndwResp = null;
+    try {
+      ndwResp = await fetchWithTimeout(ndwUrl, { timeout: 1000 });
+    } catch (err) {
+      console.warn('NDW fetch timeout of error:', err.message);
+      ndwResp = null;
+    }
     if (ndwResp.ok) {
       const ndwData = await ndwResp.json();
       // ndwData is een lijst van files met locatie, lengte, etc.
@@ -2295,3 +2309,31 @@ window.addEventListener('DOMContentLoaded', () => {
   toggle.addEventListener('click', e => {
     e.stopPropagation();
     menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+  });
+  menu.addEventListener('click', e => e.stopPropagation());
+  document.addEventListener('click', () => { menu.style.display = 'none'; });
+});
+</script>
+
+<script>
+  async function startIdealPay() {
+    if (!lastPrice) return alert('Bereken eerst de ritprijs');
+    const description = `Taxi rit ${window.currentRitID}`;
+    try {
+      const res = await fetch('https://yolo-n9xa.onrender.com/api/pay', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amount: lastPrice, description })
+      });
+      const data = await res.json();
+      if (data.checkoutUrl) window.location.href = data.checkoutUrl;
+      else throw new Error(data.error || 'Geen checkoutURL');
+    } catch (err) {
+      console.error('Mollie betaling mislukt:', err);
+      alert('Betaling kon niet worden gestart.');
+    }
+  }
+</script>
+
+</body>
+</html>
