@@ -1907,12 +1907,40 @@ async function getTrafficToeslag(start, end) {
     if (ndwResp.ok) {
       const ndwData = await ndwResp.json();
       // ndwData is een lijst van files met locatie, lengte, etc.
-      // Neem ALLE actuele files in Nederland mee
-      const allFiles = (ndwData || []).filter(f => f.latitude && f.longitude);
-      console.log('Aantal actuele files in Nederland:', allFiles.length);
-      if (allFiles.length > 0) {
-        // Verhoog toeslag afhankelijk van het totaal aantal files in Nederland
-        surcharge *= 1 + (0.01 * allFiles.length); // 1% per file in NL
+      // Zoek alleen files in de buurt van de route (tussen ophaal en afzet)
+      const routeBufferKm = 10; // buffer rond de lijn in km
+      const toRad = deg => deg * Math.PI / 180;
+      const toDeg = rad => rad * 180 / Math.PI;
+      // Haversine-afstand in km
+      function haversine(lat1, lon1, lat2, lon2) {
+        const R = 6371;
+        const dLat = toRad(lat2 - lat1);
+        const dLon = toRad(lon2 - lon1);
+        const a = Math.sin(dLat/2)**2 + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon/2)**2;
+        return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+      }
+      // Projecteer een file op het lijnstuk start-end en check afstand
+      function pointToSegmentDistance(lat, lon, lat1, lon1, lat2, lon2) {
+        // Bron: https://stackoverflow.com/a/1501725
+        function sqr(x) { return x*x; }
+        function dist2(x, y, x1, y1) { return sqr(x-x1) + sqr(y-y1); }
+        const t = Math.max(0, Math.min(1, ((lat-lat1)*(lat2-lat1)+(lon-lon1)*(lon2-lon1)) / (sqr(lat2-lat1)+sqr(lon2-lon1))));
+        const projLat = lat1 + t*(lat2-lat1);
+        const projLon = lon1 + t*(lon2-lon1);
+        return haversine(lat, lon, projLat, projLon);
+      }
+      const startLat = start[1], startLon = start[0];
+      const endLat = end[1], endLon = end[0];
+      const filesNearby = (ndwData || []).filter(f => {
+        if (!f.latitude || !f.longitude) return false;
+        const flat = parseFloat(f.latitude);
+        const flon = parseFloat(f.longitude);
+        // Afstand tot lijnstuk route
+        return pointToSegmentDistance(flat, flon, startLat, startLon, endLat, endLon) <= routeBufferKm;
+      });
+      console.log('Aantal NDW files dichtbij route:', filesNearby.length);
+      if (filesNearby.length > 0) {
+        surcharge *= 1 + (0.10 * filesNearby.length); // 10% per file dichtbij route
       }
     } else {
       console.warn('NDW incidenten niet beschikbaar', ndwResp.status);
@@ -2267,31 +2295,3 @@ window.addEventListener('DOMContentLoaded', () => {
   toggle.addEventListener('click', e => {
     e.stopPropagation();
     menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
-  });
-  menu.addEventListener('click', e => e.stopPropagation());
-  document.addEventListener('click', () => { menu.style.display = 'none'; });
-});
-</script>
-
-<script>
-  async function startIdealPay() {
-    if (!lastPrice) return alert('Bereken eerst de ritprijs');
-    const description = `Taxi rit ${window.currentRitID}`;
-    try {
-      const res = await fetch('https://yolo-n9xa.onrender.com/api/pay', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ amount: lastPrice, description })
-      });
-      const data = await res.json();
-      if (data.checkoutUrl) window.location.href = data.checkoutUrl;
-      else throw new Error(data.error || 'Geen checkoutURL');
-    } catch (err) {
-      console.error('Mollie betaling mislukt:', err);
-      alert('Betaling kon niet worden gestart.');
-    }
-  }
-</script>
-
-</body>
-</html>
