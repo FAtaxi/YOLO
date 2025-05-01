@@ -1655,13 +1655,24 @@ document.addEventListener('DOMContentLoaded', function() {
   function updateWhatsappKnopVisibility() {
     const betaalmethode = document.getElementById('betaalmethode')?.value;
     const whatsappKnop = document.getElementById('whatsappKnop');
-    // Check of betaling geslaagd is (via localStorage, set op betaalstatus.html)
-    const betalingGeslaagd = localStorage.getItem('betalingGeslaagd') === '1';
+    const whatsappBtn = whatsappKnop?.querySelector('button');
+    // Reset betalingGeslaagd bij wisselen betaalmethode
     if (betaalmethode === 'Online betaallink') {
+      localStorage.setItem('betalingGeslaagd','0');
       // Alleen tonen als betaling geslaagd is
-      whatsappKnop.style.display = betalingGeslaagd ? '' : 'none';
+      if (localStorage.getItem('betalingGeslaagd') === '1') {
+        whatsappKnop.style.display = '';
+        whatsappBtn && (whatsappBtn.disabled = false);
+        whatsappBtn && (whatsappBtn.style.pointerEvents = 'auto');
+      } else {
+        whatsappKnop.style.display = 'none';
+        whatsappBtn && (whatsappBtn.disabled = true);
+        whatsappBtn && (whatsappBtn.style.pointerEvents = 'none');
+      }
     } else {
       whatsappKnop.style.display = '';
+      whatsappBtn && (whatsappBtn.disabled = false);
+      whatsappBtn && (whatsappBtn.style.pointerEvents = 'auto');
     }
   }
   // Initieel en bij wisselen betaalmethode
