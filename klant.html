@@ -1693,7 +1693,7 @@ function updateWhatsappKnopVisibility() {
   }
   const bevestigContainer = $id('bevestigContainer');
   if (bevestigContainer) {
-    const hide = (betaalmethode === 'IDEAL Online-Betaal-Link' && localStorage.getItem('betalingGeslaagd') !== '1');
+    const hide = (betaalmethode === 'IDEAL Online-Betaal-Link');
     bevestigContainer.style.setProperty('display', hide ? 'none' : '', 'important');
   }
 }
@@ -2246,6 +2246,8 @@ function toggleAkkoord() {
 function boekRit() {
   // Reset betaalstatus voor nieuwe rit
   localStorage.setItem('betalingGeslaagd', '0');
+  // Forceer update van WhatsApp-knop zichtbaarheid
+  if (typeof updateWhatsappKnopVisibility === 'function') updateWhatsappKnopVisibility();
   // Gegevens ophalen
   const ophaaladres = document.getElementById("ophaaladres").value;
   const afzetadres = document.getElementById("afzetadres").value;
