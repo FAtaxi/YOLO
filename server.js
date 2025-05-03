@@ -10,9 +10,12 @@ require('dotenv').config({ path: path.resolve(__dirname, '../../twilio.env') });
 
 // Twilio client initialiseren
 const twilioClient = twilio(
-  process.env.TWILIO_ACCOUNT_SID,
-  process.env.TWILIO_AUTH_TOKEN
+  process.env.TWILIO_ACCOUNT_SID || process.env.TWILIO_ACCOUNT_SID,
+  process.env.TWILIO_AUTH_TOKEN || process.env.TWILIO_AUTH_TOKEN
 );
+
+// WhatsApp nummer configureren
+const whatsappNumber = process.env.TWILIO_WHATSAPP_NUMBER || 'whatsapp:+14155238886' // Sandbox nummer als fallback
 
 // Gebruik test-API-key uit env of hardcoded (alleen voor test!)
 const mollie = createMollieClient({
@@ -213,7 +216,7 @@ app.post('/api/whatsapp', async (req, res) => {
   try {
     const result = await twilioClient.messages.create({
       body: message,
-      from: `whatsapp:${process.env.TWILIO_WHATSAPP_NUMBER}`,
+      from: whatsappNumber,
       to: `whatsapp:${to}`
     });
     
@@ -251,6 +254,14 @@ app.post('/api/whatsapp/incoming', express.json(), (req, res) => {
   res.status(200).send('OK');
 });
 
-app.listen(PORT, () => {
-  console.log(`Server gestart op http://localhost:${PORT}`);
+const https = require('https');
+const fs = require('fs');
+
+const sslOptions = {
+  key: fs.readFileSync('/etc/letsencrypt/live/api.fa-taxi.com/privkey.pem'),
+  cert: fs.readFileSync('/etc/letsencrypt/live/api.fa-taxi.com/fullchain.pem')
+};
+
+https.createServer(sslOptions, app).listen(443, () => {
+  console.log('HTTPS server gestart op poort 443');
 });
