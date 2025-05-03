@@ -231,6 +231,26 @@ app.post('/api/whatsapp', async (req, res) => {
   }
 });
 
+// Lijst met goedgekeurde nummers
+const approvedNumbers = ['+31647972301'];
+
+// Endpoint voor inkomende WhatsApp berichten
+app.post('/api/whatsapp/incoming', express.json(), (req, res) => {
+  const { From, Body } = req.body;
+  
+  if (!approvedNumbers.includes(From)) {
+    return res.status(403).json({ error: 'Nummer niet geautoriseerd' });
+  }
+
+  console.log('Ontvangen WhatsApp bericht van:', From);
+  console.log('Bericht:', Body);
+  
+  // Hier kun je de logica toevoegen om met het bericht om te gaan
+  // Bijv. opslaan in database, doorsturen naar admin, etc.
+  
+  res.status(200).send('OK');
+});
+
 app.listen(PORT, () => {
   console.log(`Server gestart op http://localhost:${PORT}`);
 });
