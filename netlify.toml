@@ -12,8 +12,13 @@
 
 [[redirects]]
   from = "/api/*"
-  to = "https://www.fa-taxi.com/.netlify/functions/:splat"
+  to = "https://fa-taxi.com/.netlify/functions/:splat"
   status = 200
   force = true
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
 
 # Environment variables will be set in Netlify UI
