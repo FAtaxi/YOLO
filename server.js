@@ -5,6 +5,14 @@ const PDFDocument = require('pdfkit');
 const nodemailer = require('nodemailer');
 const { createMollieClient } = require('@mollie/api-client');
 const cors = require('cors');
+const twilio = require('twilio');
+require('dotenv').config({ path: path.resolve(__dirname, '../../twilio.env') });
+
+// Twilio client initialiseren
+const twilioClient = twilio(
+  process.env.TWILIO_ACCOUNT_SID,
+  process.env.TWILIO_AUTH_TOKEN
+);
 
 // Gebruik test-API-key uit env of hardcoded (alleen voor test!)
 const mollie = createMollieClient({
@@ -44,7 +52,6 @@ app.use(session({
 // Statische bestanden uit de projectroot én backend-map serveren
 app.use(express.static(path.resolve(__dirname, '..')));
 app.use(express.static(path.resolve(__dirname)));
-
 
 // Middleware: beveilig admin.html
 app.use('/admin.html', (req, res, next) => {
@@ -193,6 +200,35 @@ app.get('/api/payment-status', async (req, res) => {
 app.post('/api/webhook', express.json(), (req, res) => {
   console.log('[WEBHOOK] Ontvangen van Mollie:', JSON.stringify(req.body));
   res.status(200).send('ok');
+});
+
+// WhatsApp endpoint
+app.post('/api/whatsapp', async (req, res) => {
+  const { to, message } = req.body;
+  
+  if (!to || !message) {
+    return res.status(400).json({ error: 'Telefoonnummer en bericht zijn verplicht' });
+  }
+
+  try {
+    const result = await twilioClient.messages.create({
+      body: message,
+      from: `whatsapp:${process.env.TWILIO_WHATSAPP_NUMBER}`,
+      to: `whatsapp:${to}`
+    });
+    
+    res.json({ 
+      status: 'success',
+      messageId: result.sid,
+      timestamp: result.dateCreated
+    });
+  } catch (err) {
+    console.error('Twilio WhatsApp error:', err);
+    res.status(500).json({ 
+      error: 'WhatsApp bericht versturen mislukt',
+      details: err.message
+    });
+  }
 });
 
 app.listen(PORT, () => {
