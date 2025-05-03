@@ -362,7 +362,6 @@ button:hover, button:focus {
     border-radius: 11px;
     padding: 1.1rem 1vw 1.5rem 1vw;
     box-sizing: border-box;
-    overflow-x: hidden;
   }
   h1 {
     font-size: 2.5rem;
@@ -525,257 +524,11 @@ button:hover, button:focus {
     left: 0;
     right: 0;
   }
-@media (min-width: 700px) and (max-width: 1200px) and (orientation: landscape) {
-  body {
-    padding: 0.5rem 0;
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    background: linear-gradient(135deg, #232526 0%, #191919 50%, #232526 100%);
-  }
-  .taxi-animation-container {
-    height: 90px;
-    margin-bottom: 2.2rem;
-    justify-content: center;
-  }
-  .taxi-svg {
-    width: 320px !important;
-    height: 128px !important;
-  }
-  .container {
-    max-width: 850px;
-    width: 98vw;
-    margin: 2.2rem auto 2rem auto;
-    border-radius: 22px;
-    padding: 2.8rem 2.7rem 2.6rem 2.7rem;
-    box-shadow: 0 16px 64px rgba(0,0,0,0.22), 0 2px 18px rgba(255,215,0,0.10);
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 3vw 2vw;
-    align-items: flex-start;
-    justify-content: center;
-  }
-  .container > div, .container > form, .container > section {
-    min-width: 260px;
-    margin-bottom: 1.5rem;
-  }
-  .container label, .container input, .container select, .container textarea, .container button {
-    font-size: 1.17rem !important;
-  }
-  input[type="text"],
-  input[type="datetime-local"],
-  select, textarea {
-    width: 100%;
-    min-width: 0;
-    max-width: 100%;
-    font-size: 1.17rem;
-    padding: 1.25rem 1.2rem;
-    margin-bottom: 1.3rem;
-    border-radius: 15px;
-  }
-  button {
-    width: 100%;
-    min-width: 0;
-    font-size: 1.18rem;
-    padding: 1.45rem 1.2rem;
-    margin-bottom: 1.3rem;
-    border-radius: 16px;
-    box-shadow: 0 5px 20px rgba(255,215,0,0.10);
-  }
-  h1 {
-    font-size: 1.55rem;
-    margin: 1.2rem 0 1.7rem 0;
-  }
   .adres-suggesties {
-    max-width: 95vw;
-    font-size: 1.13rem;
-    left: 0;
-    right: 0;
-    border-radius: 0 0 16px 16px;
-  }
-
-  .taxi-svg {
-    width: 260px !important;
-    height: 104px !important;
-  }
-  .container {
-    max-width: 750px;
-    width: 96vw;
-    margin: 1.5rem auto 1.2rem auto;
-    border-radius: 18px;
-    padding: 2.4rem 2.2rem 2.3rem 2.2rem;
-    box-shadow: 0 12px 48px rgba(0,0,0,0.22), 0 2px 18px rgba(255,215,0,0.09);
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: 2.5vw;
-    align-items: flex-start;
-    justify-content: space-between;
-  }
-  .container > div, .container > form, .container > section {
-    flex: 1 1 44%;
-    min-width: 260px;
-    margin-bottom: 1.2rem;
-  }
-  .container label, .container input, .container select, .container textarea, .container button {
-    font-size: 1.09rem !important;
-  }
-  input[type="text"],
-  input[type="datetime-local"],
-  select, textarea {
-    width: 100%;
-    min-width: 0;
-    max-width: 100%;
-    font-size: 1.09rem;
-    padding: 1.1rem 1.1rem;
-    margin-bottom: 1.1rem;
-    border-radius: 12px;
-  }
-  button {
-    width: 100%;
-    min-width: 0;
-    font-size: 1.13rem;
-    padding: 1.25rem 1.1rem;
-    margin-bottom: 1.1rem;
-    border-radius: 14px;
-    box-shadow: 0 3px 16px rgba(255,215,0,0.09);
-  }
-  h1 {
-    font-size: 1.35rem;
-    margin: 0.7rem 0 1.1rem 0;
-  }
-  .adres-suggesties {
-    max-width: 95vw;
-    font-size: 1.05rem;
-    left: 0;
-    right: 0;
-    border-radius: 0 0 14px 14px;
-  }
-@media (max-width: 900px) and (orientation: landscape) {
-  body {
-    padding: 0.1rem;
-    min-width: 0;
-  }
-  .container {
-    max-width: 95vw;
-    margin: 0.7rem auto;
-    border-radius: 12px;
-    padding: 0.7rem 1.2rem 1.1rem 1.2rem;
-    box-shadow: 0 2px 18px rgba(0,0,0,0.22);
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 2vw;
-  }
-  .container > * {
-    flex: 1 1 44%;
-    min-width: 170px;
-    margin-bottom: 0.7rem;
-  }
-  .taxi-animation-container {
-    height: 56px;
-    margin-bottom: 0.1rem;
-  }
-  .taxi-svg {
-    width: 180px !important;
-    height: 72px !important;
-  }
-  h1 {
-  font-size: 2.2rem;
-  margin: 1.2rem 0 1.3rem 0;
-  letter-spacing: 1px;
-  }
-  label, select, input, textarea, button {
-    font-size: 0.97rem !important;
-  }
-  input[type="text"],
-  input[type="datetime-local"],
-  select, textarea {
-    width: 100%;
-    min-width: 0;
-    max-width: 100%;
+    max-width: 100vw;
     font-size: 0.97rem;
-    padding: 0.6rem 0.6rem;
-    margin-bottom: 0.5rem;
-    border-radius: 7px;
-  }
-  button {
-    width: 100%;
-    min-width: 0;
-    font-size: 1rem;
-    padding: 0.8rem 0.5rem;
-    margin-bottom: 0.6rem;
-    border-radius: 7px;
-  }
-  .adres-suggesties {
-    max-width: 95vw;
-    font-size: 0.92rem;
     left: 0;
     right: 0;
-  }
-}
-}
-
-body {
-  padding: 0.2rem;
-  min-width: 0;
-}
-.container {
-  max-width: 100vw;
-  margin: 1rem 0.2rem;
-  border-radius: 10px;
-  padding: 1rem 0.5rem 1.3rem 0.5rem;
-  box-shadow: 0 2px 18px rgba(0,0,0,0.24);
-}
-h1 {
-  font-size: 1.35rem;
-  margin: 0.5rem 0 0.7rem 0;
-}
-label, select, input, textarea, button {
-  font-size: 1rem !important;
-}
-input[type="text"],
-input[type="datetime-local"],
-select, textarea {
-  width: 100%;
-  min-width: 0;
-  max-width: 100%;
-  font-size: 1rem;
-  padding: 0.8rem 0.7rem;
-  margin-bottom: 0.7rem;
-  border-radius: 8px;
-}
-button {
-  width: 100%;
-  min-width: 0;
-  font-size: 1.08rem;
-  padding: 1rem 0.7rem;
-  margin-bottom: 0.8rem;
-  border-radius: 8px;
-}
-.taxi-animation-container {
-  height: 42px;
-  margin-bottom: 0.1rem;
-}
-.taxi-svg {
-  width: 130px !important;
-  height: 52px !important;
-}
-.adres-suggesties {
-  max-width: 100vw;
-  font-size: 0.97rem;
-  left: 0;
-  right: 0;
-}
-.adres-suggesties {
-  max-width: 100vw;
-  font-size: 0.97rem;
-  left: 0;
-  right: 0;
 }
 @media (min-width: 700px) and (max-width: 1200px) and (orientation: landscape) {
   body {
@@ -1659,7 +1412,10 @@ button {
 
   <div id="resultaat"></div>
 
-  <button id="idealPayBtn" style="display:none; width:100%; margin:0.5rem 0;" onclick="startIdealPay()">💳 Direct betalen via iDEAL</button>
+  <button id="idealPayBtn" style="display:none; width:100%; margin:0.5rem 0; display:flex; align-items:center; justify-content:center; gap:0.5em;" onclick="startIdealPay()">
+  <img src="ideal-logo.svg" alt="iDEAL" style="height:1.5em; vertical-align:middle; margin-right:0.3em; background:#fff; border-radius:4px; box-shadow:0 1px 4px #0001;" />
+  Direct betalen via iDEAL
+</button>
 
   <div id="adminSpecificaties" style="display:none;"></div>
 
@@ -1698,7 +1454,22 @@ function updateWhatsappKnopVisibility() {
   }
 }
 
-
+// Vervang directe WhatsApp link door Twilio endpoint
+async function sendWhatsApp(bericht) {
+  try {
+    const response = await fetch('http://localhost:3000/api/whatsapp', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        to: process.env.TWILIO_WHATSAPP_NUMBER,
+        message: bericht
+      })
+    });
+    console.log('Bericht verstuurd:', await response.json());
+  } catch (err) {
+    console.error('Fout bij versturen:', err);
+  }
+};
 
 document.addEventListener('DOMContentLoaded', function() {
   // Reset betalingGeslaagd als iDEAL geselecteerd bij laden
