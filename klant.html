@@ -1499,6 +1499,17 @@ async function probeerAutoLocatie() {
 }
 
 
+// Subtiele foutmelding helper
+function showSubtleError(message, targetId) {
+  let target = document.getElementById(targetId) || document.getElementById('ritprijs') || document.body;
+  let errDiv = document.createElement('div');
+  errDiv.innerText = message;
+  errDiv.style = 'background:#ffd700;color:#111;padding:6px 12px;border-radius:7px;margin:8px 0;text-align:center;font-size:1.02rem;box-shadow:0 2px 10px #ffd70044;z-index:9999;';
+  errDiv.className = 'subtle-error-msg';
+  target.parentNode.insertBefore(errDiv, target);
+  setTimeout(()=>{ errDiv.remove(); }, 4000);
+}
+
 async function showRouteOnMap(ophaaladres, afzetadres) {
   // Haal coördinaten op van ophaaladres, tussenstops en afzetadres
   const adressen = [ophaaladres];
@@ -1514,7 +1525,7 @@ async function showRouteOnMap(ophaaladres, afzetadres) {
   for (let adres of adressen) {
     const coord = await getCoordinates(adres);
     if (!coord) {
-      alert(`Adres niet gevonden: ${adres}`);
+      showSubtleError(`Adres niet gevonden: ${adres}`, 'map');
       return;
     }
     coordsArr.push(coord);
@@ -1538,17 +1549,23 @@ async function showRouteOnMap(ophaaladres, afzetadres) {
   const body = {
     coordinates: coordsArr.map(c => [c[0], c[1]])
   };
-  const res = await fetch(url, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': apiKey
-    },
-    body: JSON.stringify(body)
-  });
-  const data = await res.json();
-  if (!data.features || !data.features[0]) {
-    alert('Route niet gevonden.');
+  let data;
+  try {
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': apiKey
+      },
+      body: JSON.stringify(body)
+    });
+    data = await res.json();
+    if (!data.features || !data.features[0]) {
+      showSubtleError('Route niet gevonden.', 'map');
+      return;
+    }
+  } catch (err) {
+    showSubtleError('Kan route niet ophalen (netwerkfout).', 'map');
     return;
   }
   const coords = data.features[0].geometry.coordinates.map(c => [c[1], c[0]]);
@@ -1945,7 +1962,7 @@ async function getTrafficToeslag(start, end) {
     try {
       ndwResp = await fetchWithTimeout(ndwUrl, { timeout: 1000 });
     } catch (err) {
-      console.warn('NDW fetch timeout of error:', err.message);
+      showSubtleError('Verkeersinformatie niet beschikbaar', 'ritprijs');
       ndwResp = null;
     }
     if (ndwResp && ndwResp.ok) {
