@@ -1287,6 +1287,8 @@ button {
   right: 0;
 }
 </style>
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-sA+z0ymGNVt/5Qp1FQ1tN7LwM3Q6ZQvZ1zF2l5F1x04=" crossorigin=""/>
 </head>
 
 <body>
@@ -1369,6 +1371,12 @@ button {
     <div id="afzetadres-suggesties" class="adres-suggesties" style="position:absolute; top:100%; left:0; width:100%; z-index:10;"></div>
   </div>
 
+  <!-- Kaart met route -->
+  <div id="kaart-container" style="background: #181818ee; border-radius: 18px; box-shadow: 0 6px 32px #000a, 0 1.5px 8px #ffd70055; margin: 1.2em 0 1.6em 0; padding: 1.1em 1em 1.3em 1em; max-width: 100vw;">
+    <div style="font-weight: 700; color: gold; font-size: 1.13rem; margin-bottom: 0.6em; letter-spacing: 0.03em; text-shadow: 0 2px 8px #ffd70044;">🚗 Route op de kaart</div>
+    <div id="map" style="height: 330px; width: 100%; border-radius: 13px; overflow: hidden; box-shadow: 0 2px 12px #0005;"></div>
+  </div>
+
   <!-- Tussenstop knop en velden -->
   <button type="button" id="tussenstopBtn" onclick="toonTussenstopVeld()" style="margin-bottom:0.5rem;">➕ Tussenstop toevoegen</button>
   <div id="tussenstopContainer" style="display:none; margin-bottom:0.5rem;"></div>
@@ -1416,6 +1424,7 @@ button {
 
   <div id="resultaat"></div>
 
+
   <button id="idealPayBtn" style="display:none; width:100%; margin:0.5rem 0; display:flex; align-items:center; justify-content:center; gap:0.5em;" onclick="startIdealPay()">
   <span style="height:1.5em; display:inline-block; vertical-align:middle; margin-right:0.3em; background:#fff; border-radius:4px; box-shadow:0 1px 4px #0001;">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 32" width="28" height="18" style="display:block;">
@@ -1438,6 +1447,59 @@ button {
 </div>
 
 <!-- Zet ALLE scripts vlak voor </body> -->
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-o9N1jRVvZC6fJbZbT9gFQ6bFZtZb7Q6ZQvZ1zF2l5F1x04=" crossorigin=""></script>
+<script>
+// Kaart object globaal zodat we hem kunnen hergebruiken
+let map, routeLayer;
+
+async function showRouteOnMap(ophaaladres, afzetadres) {
+  // Haal coordinaten op via bestaande functie
+  const coordStart = await getCoordinates(ophaaladres);
+  const coordEnd = await getCoordinates(afzetadres);
+  if (!coordStart || !coordEnd) return;
+
+  // Initieer kaart indien nog niet gedaan
+  if (!map) {
+    map = L.map('map').setView([coordStart[1], coordStart[0]], 11);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: 'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors',
+      maxZoom: 18,
+    }).addTo(map);
+  } else {
+    map.setView([coordStart[1], coordStart[0]], 11);
+    if (routeLayer) {
+      map.removeLayer(routeLayer);
+    }
+  }
+
+  // OpenRouteService API call (API key uit je script)
+  const apiKey = '5b3ce3597851110001cf6248b59dc263cab24bdabda48748cd9122b3';
+  const url = `https://api.openrouteservice.org/v2/directions/driving-car?api_key=${apiKey}&start=${coordStart[0]},${coordStart[1]}&end=${coordEnd[0]},${coordEnd[1]}`;
+  const res = await fetch(url);
+  const data = await res.json();
+  const coords = data.features[0].geometry.coordinates.map(c => [c[1], c[0]]);
+
+  // Teken route
+  routeLayer = L.polyline(coords, {color: 'gold', weight: 6, opacity: 0.9}).addTo(map);
+  map.fitBounds(routeLayer.getBounds(), {padding: [30, 30]});
+
+  // Markers
+  L.marker([coordStart[1], coordStart[0]], {title: 'Ophaaladres'}).addTo(map);
+  L.marker([coordEnd[1], coordEnd[0]], {title: 'Afzetadres'}).addTo(map);
+}
+
+// Haak in op ritberekening
+const origBerekenRit = berekenRit;
+berekenRit = async function() {
+  await origBerekenRit.apply(this, arguments);
+  const ophalen = document.getElementById('ophaaladres').value;
+  const afzetten = document.getElementById('afzetadres').value;
+  if (ophalen && afzetten) {
+    showRouteOnMap(ophalen, afzetten);
+  }
+};
+</script>
 <script>
 // --- FA Taxi Boeking | Modern, robuust & foutloos script ---
 
