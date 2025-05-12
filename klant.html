@@ -1500,47 +1500,66 @@ async function probeerAutoLocatie() {
 
 
 async function showRouteOnMap(ophaaladres, afzetadres) {
-  // Haal coordinaten op via bestaande functie
-  const coordStart = await getCoordinates(ophaaladres);
-  const coordEnd = await getCoordinates(afzetadres);
-  if (!coordStart || !coordEnd) return;
-
+  // Haal coördinaten op van ophaaladres, tussenstops en afzetadres
+  const adressen = [ophaaladres];
+  for (let i = 1; i <= 3; i++) {
+    const ts = document.getElementById(`tussenstop${i}`);
+    if (ts && ts.value && ts.value.trim()) {
+      adressen.push(ts.value.trim());
+    }
+  }
+  adressen.push(afzetadres);
+  // Haal alle coördinaten op (async)
+  let coordsArr = [];
+  for (let adres of adressen) {
+    const coord = await getCoordinates(adres);
+    if (!coord) {
+      alert(`Adres niet gevonden: ${adres}`);
+      return;
+    }
+    coordsArr.push(coord);
+  }
   // Initieer kaart indien nog niet gedaan
   if (!map) {
-    map = L.map('map').setView([coordStart[1], coordStart[0]], 11);
+    map = L.map('map').setView([coordsArr[0][1], coordsArr[0][0]], 11);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: 'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors',
       maxZoom: 18,
     }).addTo(map);
   } else {
-    map.setView([coordStart[1], coordStart[0]], 11);
-    if (routeLayer) {
-      map.removeLayer(routeLayer);
-    }
-    if (startMarker) {
-      map.removeLayer(startMarker);
-    }
-    if (endMarker) {
-      map.removeLayer(endMarker);
-    }
+    map.setView([coordsArr[0][1], coordsArr[0][0]], 11);
+    if (routeLayer) map.removeLayer(routeLayer);
+    if (startMarker) map.removeLayer(startMarker);
+    if (endMarker) map.removeLayer(endMarker);
   }
-
-  // OpenRouteService API call (API key uit je script)
+  // OpenRouteService API call (multi-waypoint)
   const apiKey = '5b3ce3597851110001cf6248b59dc263cab24bdabda48748cd9122b3';
-  const url = `https://api.openrouteservice.org/v2/directions/driving-car?api_key=${apiKey}&start=${coordStart[0]},${coordStart[1]}&end=${coordEnd[0]},${coordEnd[1]}`;
-  const res = await fetch(url);
+  const url = 'https://api.openrouteservice.org/v2/directions/driving-car/geojson';
+  const body = {
+    coordinates: coordsArr.map(c => [c[0], c[1]])
+  };
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': apiKey
+    },
+    body: JSON.stringify(body)
+  });
   const data = await res.json();
+  if (!data.features || !data.features[0]) {
+    alert('Route niet gevonden.');
+    return;
+  }
   const coords = data.features[0].geometry.coordinates.map(c => [c[1], c[0]]);
-
   // Teken route
   routeLayer = L.polyline(coords, {color: 'gold', weight: 6, opacity: 0.9}).addTo(map);
-  // Altijd de hele route tonen, netjes met padding
   map.fitBounds(routeLayer.getBounds(), {padding: [50, 50], maxZoom: 16});
-
   // Markers
-  startMarker = L.marker([coordStart[1], coordStart[0]], {title: 'Ophaaladres'}).addTo(map);
-  endMarker = L.marker([coordEnd[1], coordEnd[0]], {title: 'Afzetadres'}).addTo(map);
+  startMarker = L.marker([coordsArr[0][1], coordsArr[0][0]], {title: 'Ophaaladres'}).addTo(map);
+  endMarker = L.marker([coordsArr[coordsArr.length-1][1], coordsArr[coordsArr.length-1][0]], {title: 'Afzetadres'}).addTo(map);
 }
+
 
 
 </script>
@@ -2594,15 +2613,44 @@ window.addEventListener('DOMContentLoaded', function() {
 <script>
 // --- Automatische prijsberekening bij wijzigen invoervelden ---
 (function() {
-  function debounce(fn, ms = 350) {
+  // Loader helpers
+  function showPriceLoader() {
+    let prijsEl = document.getElementById('ritprijs') || document.querySelector('[data-prijs]');
+    if (prijsEl) {
+      prijsEl.dataset.origText = prijsEl.innerText;
+      prijsEl.innerHTML = '<span class="loader" style="display:inline-block;width:18px;height:18px;border:2px solid #ffd700;border-top:2px solid #232526;border-radius:50%;animation:spin 1s linear infinite;vertical-align:middle;margin-right:6px;"></span>Bezig met berekenen...';
+    }
+  }
+  function hidePriceLoader() {
+    let prijsEl = document.getElementById('ritprijs') || document.querySelector('[data-prijs]');
+    if (prijsEl && prijsEl.dataset.origText) {
+      prijsEl.innerText = prijsEl.dataset.origText;
+      delete prijsEl.dataset.origText;
+    }
+  }
+  // Debounce met async/await support
+  function debounceAsync(fn, ms = 350) {
     let timer;
     return function(...args) {
       clearTimeout(timer);
-      timer = setTimeout(() => fn.apply(this, args), ms);
+      timer = setTimeout(async () => {
+        showPriceLoader();
+        try {
+          await fn.apply(this, args);
+        } catch (err) {
+          // Foutmelding alleen in dev, geen console.error in productie
+          if (window.location.hostname === 'localhost') console.warn('Fout bij prijsberekening:', err);
+          // Toon subtiele melding in prijsveld
+          let prijsEl = document.getElementById('ritprijs') || document.querySelector('[data-prijs]');
+          if (prijsEl) prijsEl.innerText = 'Prijs niet beschikbaar';
+        } finally {
+          hidePriceLoader();
+        }
+      }, ms);
     };
   }
-  const autoBereken = debounce(() => {
-    if (typeof berekenRit === 'function') berekenRit();
+  const autoBereken = debounceAsync(async () => {
+    if (typeof berekenRit === 'function') await berekenRit();
   });
   const autoFields = [
     'ophaaladres', 'afzetadres', 'tijdstip', 'betaalmethode', 'kortingscode', 'opmerkingen',
@@ -2623,6 +2671,10 @@ window.addEventListener('DOMContentLoaded', function() {
       }
     });
   });
+  // CSS voor loader animatie
+  const style = document.createElement('style');
+  style.innerHTML = `@keyframes spin{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}`;
+  document.head.appendChild(style);
 })();
 </script>
 </body>
