@@ -2102,6 +2102,12 @@ async function berekenRit() {
     };
     ritten.push(nieuweRit);
     localStorage.setItem('ritten', JSON.stringify(ritten));
+    // Zet lastPrice voor iDEAL altijd na berekening
+    if (typeof ritprijs === 'number' && !isNaN(ritprijs)) {
+      window.lastPrice = ritprijs;
+    } else {
+      window.lastPrice = 0;
+    }
   } catch(e) {
     alert('Rit kon niet worden opgeslagen. Probeer het later opnieuw.');
     //console.error('Rit niet opgeslagen:', e);
@@ -2584,6 +2590,40 @@ window.addEventListener('DOMContentLoaded', function() {
     };
   }
 });
+</script>
+<script>
+// --- Automatische prijsberekening bij wijzigen invoervelden ---
+(function() {
+  function debounce(fn, ms = 350) {
+    let timer;
+    return function(...args) {
+      clearTimeout(timer);
+      timer = setTimeout(() => fn.apply(this, args), ms);
+    };
+  }
+  const autoBereken = debounce(() => {
+    if (typeof berekenRit === 'function') berekenRit();
+  });
+  const autoFields = [
+    'ophaaladres', 'afzetadres', 'tijdstip', 'betaalmethode', 'kortingscode', 'opmerkingen',
+    'huisdieren', 'spoed', 'akkoord'
+  ];
+  window.addEventListener('DOMContentLoaded', function() {
+    autoFields.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.addEventListener('input', autoBereken);
+        el.addEventListener('change', autoBereken);
+      }
+    });
+    // Dynamisch toegevoegde tussenstops
+    document.addEventListener('input', function(e) {
+      if (e.target && e.target.classList && e.target.classList.contains('tussenstop-input')) {
+        autoBereken();
+      }
+    });
+  });
+})();
 </script>
 </body>
 </html>
