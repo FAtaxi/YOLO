@@ -1357,6 +1357,10 @@ button {
     <button type="button" onclick="gebruikLocatie()" id="locatieBtn">📍 Mijn locatie</button>
   </div>
 
+  <!-- Tussenstop knop en velden -->
+  <button type="button" id="tussenstopBtn" onclick="toonTussenstopVeld()" style="margin-bottom:0.5rem;">➕ Tussenstop toevoegen</button>
+  <div id="tussenstopContainer" style="display:none; margin-bottom:0.5rem;"></div>
+
   <label for="afzetadres" id="labelAfzet">📍 AFZET ADRES 📍</label>
   <div class="input-wrapper" style="position:relative; width:100%;">
     <input 
@@ -1376,10 +1380,6 @@ button {
     <div style="font-weight: 700; color: gold; font-size: 1.13rem; margin-bottom: 0.6em; letter-spacing: 0.03em; text-shadow: 0 2px 8px #ffd70044;">🚗 Route op de kaart</div>
     <div id="map" style="height: 330px; width: 100%; border-radius: 13px; overflow: hidden; box-shadow: 0 2px 12px #0005;"></div>
   </div>
-
-  <!-- Tussenstop knop en velden -->
-  <button type="button" id="tussenstopBtn" onclick="toonTussenstopVeld()" style="margin-bottom:0.5rem;">➕ Tussenstop toevoegen</button>
-  <div id="tussenstopContainer" style="display:none; margin-bottom:0.5rem;"></div>
 
   <button type="button" onclick="toggleDatum()" id="toggleDatumBtn" aria-controls="datumContainer" aria-expanded="false">📅 Reserveren? €17.50,- 📅</button>
 
@@ -1475,7 +1475,7 @@ async function probeerAutoLocatie() {
         const lat = pos.coords.latitude, lon = pos.coords.longitude;
         // Zoom en marker op kaart
         if (map) {
-          map.setView([lat, lon], 14);
+          map.setView([lat, lon], 16);
           if (window.autoLocMarker) map.removeLayer(window.autoLocMarker);
           window.autoLocMarker = L.marker([lat, lon], {title: 'Uw locatie', icon: L.icon({iconUrl:'https://cdn.jsdelivr.net/gh/pointhi/leaflet-color-markers@master/img/marker-icon-blue.png', shadowUrl:'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png', iconSize:[25,41], iconAnchor:[12,41], popupAnchor:[1,-34], shadowSize:[41,41]})}).addTo(map).bindPopup('Uw locatie').openPopup();
         }
@@ -1534,7 +1534,8 @@ async function showRouteOnMap(ophaaladres, afzetadres) {
 
   // Teken route
   routeLayer = L.polyline(coords, {color: 'gold', weight: 6, opacity: 0.9}).addTo(map);
-  map.fitBounds(routeLayer.getBounds(), {padding: [30, 30]});
+  // Altijd de hele route tonen, netjes met padding
+  map.fitBounds(routeLayer.getBounds(), {padding: [50, 50], maxZoom: 16});
 
   // Markers
   startMarker = L.marker([coordStart[1], coordStart[0]], {title: 'Ophaaladres'}).addTo(map);
