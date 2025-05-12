@@ -1425,7 +1425,7 @@ button {
   <div id="resultaat"></div>
 
 
-  <button id="idealPayBtn" style="display:none; width:100%; margin:0.5rem 0; display:flex; align-items:center; justify-content:center; gap:0.5em;" onclick="startIdealPay()">
+  <button id="idealPayBtn" style="width:100%; margin:0.5rem 0; display:flex; align-items:center; justify-content:center; gap:0.5em;" onclick="window.startIdealPay()">
   <span style="height:1.5em; display:inline-block; vertical-align:middle; margin-right:0.3em; background:#fff; border-radius:4px; box-shadow:0 1px 4px #0001;">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 32" width="28" height="18" style="display:block;">
       <rect width="50" height="32" rx="8" fill="#fff"/>
@@ -1977,7 +1977,13 @@ function berekenRitprijs(afstand, duur, weer) {
     nachtEuro: (basis * (nacht - 1)).toFixed(2),
     spoed: spoedToeslag,
     korting: 0,
-    kortingBedrag: 0
+    kortingBedrag: 0,
+    tussenstops: [], // Wordt later ingevuld
+    tussenstopDetails: [], // Wordt later ingevuld
+    extraKmDoorTussenstops: 0,
+    extraTijdDoorTussenstops: 0,
+    extraKostenTussenstops: 0,
+    tussenstopToeslag: 0
   };
 
   let totalePrijs = prijsNaToeslagen + spoedToeslag;
@@ -2045,16 +2051,22 @@ async function getTrafficToeslag(start, end) {
     const ndwUrl = 'http://localhost:3001/api/ndwfiles';
     // Timeout wrapper voor fetch
     async function fetchWithTimeout(resource, options = {}) {
-      const { timeout = 1000 } = options;
-      return Promise.race([
-        fetch(resource, options),
-        new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), timeout))
-      ]);
+      const { timeout = 3000 } = options; // Verhoogd naar 3 seconden
+      try {
+        return Promise.race([
+          fetch(resource, options),
+          new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), timeout))
+        ]);
+      } catch (err) {
+        console.warn('Fetch timeout:', err.message);
+        return null;
+      }
     }
     let ndwResp = null;
     try {
-      ndwResp = await fetchWithTimeout(ndwUrl, { timeout: 1000 });
+      ndwResp = await fetchWithTimeout(ndwUrl, { timeout: 3000 }); // Verhoogd naar 3 seconden
     } catch (err) {
+      // Alleen een subtiele melding, geen error
       showSubtleError('Verkeersinformatie niet beschikbaar', 'ritprijs');
       ndwResp = null;
     }
@@ -2281,6 +2293,14 @@ async function berekenRit() {
       
       segmentDetails.push(`Extra door tussenstops: +${extraAfstand.toFixed(1)} km, +${extraDuur.toFixed(0)} min, €${extraPrijs.toFixed(2)}`);
       segmentDetails.push(`Tussenstop toeslag: ${tussenstops.length} × €${toeslagPerStop.toFixed(2)} = €${tussenstopToeslag.toFixed(2)}`);
+      
+      // Voeg tussenstop details toe aan adminData
+      adminData.tussenstops = tussenstops;
+      adminData.tussenstopDetails = segmentDetails;
+      adminData.extraKmDoorTussenstops = extraAfstand;
+      adminData.extraTijdDoorTussenstops = extraDuur;
+      adminData.extraKostenTussenstops = extraPrijs - tussenstopToeslag;
+      adminData.tussenstopToeslag = tussenstopToeslag;
     } catch (err) {
       showSubtleError("Fout bij berekenen tussenstops", 'ritprijs');
       // Ga door met alleen de basisprijs
@@ -2791,7 +2811,8 @@ window.addEventListener('DOMContentLoaded', () => {
 </script>
 
 <script>
-  async function startIdealPay() {
+  // Maak een globale functie zodat deze direct aangeroepen kan worden
+  window.startIdealPay = async function() {
     // Check eerst of we een geldige prijs hebben
     if (!window.lastPrice || isNaN(window.lastPrice) || parseFloat(window.lastPrice) <= 0) {
       // Probeer de prijs uit het prijsveld te halen als fallback
@@ -2837,7 +2858,7 @@ window.addEventListener('DOMContentLoaded', () => {
         betaalBtn.disabled = false;
       }
     }
-  }
+  };
 </script>
 <script>
 // OVERRIDE BEREKENRIT NA ALLES ANDERS!
