@@ -2138,9 +2138,9 @@ async function berekenRit() {
     };
     ritten.push(nieuweRit);
     localStorage.setItem('ritten', JSON.stringify(ritten));
-    // Zet lastPrice voor iDEAL altijd na berekening
+    // Zet lastPrice voor iDEAL altijd na berekening als float
     if (typeof ritprijs === 'number' && !isNaN(ritprijs)) {
-      window.lastPrice = ritprijs;
+      window.lastPrice = parseFloat(ritprijs);
     } else {
       window.lastPrice = 0;
     }
@@ -2594,7 +2594,10 @@ window.addEventListener('DOMContentLoaded', () => {
 
 <script>
   async function startIdealPay() {
-    if (!lastPrice) return alert('Bereken eerst de ritprijs');
+    if (!lastPrice || isNaN(lastPrice) || Number(lastPrice) <= 0) {
+      showSubtleError('Bereken eerst de ritprijs', 'ritprijs');
+      return;
+    }
     const description = `Taxi rit ${window.currentRitID}`;
     try {
       const res = await fetch('https://yolo-n9xa.onrender.com/api/pay', {
@@ -2606,8 +2609,7 @@ window.addEventListener('DOMContentLoaded', () => {
       if (data.checkoutUrl) window.location.href = data.checkoutUrl;
       else throw new Error(data.error || 'Geen checkoutURL');
     } catch (err) {
-      console.error('Mollie betaling mislukt:', err);
-      alert('Betaling kon niet worden gestart.');
+      showSubtleError('Betaling kon niet worden gestart.', 'ritprijs');
     }
   }
 </script>
@@ -2666,8 +2668,15 @@ window.addEventListener('DOMContentLoaded', function() {
       }, ms);
     };
   }
+  let debounceLock = false;
   const autoBereken = debounceAsync(async () => {
-    if (typeof berekenRit === 'function') await berekenRit();
+    if (debounceLock) return;
+    debounceLock = true;
+    try {
+      if (typeof berekenRit === 'function') await berekenRit();
+    } finally {
+      debounceLock = false;
+    }
   });
   const autoFields = [
     'ophaaladres', 'afzetadres', 'tijdstip', 'betaalmethode', 'kortingscode', 'opmerkingen',
