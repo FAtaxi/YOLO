@@ -1886,12 +1886,19 @@ function deg2tile(lat_deg, lon_deg, zoom) {
 }
 
 async function getTrafficToeslag(start, end) {
+  try {
   const midLat = (start[1] + end[1]) / 2;
   const midLon = (start[0] + end[0]) / 2;
   // Flow data
   const flowUrl = `https://api.tomtom.com/traffic/services/4/flowSegmentData/absolute/10/json?point=${midLat},${midLon}&unit=KMPH&key=${TRAFFIC_API_KEY}`;
-  const flow = await fetch(flowUrl).then(r=>r.json()).catch(()=>null);
   let surcharge = 1;
+  let flow = null;
+  try {
+    flow = await fetch(flowUrl).then(r=>r.json());
+  } catch (e) {
+    // Geen flowdata beschikbaar, geen toeslag
+    flow = null;
+  }
   if (flow && flow.flowSegmentData) {
     const { freeFlowSpeed, currentSpeed } = flow.flowSegmentData;
     const ratio = currentSpeed / freeFlowSpeed;
@@ -1961,13 +1968,22 @@ async function getTrafficToeslag(start, end) {
         surcharge *= 1 + (0.10 * filesNearby.length); // 10% per file dichtbij route
       }
     } else {
-      console.warn('NDW incidenten niet beschikbaar', ndwResp.status);
+      // NDW incidenten niet beschikbaar, geen toeslag
+      if (ndwResp && ndwResp.status) {
+        console.warn('NDW incidenten niet beschikbaar', ndwResp.status);
+      }
     }
   } catch (err) {
-    console.warn('NDW incidenten ophalen mislukt', err);
+    // Alleen loggen als het echt een error is, geen crash
+    //console.warn('NDW incidenten ophalen mislukt', err);
   }
 
   return surcharge;
+  } catch (err) {
+    // Backend niet bereikbaar of andere error, nooit crashen
+    alert('Let op: verkeersinformatie kon niet worden opgehaald. De ritprijs wordt zonder verkeersopslag berekend.');
+    return 1;
+  }
 }
 
 
@@ -1985,6 +2001,7 @@ function pasKortingscodeToe(ritprijs) {
 }
 
 async function berekenRit() {
+  let ritprijs = 0;
   // Genereer een uniek rit-ID bij elke berekening
   window.currentRitID = generateRitID();
 
@@ -2080,12 +2097,15 @@ async function berekenRit() {
       pinEuro: adminData.pinEuro,
       verkeerProcent: adminData.verkeerProcent,
       verkeerEuro: adminData.verkeerEuro,
-      ritprijs: ritprijs.toFixed(2),
+      ritprijs: (typeof ritprijs === 'number' ? ritprijs.toFixed(2) : '0.00'),
       opmerkingen: opmerkingen || 'Geen'
     };
     ritten.push(nieuweRit);
     localStorage.setItem('ritten', JSON.stringify(ritten));
-  } catch(e) { console.error('Rit niet opgeslagen:', e); }
+  } catch(e) {
+    alert('Rit kon niet worden opgeslagen. Probeer het later opnieuw.');
+    //console.error('Rit niet opgeslagen:', e);
+  }
 
   // Voeg spoedrit informatie toe aan WhatsApp bericht voor chauffeur
   let spoedBericht = "";
@@ -2107,6 +2127,7 @@ async function berekenRit() {
 }
 
 async function toonAdmin() {
+  let ritprijs = (typeof window.lastPrice === 'number') ? window.lastPrice : 0;
   // Toon altijd de laatst berekende rit-ID
   if (window.currentRitID) {
     adminData.ritID = window.currentRitID;
