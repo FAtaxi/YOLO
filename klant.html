@@ -1369,6 +1369,10 @@ button {
     <div id="afzetadres-suggesties" class="adres-suggesties" style="position:absolute; top:100%; left:0; width:100%; z-index:10;"></div>
   </div>
 
+  <!-- Tussenstop knop en velden -->
+  <button type="button" id="tussenstopBtn" onclick="toonTussenstopVeld()" style="margin-bottom:0.5rem;">➕ Tussenstop toevoegen</button>
+  <div id="tussenstopContainer" style="display:none; margin-bottom:0.5rem;"></div>
+
   <button type="button" onclick="toggleDatum()" id="toggleDatumBtn" aria-controls="datumContainer" aria-expanded="false">📅 Reserveren? €17.50,- 📅</button>
 
   <div id="datumContainer">
@@ -1413,7 +1417,14 @@ button {
   <div id="resultaat"></div>
 
   <button id="idealPayBtn" style="display:none; width:100%; margin:0.5rem 0; display:flex; align-items:center; justify-content:center; gap:0.5em;" onclick="startIdealPay()">
-  <img src="ideal-logo.svg" alt="iDEAL" style="height:1.5em; vertical-align:middle; margin-right:0.3em; background:#fff; border-radius:4px; box-shadow:0 1px 4px #0001;" />
+  <span style="height:1.5em; display:inline-block; vertical-align:middle; margin-right:0.3em; background:#fff; border-radius:4px; box-shadow:0 1px 4px #0001;">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 32" width="28" height="18" style="display:block;">
+      <rect width="50" height="32" rx="8" fill="#fff"/>
+      <path d="M8 4h15a11 11 0 1 1 0 24H8z" fill="#c06"/>
+      <path d="M13.2 8.8v14.4h2.9c2.5 0 4.1-1.5 4.1-3.7 0-1.5-0.8-2.6-2.2-3.1 1.1-0.4 1.8-1.3 1.8-2.6 0-2-1.4-3-3.8-3h-2.8zm2.1 2h0.7c1.1 0 1.7 0.5 1.7 1.5 0 1-0.6 1.5-1.7 1.5h-0.7zm0 5.1h0.9c1.2 0 1.9 0.6 1.9 1.6 0 1-0.7 1.6-1.9 1.6h-0.9z" fill="#fff"/>
+      <text x="32" y="22" font-family="Arial, Helvetica, sans-serif" font-size="10" fill="#000">iDEAL</text>
+    </svg>
+  </span>
   Direct betalen via iDEAL
 </button>
 
@@ -1429,6 +1440,58 @@ button {
 <!-- Zet ALLE scripts vlak voor </body> -->
 <script>
 // --- FA Taxi Boeking | Modern, robuust & foutloos script ---
+
+// --- Tussenstop functionaliteit ---
+let tussenstopAantal = 0;
+const MAX_TUSSENSTOPS = 3;
+
+function toonTussenstopVeld() {
+  const container = document.getElementById('tussenstopContainer');
+  if (tussenstopAantal < MAX_TUSSENSTOPS) {
+    tussenstopAantal++;
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.className = 'tussenstop-input';
+    input.placeholder = `Tussenstop ${tussenstopAantal} (adres)`;
+    input.setAttribute('autocomplete', 'off');
+    input.style.marginBottom = '0.3rem';
+    input.oninput = function() { zoekAdresSuggesties(this, `tussenstop-suggesties-${tussenstopAantal}`); };
+    input.setAttribute('aria-label', `Tussenstop ${tussenstopAantal}`);
+    input.id = `tussenstop${tussenstopAantal}`;
+    // Suggestie container
+    const suggestDiv = document.createElement('div');
+    suggestDiv.id = `tussenstop-suggesties-${tussenstopAantal}`;
+    suggestDiv.className = 'adres-suggesties';
+    suggestDiv.style.cssText = 'position:absolute; top:100%; left:0; width:100%; z-index:10;';
+    // Wrapper
+    const wrapper = document.createElement('div');
+    wrapper.className = 'input-wrapper';
+    wrapper.style.position = 'relative';
+    wrapper.appendChild(input);
+    wrapper.appendChild(suggestDiv);
+    container.appendChild(wrapper);
+    container.style.display = '';
+    if (tussenstopAantal === MAX_TUSSENSTOPS) {
+      document.getElementById('tussenstopBtn').disabled = true;
+      document.getElementById('tussenstopBtn').innerText = 'Maximaal 3 tussenstops bereikt';
+    }
+  }
+}
+
+// --- Prijsberekening uitbreiden voor tussenstops ---
+const orig_berekenRitprijs = window.berekenRitprijs;
+window.berekenRitprijs = function(afstand, duur, weer) {
+  let prijs = orig_berekenRitprijs(afstand, duur, weer);
+  // Simpel: voor elke tussenstop +€5,- optellen (pas evt. aan naar wens)
+  let extra = 0;
+  for (let i = 1; i <= MAX_TUSSENSTOPS; i++) {
+    const val = document.getElementById(`tussenstop${i}`)?.value?.trim();
+    if (val) extra += 5; // Of bereken op basis van extra afstand
+  }
+  prijs += extra;
+  return prijs;
+};
+
 'use strict';
 
 // --- DraftRit automatisch terugzetten bij laden pagina ---
@@ -1836,28 +1899,48 @@ async function berekenRit() {
     return;
   }
 
-  const coordOphalen = await getCoordinates(ophalen);
-  const coordAfzetten = await getCoordinates(afzetten);
-  const routeURL = `https://api.openrouteservice.org/v2/directions/driving-car?api_key=5b3ce3597851110001cf6248b59dc263cab24bdabda48748cd9122b3&start=${coordOphalen[0]},${coordOphalen[1]}&end=${coordAfzetten[0]},${coordAfzetten[1]}`;
-  const res = await fetch(routeURL);
-  const data = await res.json();
-
-  const afstandKm = data.features[0].properties.summary.distance / 1000;
-  const duurMin = data.features[0].properties.summary.duration / 60;
-  const weer = await getWeer(coordOphalen[1], coordOphalen[0]);
-
-  let ritprijs = berekenRitprijs(afstandKm, duurMin, weer);
-  const trafficMul = await getTrafficToeslag(coordOphalen, coordAfzetten);
-  adminData.verkeerProcent = ((trafficMul - 1) * 100).toFixed(0);
-  adminData.verkeerEuro = (adminData.basis * (trafficMul - 1)).toFixed(2);
-  ritprijs *= trafficMul;
-  ritprijs = pasKortingscodeToe(ritprijs);
+  // Segmenten bepalen: ophaaladres -> tussenstop1 -> tussenstop2 -> tussenstop3 -> afzetadres
+  const tussenstops = [];
+  for (let i = 1; i <= 3; i++) {
+    const val = document.getElementById(`tussenstop${i}`)?.value?.trim();
+    if (val) tussenstops.push(val);
+  }
+  const segmenten = [ophalen, ...tussenstops, afzetten];
+  let totaalPrijs = 0;
+  let totaalAfstand = 0;
+  let totaalDuur = 0;
+  let weer = null;
+  let trafficTot = 1;
+  let segmentDetails = [];
+  for (let i = 0; i < segmenten.length - 1; i++) {
+    const start = segmenten[i];
+    const end = segmenten[i + 1];
+    const coordStart = await getCoordinates(start);
+    const coordEnd = await getCoordinates(end);
+    const routeURL = `https://api.openrouteservice.org/v2/directions/driving-car?api_key=5b3ce3597851110001cf6248b59dc263cab24bdabda48748cd9122b3&start=${coordStart[0]},${coordStart[1]}&end=${coordEnd[0]},${coordEnd[1]}`;
+    const res = await fetch(routeURL);
+    const data = await res.json();
+    const afstandKm = data.features[0].properties.summary.distance / 1000;
+    const duurMin = data.features[0].properties.summary.duration / 60;
+    if (i === 0) {
+      weer = await getWeer(coordStart[1], coordStart[0]);
+    }
+    let prijs = berekenRitprijs(afstandKm, duurMin, weer);
+    const trafficMul = await getTrafficToeslag(coordStart, coordEnd);
+    prijs *= trafficMul;
+    trafficTot *= trafficMul;
+    totaalPrijs += prijs;
+    totaalAfstand += afstandKm;
+    totaalDuur += duurMin;
+    segmentDetails.push(`Segment ${i + 1}: ${start} → ${end}: €${prijs.toFixed(2)}, ${afstandKm.toFixed(1)} km, ${duurMin.toFixed(0)} min`);
+  }
+  totaalPrijs = pasKortingscodeToe(totaalPrijs);
 
   // Pin bij chauffeur kosten 2.25%
   if (betaalmethode === 'Pin bij chauffeur') {
     adminData.pinProcent = 2.25;
-    adminData.pinEuro = (ritprijs * 0.0225).toFixed(2);
-    ritprijs *= 1.0225;
+    adminData.pinEuro = (totaalPrijs * 0.0225).toFixed(2);
+    totaalPrijs *= 1.0225;
   } else {
     adminData.pinProcent = 0;
     adminData.pinEuro = 0;
@@ -1870,7 +1953,7 @@ async function berekenRit() {
   }
 
   const tijdstipWeergave = tijd ? tijd : 'On-Demand';
-  document.getElementById("resultaat").innerText = `${spoedInfo}🚖 Ritprijs: €${ritprijs.toFixed(2)}\n🛣️ Afstand: ${afstandKm.toFixed(1)} km\n🕒 Duur: ${duurMin.toFixed(0)} min\n🕒 Tijdstip: ${tijdstipWeergave}\n💳 Betaalmethode: ${betaalmethode}\n💳 Pin-kosten: ${adminData.pinProcent}% (€${adminData.pinEuro})\n📌 Annuleringskosten: €10 (niet inbegrepen)\n🎁 Korting toegepast: €${adminData.kortingBedrag}\n${adminData.geplandeRit}\n${adminData.huisdieren}`;
+  document.getElementById("resultaat").innerText = `${spoedInfo}🚖 Ritprijs: €${totaalPrijs.toFixed(2)}\n🛣️ Afstand totaal: ${totaalAfstand.toFixed(1)} km\n🕒 Duur totaal: ${totaalDuur.toFixed(0)} min\n${segmentDetails.join('\n')}\n🕒 Tijdstip: ${tijdstipWeergave}\n💳 Betaalmethode: ${betaalmethode}\n💳 Pin-kosten: ${adminData.pinProcent}% (€${adminData.pinEuro})\n📌 Annuleringskosten: €10 (niet inbegrepen)\n🎁 Korting toegepast: €${adminData.kortingBedrag}\n${adminData.geplandeRit}\n${adminData.huisdieren}`;
 
   // Sla de rit op in LocalStorage
   try {
@@ -2118,18 +2201,178 @@ document.addEventListener('DOMContentLoaded', ()=>{
   const lang = new URLSearchParams(location.search).get('lang') || 'nl';
   console.log('Selected language for index:', lang);
   const dict = {
-    nl: { ophaal:'📍 OPHAAL ADRES 📍', afzet:'📍 AFZET ADRES 📍', reserveren:'📅 Reserveren? €17,50 📅', huisdieren:'🐶 Huisdieren €5,- 🐶', spoed:'🚀 Spoedrit €10 🚀', akkoord:'🚨 Annuleringskosten €10,- 🚨', bereken:'🚖 Bereken ritprijs 🚖', ph:'Bijv. Stationsplein 1, Amsterdam', dh:'Bijv. Damrak 50, Amsterdam', locatieBtn:'📍 Mijn locatie' },
-    en: { ophaal:'📍 Pickup Address 📍', afzet:'📍 Drop-off Address 📍', reserveren:'📅 Reserve? $17,50 📅', huisdieren:'🐶 Pets $5,- 🐶', spoed:'🚀 Rush $10 🚀', akkoord:'🚨 Cancel fee $10,- 🚨', bereken:'🚖 Calculate Fare 🚖', ph:'e.g. Central Station 1, Amsterdam', dh:'e.g. Damrak 50, Amsterdam', locatieBtn:'📍 My location' },
-    es: { ophaal:'📍 Dirección de recogida 📍', afzet:'📍 Dirección de entrega 📍', reserveren:'📅 Reservar? €17,50 📅', huisdieren:'🐶 Mascotas €5,- 🐶', spoed:'🚀 Servicio urgente €10 🚀', akkoord:'🚨 Cargo de cancelación €10,- 🚨', bereken:'🚖 Calcular tarifa 🚖', ph:'p.ej. Stationsplein 1, Ámsterdam', dh:'p.ej. Damrak 50, Ámsterdam', locatieBtn:'📍 Mi ubicación' },
-    ar: { ophaal:'📍 عنوان الانطلاق 📍', afzet:'📍 عنوان الوصول 📍', reserveren:'📅 حجز؟ €17,50 📅', huisdieren:'🐶 حيوانات أليفة €5,- 🐶', spoed:'🚀 خدمة عاجلة €10 🚀', akkoord:'🚨 رسوم الإلغاء €10,- 🚨', bereken:'🚖 احسب الأجرة 🚖', ph:'مثال: Stationsplein 1, Amsterdam', dh:'مثال: Damrak 50, Amsterdam', locatieBtn:'📍 موقعي' },
-    pt: { ophaal:'📍 Endereço de partida 📍', afzet:'📍 Endereço de chegada 📍', reserveren:'📅 Reservar? €17,50 📅', huisdieren:'🐶 Animais €5,- 🐶', spoed:'🚀 Serviço urgente €10 🚀', akkoord:'🚨 Taxa de cancelamento €10,- 🚨', bereken:'🚖 Calcular tarifa 🚖', ph:'Ex: Stationsplein 1, Amsterdã', dh:'Ex: Damrak 50, Amsterdã', locatieBtn:'📍 Minha localização' },
-    tr: { ophaal:'📍 Alış Noktası 📍', afzet:'📍 Bırakma Noktası 📍', reserveren:'📅 Rezervasyon? €17,50 📅', huisdieren:'🐶 Evcil Hayvan €5,- 🐶', spoed:'🚀 Acele Hizmet €10 🚀', akkoord:'🚨 İptal Ücreti €10,- 🚨', bereken:'🚖 Ücret Hesapla 🚖', ph:'Örn: Stationsplein 1, Amsterdam', dh:'Örn: Damrak 50, Amsterdam', locatieBtn:'📍 Konumum' },
-    fr: { ophaal:'📍 Adresse de départ 📍', afzet:'📍 Adresse d’arrivée 📍', reserveren:'📅 Réserver? €17,50 📅', huisdieren:'🐶 Animaux €5,- 🐶', spoed:'🚀 Service urgent €10 🚀', akkoord:'🚨 Frais d’annulation €10,- 🚨', bereken:'🚖 Calculer Tarif 🚖', ph:'Ex: Stationsplein 1, Amsterdam', dh:'Ex: Damrak 50, Amsterdam', locatieBtn:'📍 Ma position' },
-    it: { ophaal:'📍 Indirizzo di partenza 📍', afzet:'📍 Indirizzo di arrivo 📍', reserveren:'📅 Prenota? €17,50 📅', huisdieren:'🐶 Animali €5,- 🐶', spoed:'🚀 Servizio Urgente €10 🚀', akkoord:'🚨 Tariffa cancellazione €10,- 🚨', bereken:'🚖 Calcola Tariffa 🚖', ph:'Es: Stationsplein 1, Amsterdam', dh:'Es: Damrak 50, Amsterdam', locatieBtn:'📍 La mia posizione' },
-    de: { ophaal:'📍 Abholadresse 📍', afzet:'📍 Zieladresse 📍', reserveren:'📅 Reservieren? €17,50 📅', huisdieren:'🐶 Haustiere €5,- 🐶', spoed:'🚀 Eilfahrt €10 🚀', akkoord:'🚨 Stornogebühr €10,- 🚨', bereken:'🚖 Fahrtpreis berechnen 🚖', ph:'z.B. Stationsplein 1, Amsterdam', dh:'z.B. Damrak 50, Amsterdam', locatieBtn:'📍 Mein Standort' },
-    pl: { ophaal:'📍 Adres odbioru 📍', afzet:'📍 Adres dostawy 📍', reserveren:'📅 Rezerwować? €17,50 📅', huisdieren:'🐶 Zwierzęta 🐶 5€', spoed:'🚀 Pilna usługa €10 🚀', akkoord:'🚨 Opłata za anulowanie €10,- 🚨', bereken:'🚖 Oblicz cenę 🚖', ph:'np. Stationsplein 1, Amsterdam', dh:'np. Damrak 50, Amsterdam', locatieBtn:'📍 Moja lokalizacja' }
-
+    nl: {
+      h1: 'FA TAXI Service',
+      h2: 'TAXI 4 Personen',
+      tussenstopBtn: '➕ Tussenstop toevoegen',
+      labelTijdstip: '🕒 Gewenst tijdstip 🕒',
+      labelBetaal: '💳 Kies een betaalmethode 💳',
+      labelKorting: '💰 Kortingscode 💰',
+      labelOpmerkingen: '✏️ Opmerkingen ✏️',
+      idealPayBtn: 'Direct betalen via iDEAL',
+      textareaPH: 'Bijvoorbeeld: helpen met bagage, bijzonderheden, etc.',
+      adminSpecificaties: 'Admin specificaties',
+      selectIdeal: '🌐 IDEAL Online-Betaal-Link',
+      selectTikkie: '🔗 Tikkie',
+      selectPin: '💳 Pin bij chauffeur',
+      selectCash: '💶 Contant',
+      ophaal:'📍 OPHAAL ADRES 📍', afzet:'📍 AFZET ADRES 📍', reserveren:'📅 Reserveren? €17,50 📅', huisdieren:'🐶 Huisdieren €5,- 🐶', spoed:'🚀 Spoedrit €10 🚀', akkoord:'🚨 Annuleringskosten €10,- 🚨', bereken:'🚖 Bereken ritprijs 🚖', ph:'Bijv. Stationsplein 1, Amsterdam', dh:'Bijv. Damrak 50, Amsterdam', locatieBtn:'📍 Mijn locatie'
+    },
+    en: {
+      h1: 'FA TAXI Service',
+      h2: 'TAXI 4 Persons',
+      tussenstopBtn: '➕ Add stopover',
+      labelTijdstip: '🕒 Desired time 🕒',
+      labelBetaal: '💳 Choose a payment method 💳',
+      labelKorting: '💰 Discount code 💰',
+      labelOpmerkingen: '✏️ Comments ✏️',
+      idealPayBtn: 'Pay directly via iDEAL',
+      textareaPH: 'For example: help with luggage, special requests, etc.',
+      adminSpecificaties: 'Admin specifications',
+      selectIdeal: '🌐 IDEAL Online Payment Link',
+      selectTikkie: '🔗 Tikkie',
+      selectPin: '💳 Card at driver',
+      selectCash: '💶 Cash',
+      ophaal:'📍 Pickup Address 📍', afzet:'📍 Drop-off Address 📍', reserveren:'📅 Reserve? €17,50 📅', huisdieren:'🐶 Pets €5,- 🐶', spoed:'🚀 Rush €10 🚀', akkoord:'🚨 Cancel fee €10,- 🚨', bereken:'🚖 Calculate Fare 🚖', ph:'e.g. Central Station 1, Amsterdam', dh:'e.g. Damrak 50, Amsterdam', locatieBtn:'📍 My location'
+    },
+    es: {
+      h1: 'FA TAXI Servicio',
+      h2: 'TAXI 4 Personas',
+      tussenstopBtn: '➕ Añadir parada',
+      labelTijdstip: '🕒 Hora deseada 🕒',
+      labelBetaal: '💳 Elija un método de pago 💳',
+      labelKorting: '💰 Código de descuento 💰',
+      labelOpmerkingen: '✏️ Comentarios ✏️',
+      idealPayBtn: 'Pagar directamente con iDEAL',
+      textareaPH: 'Por ejemplo: ayuda con equipaje, detalles especiales, etc.',
+      adminSpecificaties: 'Especificaciones admin',
+      selectIdeal: '🌐 Enlace de pago IDEAL',
+      selectTikkie: '🔗 Tikkie',
+      selectPin: '💳 Tarjeta al conductor',
+      selectCash: '💶 Efectivo',
+      ophaal:'📍 Dirección de recogida 📍', afzet:'📍 Dirección de entrega 📍', reserveren:'📅 Reservar? €17,50 📅', huisdieren:'🐶 Mascotas €5,- 🐶', spoed:'🚀 Servicio urgente €10 🚀', akkoord:'🚨 Cargo de cancelación €10,- 🚨', bereken:'🚖 Calcular tarifa 🚖', ph:'p.ej. Stationsplein 1, Ámsterdam', dh:'p.ej. Damrak 50, Ámsterdam', locatieBtn:'📍 Mi ubicación'
+    },
+    ar: {
+      h1: 'خدمة تاكسي FA',
+      h2: 'تاكسي ٤ أشخاص',
+      tussenstopBtn: '➕ إضافة محطة',
+      labelTijdstip: '🕒 الوقت المطلوب 🕒',
+      labelBetaal: '💳 اختر طريقة الدفع 💳',
+      labelKorting: '💰 رمز الخصم 💰',
+      labelOpmerkingen: '✏️ ملاحظات ✏️',
+      idealPayBtn: 'الدفع مباشرة عبر iDEAL',
+      textareaPH: 'مثال: المساعدة في الأمتعة، تفاصيل خاصة، إلخ.',
+      adminSpecificaties: 'مواصفات المشرف',
+      selectIdeal: '🌐 رابط دفع iDEAL',
+      selectTikkie: '🔗 تيكي',
+      selectPin: '💳 بطاقة عند السائق',
+      selectCash: '💶 نقداً',
+      ophaal:'📍 عنوان الانطلاق 📍', afzet:'📍 عنوان الوصول 📍', reserveren:'📅 حجز؟ €17,50 📅', huisdieren:'🐶 حيوانات أليفة €5,- 🐶', spoed:'🚀 خدمة عاجلة €10 🚀', akkoord:'🚨 رسوم الإلغاء €10,- 🚨', bereken:'🚖 احسب الأجرة 🚖', ph:'مثال: Stationsplein 1, Amsterdam', dh:'مثال: Damrak 50, Amsterdam', locatieBtn:'📍 موقعي'
+    },
+    pt: {
+      h1: 'Serviço FA TAXI',
+      h2: 'TÁXI 4 Pessoas',
+      tussenstopBtn: '➕ Adicionar parada',
+      labelTijdstip: '🕒 Horário desejado 🕒',
+      labelBetaal: '💳 Escolha um método de pagamento 💳',
+      labelKorting: '💰 Código de desconto 💰',
+      labelOpmerkingen: '✏️ Comentários ✏️',
+      idealPayBtn: 'Pagar diretamente via iDEAL',
+      textareaPH: 'Por exemplo: ajuda com bagagem, detalhes especiais, etc.',
+      adminSpecificaties: 'Especificações admin',
+      selectIdeal: '🌐 Link de pagamento IDEAL',
+      selectTikkie: '🔗 Tikkie',
+      selectPin: '💳 Cartão com motorista',
+      selectCash: '💶 Dinheiro',
+      ophaal:'📍 Endereço de partida 📍', afzet:'📍 Endereço de chegada 📍', reserveren:'📅 Reservar? €17,50 📅', huisdieren:'🐶 Animais €5,- 🐶', spoed:'🚀 Serviço urgente €10 🚀', akkoord:'🚨 Taxa de cancelamento €10,- 🚨', bereken:'🚖 Calcular tarifa 🚖', ph:'Ex: Stationsplein 1, Amsterdã', dh:'Ex: Damrak 50, Amsterdã', locatieBtn:'📍 Minha localização'
+    },
+    tr: {
+      h1: 'FA TAKSİ Servisi',
+      h2: 'TAKSİ 4 Kişi',
+      tussenstopBtn: '➕ Ara durak ekle',
+      labelTijdstip: '🕒 İstenen zaman 🕒',
+      labelBetaal: '💳 Ödeme yöntemi seçin 💳',
+      labelKorting: '💰 İndirim kodu 💰',
+      labelOpmerkingen: '✏️ Yorumlar ✏️',
+      idealPayBtn: 'iDEAL ile hemen öde',
+      textareaPH: 'Örneğin: bagaj yardımı, özel notlar, vb.',
+      adminSpecificaties: 'Yönetici özellikleri',
+      selectIdeal: '🌐 IDEAL Online Ödeme Linki',
+      selectTikkie: '🔗 Tikkie',
+      selectPin: '💳 Şoförde kart',
+      selectCash: '💶 Nakit',
+      ophaal:'📍 Alış Noktası 📍', afzet:'📍 Bırakma Noktası 📍', reserveren:'📅 Rezervasyon? €17,50 📅', huisdieren:'🐶 Evcil Hayvan €5,- 🐶', spoed:'🚀 Acele Hizmet €10 🚀', akkoord:'🚨 İptal Ücreti €10,- 🚨', bereken:'🚖 Ücret Hesapla 🚖', ph:'Örn: Stationsplein 1, Amsterdam', dh:'Örn: Damrak 50, Amsterdam', locatieBtn:'📍 Konumum'
+    },
+    fr: {
+      h1: 'Service FA TAXI',
+      h2: 'TAXI 4 Personnes',
+      tussenstopBtn: '➕ Ajouter une étape',
+      labelTijdstip: '🕒 Heure souhaitée 🕒',
+      labelBetaal: '💳 Choisissez un mode de paiement 💳',
+      labelKorting: '💰 Code promo 💰',
+      labelOpmerkingen: '✏️ Commentaires ✏️',
+      idealPayBtn: 'Payer directement via iDEAL',
+      textareaPH: 'Par exemple : aide pour les bagages, remarques, etc.',
+      adminSpecificaties: 'Spécifications admin',
+      selectIdeal: '🌐 Lien de paiement IDEAL',
+      selectTikkie: '🔗 Tikkie',
+      selectPin: '💳 Carte au chauffeur',
+      selectCash: '💶 Espèces',
+      ophaal:'📍 Adresse de départ 📍', afzet:'📍 Adresse d’arrivée 📍', reserveren:'📅 Réserver? €17,50 📅', huisdieren:'🐶 Animaux €5,- 🐶', spoed:'🚀 Service urgent €10 🚀', akkoord:'🚨 Frais d’annulation €10,- 🚨', bereken:'🚖 Calculer Tarif 🚖', ph:'Ex: Stationsplein 1, Amsterdam', dh:'Ex: Damrak 50, Amsterdam', locatieBtn:'📍 Ma position'
+    },
+    it: {
+      h1: 'Servizio FA TAXI',
+      h2: 'TAXI 4 Persone',
+      tussenstopBtn: '➕ Aggiungi fermata',
+      labelTijdstip: '🕒 Orario desiderato 🕒',
+      labelBetaal: '💳 Scegli un metodo di pagamento 💳',
+      labelKorting: '💰 Codice sconto 💰',
+      labelOpmerkingen: '✏️ Commenti ✏️',
+      idealPayBtn: 'Paga direttamente con iDEAL',
+      textareaPH: 'Ad esempio: aiuto con i bagagli, dettagli particolari, ecc.',
+      adminSpecificaties: 'Specifiche admin',
+      selectIdeal: '🌐 Link pagamento IDEAL',
+      selectTikkie: '🔗 Tikkie',
+      selectPin: '💳 Carta al conducente',
+      selectCash: '💶 Contanti',
+      ophaal:'📍 Indirizzo di partenza 📍', afzet:'📍 Indirizzo di arrivo 📍', reserveren:'📅 Prenota? €17,50 📅', huisdieren:'🐶 Animali €5,- 🐶', spoed:'🚀 Servizio Urgente €10 🚀', akkoord:'🚨 Tariffa cancellazione €10,- 🚨', bereken:'🚖 Calcola Tariffa 🚖', ph:'Es: Stationsplein 1, Amsterdam', dh:'Es: Damrak 50, Amsterdam', locatieBtn:'📍 La mia posizione'
+    },
+    de: {
+      h1: 'FA TAXI Service',
+      h2: 'TAXI 4 Personen',
+      tussenstopBtn: '➕ Zwischenstopp hinzufügen',
+      labelTijdstip: '🕒 Gewünschte Zeit 🕒',
+      labelBetaal: '💳 Zahlungsmethode wählen 💳',
+      labelKorting: '💰 Rabattcode 💰',
+      labelOpmerkingen: '✏️ Bemerkungen ✏️',
+      idealPayBtn: 'Direkt mit iDEAL bezahlen',
+      textareaPH: 'Zum Beispiel: Hilfe mit Gepäck, Besonderheiten, etc.',
+      adminSpecificaties: 'Admin-Spezifikationen',
+      selectIdeal: '🌐 IDEAL Online-Zahlungslink',
+      selectTikkie: '🔗 Tikkie',
+      selectPin: '💳 Karte beim Fahrer',
+      selectCash: '💶 Barzahlung',
+      ophaal:'📍 Abholadresse 📍', afzet:'📍 Zieladresse 📍', reserveren:'📅 Reservieren? €17,50 📅', huisdieren:'🐶 Haustiere €5,- 🐶', spoed:'🚀 Eilfahrt €10 🚀', akkoord:'🚨 Stornogebühr €10,- 🚨', bereken:'🚖 Fahrtpreis berechnen 🚖', ph:'z.B. Stationsplein 1, Amsterdam', dh:'z.B. Damrak 50, Amsterdam', locatieBtn:'📍 Mein Standort'
+    },
+    pl: {
+      h1: 'FA TAXI Usługa',
+      h2: 'TAXI 4 Osoby',
+      tussenstopBtn: '➕ Dodaj przystanek',
+      labelTijdstip: '🕒 Pożądany czas 🕒',
+      labelBetaal: '💳 Wybierz metodę płatności 💳',
+      labelKorting: '💰 Kod rabatowy 💰',
+      labelOpmerkingen: '✏️ Uwagi ✏️',
+      idealPayBtn: 'Zapłać bezpośrednio przez iDEAL',
+      textareaPH: 'Na przykład: pomoc z bagażem, szczegóły, itp.',
+      adminSpecificaties: 'Specyfikacje admina',
+      selectIdeal: '🌐 IDEAL Link płatności',
+      selectTikkie: '🔗 Tikkie',
+      selectPin: '💳 Karta u kierowcy',
+      selectCash: '💶 Gotówka',
+      ophaal:'📍 Adres odbioru 📍', afzet:'📍 Adres dostawy 📍', reserveren:'📅 Rezerwować? €17,50 📅', huisdieren:'🐶 Zwierzęta 🐶 5€', spoed:'🚀 Pilna usługa €10 🚀', akkoord:'🚨 Opłata za anulowanie €10,- 🚨', bereken:'🚖 Oblicz cenę 🚖', ph:'np. Stationsplein 1, Amsterdam', dh:'np. Damrak 50, Amsterdam', locatieBtn:'📍 Moja lokalizacja'
+    }
   };
+
   console.log('Index translation object for', lang, dict[lang]);
   const t = dict[lang] || dict.nl;
   console.log('Index using translation:', t);
@@ -2143,6 +2386,26 @@ document.addEventListener('DOMContentLoaded', ()=>{
   document.getElementById('ophaaladres').placeholder = t.ph;
   document.getElementById('afzetadres').placeholder = t.dh;
   document.getElementById('locatieBtn').innerText = t.locatieBtn;
+
+  // Extra vertalingen voor volledige pagina
+  if(document.getElementById('h1Title')) document.getElementById('h1Title').innerText = t.h1 || dict.nl.h1;
+  if(document.getElementById('h2Subtitle')) document.getElementById('h2Subtitle').innerText = t.h2 || dict.nl.h2;
+  if(document.getElementById('tussenstopBtn')) document.getElementById('tussenstopBtn').innerText = t.tussenstopBtn || dict.nl.tussenstopBtn;
+  if(document.getElementById('labelTijdstip')) document.getElementById('labelTijdstip').innerText = t.labelTijdstip || dict.nl.labelTijdstip;
+  if(document.getElementById('labelBetaal')) document.getElementById('labelBetaal').innerText = t.labelBetaal || dict.nl.labelBetaal;
+  if(document.getElementById('labelKorting')) document.getElementById('labelKorting').innerText = t.labelKorting || dict.nl.labelKorting;
+  if(document.getElementById('labelOpmerkingen')) document.getElementById('labelOpmerkingen').innerText = t.labelOpmerkingen || dict.nl.labelOpmerkingen;
+  if(document.getElementById('opmerkingen')) document.getElementById('opmerkingen').placeholder = t.textareaPH || dict.nl.textareaPH;
+  if(document.getElementById('idealPayBtn')) document.getElementById('idealPayBtn').lastChild.textContent = ' ' + (t.idealPayBtn || dict.nl.idealPayBtn);
+  if(document.getElementById('adminSpecificaties')) document.getElementById('adminSpecificaties').innerText = t.adminSpecificaties || dict.nl.adminSpecificaties;
+  // Select opties betaalmethode
+  const betaalSelect = document.getElementById('betaalmethode');
+  if(betaalSelect && betaalSelect.options.length >= 4) {
+    betaalSelect.options[0].text = t.selectIdeal || dict.nl.selectIdeal;
+    betaalSelect.options[1].text = t.selectTikkie || dict.nl.selectTikkie;
+    betaalSelect.options[2].text = t.selectPin || dict.nl.selectPin;
+    betaalSelect.options[3].text = t.selectCash || dict.nl.selectCash;
+  }
 });
 </script>
 
