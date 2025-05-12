@@ -5,17 +5,6 @@ const PDFDocument = require('pdfkit');
 const nodemailer = require('nodemailer');
 const { createMollieClient } = require('@mollie/api-client');
 const cors = require('cors');
-const twilio = require('twilio');
-require('dotenv').config({ path: path.resolve(__dirname, '../../twilio.env') });
-
-// Twilio client initialiseren
-const twilioClient = twilio(
-  process.env.TWILIO_ACCOUNT_SID || process.env.TWILIO_ACCOUNT_SID,
-  process.env.TWILIO_AUTH_TOKEN || process.env.TWILIO_AUTH_TOKEN
-);
-
-// WhatsApp nummer configureren
-const whatsappNumber = process.env.TWILIO_WHATSAPP_NUMBER || 'whatsapp:+14155238886' // Sandbox nummer als fallback
 
 // Gebruik test-API-key uit env of hardcoded (alleen voor test!)
 const mollie = createMollieClient({
@@ -213,25 +202,8 @@ app.post('/api/whatsapp', async (req, res) => {
     return res.status(400).json({ error: 'Telefoonnummer en bericht zijn verplicht' });
   }
 
-  try {
-    const result = await twilioClient.messages.create({
-      body: message,
-      from: whatsappNumber,
-      to: `whatsapp:${to}`
-    });
-    
-    res.json({ 
-      status: 'success',
-      messageId: result.sid,
-      timestamp: result.dateCreated
-    });
-  } catch (err) {
-    console.error('Twilio WhatsApp error:', err);
-    res.status(500).json({ 
-      error: 'WhatsApp bericht versturen mislukt',
-      details: err.message
-    });
-  }
+  // WhatsApp functionaliteit uitgeschakeld
+  res.json({ status: 'disabled', message: 'WhatsApp functionaliteit is tijdelijk uitgeschakeld.' });
 });
 
 // Lijst met goedgekeurde nummers
@@ -252,6 +224,45 @@ app.post('/api/whatsapp/incoming', express.json(), (req, res) => {
   // Bijv. opslaan in database, doorsturen naar admin, etc.
   
   res.status(200).send('OK');
+});
+
+// Database voor boekingen (tijdelijk, vervang door echte database)
+const bookings = [];
+
+// Endpoint: Taxi boeking ontvangen
+app.post('/api/bookings', async (req, res) => {
+  try {
+    const booking = req.body;
+    
+    // Validatie
+    if (!booking.pickup || !booking.destination || !booking.date || !booking.time || 
+        !booking.name || !booking.phone) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Niet alle verplichte velden zijn ingevuld' 
+      });
+    }
+    
+    // Sla boeking op
+    booking.id = Date.now();
+    booking.createdAt = new Date();
+    booking.status = 'pending';
+    bookings.push(booking);
+    
+    // WhatsApp bevestiging uitgeschakeld
+    res.json({ success: true, bookingId: booking.id });
+  } catch (error) {
+    console.error('Boeking error:', error);
+    res.status(500).json({ success: false, message: 'Interne serverfout' });
+  }
+});
+
+// Endpoint: Boekingen ophalen (admin)
+app.get('/api/bookings', (req, res) => {
+  if (!req.session || !req.session.ingelogd) {
+    return res.status(403).json({ error: 'Niet geautoriseerd' });
+  }
+  res.json(bookings);
 });
 
 const https = require('https');
