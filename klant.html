@@ -1451,7 +1451,18 @@ button {
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-o9N1jRVvZC6fJbZbT9gFQ6bFZtZb7Q6ZQvZ1zF2l5F1x04=" crossorigin=""></script>
 <script>
 // Kaart object globaal zodat we hem kunnen hergebruiken
-let map, routeLayer;
+let map, routeLayer, startMarker, endMarker;
+
+// Initieer kaart direct bij laden op Nederland
+window.addEventListener('DOMContentLoaded', () => {
+  if (!map) {
+    map = L.map('map').setView([52.2, 5.3], 7); // Nederland
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: 'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors',
+      maxZoom: 18,
+    }).addTo(map);
+  }
+});
 
 async function showRouteOnMap(ophaaladres, afzetadres) {
   // Haal coordinaten op via bestaande functie
@@ -1471,6 +1482,12 @@ async function showRouteOnMap(ophaaladres, afzetadres) {
     if (routeLayer) {
       map.removeLayer(routeLayer);
     }
+    if (startMarker) {
+      map.removeLayer(startMarker);
+    }
+    if (endMarker) {
+      map.removeLayer(endMarker);
+    }
   }
 
   // OpenRouteService API call (API key uit je script)
@@ -1485,8 +1502,8 @@ async function showRouteOnMap(ophaaladres, afzetadres) {
   map.fitBounds(routeLayer.getBounds(), {padding: [30, 30]});
 
   // Markers
-  L.marker([coordStart[1], coordStart[0]], {title: 'Ophaaladres'}).addTo(map);
-  L.marker([coordEnd[1], coordEnd[0]], {title: 'Afzetadres'}).addTo(map);
+  startMarker = L.marker([coordStart[1], coordStart[0]], {title: 'Ophaaladres'}).addTo(map);
+  endMarker = L.marker([coordEnd[1], coordEnd[0]], {title: 'Afzetadres'}).addTo(map);
 }
 
 // Haak in op ritberekening
