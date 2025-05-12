@@ -265,14 +265,7 @@ app.get('/api/bookings', (req, res) => {
   res.json(bookings);
 });
 
-const https = require('https');
-const fs = require('fs');
-
-const sslOptions = {
-  key: fs.readFileSync('/etc/letsencrypt/live/api.fa-taxi.com/privkey.pem'),
-  cert: fs.readFileSync('/etc/letsencrypt/live/api.fa-taxi.com/fullchain.pem')
-};
-
-https.createServer(sslOptions, app).listen(443, () => {
-  console.log('HTTPS server gestart op poort 443');
+// SSL/HTTPS uitgeschakeld voor development/Render. Gebruik alleen HTTP.
+app.listen(PORT, () => {
+  console.log(`HTTP server running op poort ${PORT}`);
 });
