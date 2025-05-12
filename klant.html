@@ -1425,7 +1425,7 @@ button {
   <div id="resultaat"></div>
 
 
-  <button id="idealPayBtn" style="width:100%; margin:0.5rem 0; display:flex; align-items:center; justify-content:center; gap:0.5em;" onclick="window.startIdealPay()">
+  <button id="idealPayBtn" style="width:100%; margin:0.5rem 0; display:none; align-items:center; justify-content:center; gap:0.5em;" onclick="window.startIdealPay()">
   <span style="height:1.5em; display:inline-block; vertical-align:middle; margin-right:0.3em; background:#fff; border-radius:4px; box-shadow:0 1px 4px #0001;">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 32" width="28" height="18" style="display:block;">
       <rect width="50" height="32" rx="8" fill="#fff"/>
@@ -2435,12 +2435,30 @@ async function toonAdmin() {
 ${huisdierenToeslagLine}
 ${spoedToeslagLine}
 ${geplandeRitToeslagLine}
-- Korting: ${adminData.korting}% (-€${adminData.kortingBedrag})
+- Korting: ${adminData.korting}% (-€${adminData.kortingBedrag})`;
 
-💶 RITPRIJS TOTAAL: €${ritprijs.toFixed(2)}`;
+  // Voeg tussenstop details toe aan admin overzicht als die er zijn
+  if (adminData.tussenstops && adminData.tussenstops.length > 0) {
+    spec += `\n\n🚩 TUSSENSTOPS (${adminData.tussenstops.length}):\n`;
+    adminData.tussenstops.forEach((stop, index) => {
+      spec += `- Tussenstop ${index+1}: ${stop}\n`;
+    });
+    spec += `\n- Extra afstand: +${adminData.extraKmDoorTussenstops.toFixed(1)} km\n`;
+    spec += `- Extra tijd: +${adminData.extraTijdDoorTussenstops.toFixed(0)} min\n`;
+    spec += `- Tussenstop toeslag: €${adminData.tussenstopToeslag.toFixed(2)}\n`;
+    spec += `- Extra kosten: €${adminData.extraKostenTussenstops.toFixed(2)}`;
+  }
+
+  spec += `\n\n💶 RITPRIJS TOTAAL: €${ritprijs.toFixed(2)}`;
 
   document.getElementById("adminSpecificaties").innerText = spec;
   document.getElementById("adminSpecificaties").style.display = "block";
+  
+  // Toon iDEAL knop als er een geldige prijs is
+  const idealBtn = document.getElementById('idealPayBtn');
+  if (idealBtn && ritprijs > 0) {
+    idealBtn.style.display = 'flex';
+  }
 }
 
 function switchLanguage(lang) {
