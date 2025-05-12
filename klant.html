@@ -2040,9 +2040,6 @@ async function berekenRit() {
   let ritprijs = 0;
   // Genereer een uniek rit-ID bij elke berekening
   window.currentRitID = generateRitID();
-
-  // Genereer een uniek rit-ID bij elke berekening
-  window.currentRitID = generateRitID();
   try {
   const ophalen = document.getElementById("ophaaladres").value;
   const afzetten = document.getElementById("afzetadres").value;
@@ -2051,10 +2048,11 @@ async function berekenRit() {
   const opmerkingen = document.getElementById("opmerkingen").value;
 
   if (!ophalen || !afzetten) {
-    return alert("Vul alles correct in en ga akkoord met de voorwaarden.");
+    showSubtleError("Vul alles correct in en ga akkoord met de voorwaarden.", 'ritprijs');
+    return;
   }
   if (document.getElementById("akkoord").value !== "1") {
-    alert("U dient akkoord te gaan met de annuleringskosten. Dit bedrag wordt niet in rekening gebracht als u binnen 5 minuten annuleert. Na 5 minuten worden annuleringskosten in rekening gebracht. Let op: Bij schade wordt de verzekering ingeschakeld. Reinigingskosten €450,-.");
+    showSubtleError("U dient akkoord te gaan met de annuleringskosten. Dit bedrag wordt niet in rekening gebracht als u binnen 5 minuten annuleert. Na 5 minuten worden annuleringskosten in rekening gebracht. Let op: Bij schade wordt de verzekering ingeschakeld. Reinigingskosten €450,-.", 'ritprijs');
     return;
   }
 
@@ -2693,7 +2691,25 @@ window.addEventListener('DOMContentLoaded', function() {
     // Dynamisch toegevoegde tussenstops
     document.addEventListener('input', function(e) {
       if (e.target && e.target.classList && e.target.classList.contains('tussenstop-input')) {
-        autoBereken();
+        // Alleen herberekenen als plausibel adres (minimaal 6 tekens en spatie)
+        const val = e.target.value.trim();
+        const wrapper = e.target.parentNode;
+        let loader = wrapper.querySelector('.tussenstop-loader');
+        if (val.length >= 6 && val.includes(' ')) {
+          // Loader tonen
+          if (!loader) {
+            loader = document.createElement('span');
+            loader.className = 'tussenstop-loader';
+            loader.style = 'display:inline-block;width:16px;height:16px;border:2px solid #ffd700;border-top:2px solid #232526;border-radius:50%;animation:spin 1s linear infinite;vertical-align:middle;margin-left:6px;';
+            e.target.after(loader);
+          }
+          autoBereken().then(()=>{
+            if (loader) loader.remove();
+          });
+        } else {
+          // Loader verwijderen als adres weer leeg of incompleet
+          if (loader) loader.remove();
+        }
       }
     });
   });
