@@ -1288,7 +1288,7 @@ button {
 }
 </style>
   <!-- Leaflet CSS -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-sA+z0ymGNVt/5Qp1FQ1tN7LwM3Q6ZQvZ1zF2l5F1x04=" crossorigin=""/>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
 </head>
 
 <body>
@@ -1448,7 +1448,7 @@ button {
 
 <!-- Zet ALLE scripts vlak voor </body> -->
 <!-- Leaflet JS -->
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-o9N1jRVvZC6fJbZbT9gFQ6bFZtZb7Q6ZQvZ1zF2l5F1x04=" crossorigin=""></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
 <script>
 // Kaart object globaal zodat we hem kunnen hergebruiken
 let map, routeLayer, startMarker, endMarker;
@@ -1506,16 +1506,7 @@ async function showRouteOnMap(ophaaladres, afzetadres) {
   endMarker = L.marker([coordEnd[1], coordEnd[0]], {title: 'Afzetadres'}).addTo(map);
 }
 
-// Haak in op ritberekening
-const origBerekenRit = berekenRit;
-berekenRit = async function() {
-  await origBerekenRit.apply(this, arguments);
-  const ophalen = document.getElementById('ophaaladres').value;
-  const afzetten = document.getElementById('afzetadres').value;
-  if (ophalen && afzetten) {
-    showRouteOnMap(ophalen, afzetten);
-  }
-};
+
 </script>
 <script>
 // --- FA Taxi Boeking | Modern, robuust & foutloos script ---
@@ -2521,6 +2512,21 @@ window.addEventListener('DOMContentLoaded', () => {
     }
   }
 </script>
-
+<script>
+// OVERRIDE BEREKENRIT NA ALLES ANDERS!
+window.addEventListener('DOMContentLoaded', function() {
+  if (typeof berekenRit === 'function') {
+    const origBerekenRit = berekenRit;
+    berekenRit = async function() {
+      await origBerekenRit.apply(this, arguments);
+      const ophalen = document.getElementById('ophaaladres').value;
+      const afzetten = document.getElementById('afzetadres').value;
+      if (ophalen && afzetten) {
+        showRouteOnMap(ophalen, afzetten);
+      }
+    };
+  }
+});
+</script>
 </body>
 </html>
