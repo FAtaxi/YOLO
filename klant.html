@@ -2592,22 +2592,50 @@ window.addEventListener('DOMContentLoaded', () => {
 
 <script>
   async function startIdealPay() {
-    if (!lastPrice || isNaN(lastPrice) || Number(lastPrice) <= 0) {
-      showSubtleError('Bereken eerst de ritprijs', 'ritprijs');
-      return;
+    // Check eerst of we een geldige prijs hebben
+    if (!window.lastPrice || isNaN(window.lastPrice) || parseFloat(window.lastPrice) <= 0) {
+      // Probeer de prijs uit het prijsveld te halen als fallback
+      const prijsEl = document.getElementById('ritprijs');
+      if (prijsEl && prijsEl.innerText) {
+        const prijsText = prijsEl.innerText.replace(/[^0-9,.]/g, '').replace(',', '.');
+        const prijs = parseFloat(prijsText);
+        if (!isNaN(prijs) && prijs > 0) {
+          window.lastPrice = prijs;
+        } else {
+          showSubtleError('Bereken eerst de ritprijs', 'ritprijs');
+          return;
+        }
+      } else {
+        showSubtleError('Bereken eerst de ritprijs', 'ritprijs');
+        return;
+      }
     }
-    const description = `Taxi rit ${window.currentRitID}`;
+    
+    // Toon loader tijdens betaalproces
+    const betaalBtn = document.querySelector('button[onclick="startIdealPay()"]');
+    const origText = betaalBtn ? betaalBtn.innerText : '';
+    if (betaalBtn) {
+      betaalBtn.innerHTML = '<span class="loader" style="display:inline-block;width:16px;height:16px;border:2px solid #232526;border-top:2px solid #ffd700;border-radius:50%;animation:spin 1s linear infinite;vertical-align:middle;margin-right:6px;"></span>Betaling starten...';
+      betaalBtn.disabled = true;
+    }
+    
+    const description = `Taxi rit ${window.currentRitID || 'FA' + Date.now()}`;
     try {
       const res = await fetch('https://yolo-n9xa.onrender.com/api/pay', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ amount: lastPrice, description })
+        body: JSON.stringify({ amount: window.lastPrice, description })
       });
       const data = await res.json();
       if (data.checkoutUrl) window.location.href = data.checkoutUrl;
       else throw new Error(data.error || 'Geen checkoutURL');
     } catch (err) {
       showSubtleError('Betaling kon niet worden gestart.', 'ritprijs');
+      // Herstel knop
+      if (betaalBtn) {
+        betaalBtn.innerHTML = origText;
+        betaalBtn.disabled = false;
+      }
     }
   }
 </script>
@@ -2649,31 +2677,47 @@ window.addEventListener('DOMContentLoaded', function() {
   function debounceAsync(fn, ms = 350) {
     let timer;
     return function(...args) {
-      clearTimeout(timer);
-      timer = setTimeout(async () => {
-        showPriceLoader();
-        try {
-          await fn.apply(this, args);
-        } catch (err) {
-          // Foutmelding alleen in dev, geen console.error in productie
-          if (window.location.hostname === 'localhost') console.warn('Fout bij prijsberekening:', err);
-          // Toon subtiele melding in prijsveld
-          let prijsEl = document.getElementById('ritprijs') || document.querySelector('[data-prijs]');
-          if (prijsEl) prijsEl.innerText = 'Prijs niet beschikbaar';
-        } finally {
-          hidePriceLoader();
-        }
-      }, ms);
+      return new Promise((resolve) => {
+        clearTimeout(timer);
+        timer = setTimeout(async () => {
+          showPriceLoader();
+          try {
+            const result = await fn.apply(this, args);
+            resolve(result);
+          } catch (err) {
+            // Toon subtiele melding in prijsveld
+            showSubtleError('Prijs niet beschikbaar', 'ritprijs');
+            resolve(null);
+          } finally {
+            hidePriceLoader();
+          }
+        }, ms);
+      });
     };
   }
-  let debounceLock = false;
+  
+  // Globale variabele om dubbele berekeningen te voorkomen
+  let isCalculating = false;
+  
   const autoBereken = debounceAsync(async () => {
-    if (debounceLock) return;
-    debounceLock = true;
+    if (isCalculating) return null;
+    isCalculating = true;
     try {
-      if (typeof berekenRit === 'function') await berekenRit();
+      if (typeof berekenRit === 'function') {
+        await berekenRit();
+        // Zorg dat lastPrice altijd beschikbaar is
+        if (window.lastPrice === undefined || window.lastPrice === null) {
+          const prijsEl = document.getElementById('ritprijs');
+          if (prijsEl && prijsEl.innerText) {
+            const prijsText = prijsEl.innerText.replace(/[^0-9,.]/g, '').replace(',', '.');
+            const prijs = parseFloat(prijsText);
+            if (!isNaN(prijs)) window.lastPrice = prijs;
+          }
+        }
+      }
+      return window.lastPrice;
     } finally {
-      debounceLock = false;
+      isCalculating = false;
     }
   });
   const autoFields = [
@@ -2689,26 +2733,40 @@ window.addEventListener('DOMContentLoaded', function() {
       }
     });
     // Dynamisch toegevoegde tussenstops
+    // Vertraagde verwerking voor tussenstops
+    let tussenstopTimer = null;
     document.addEventListener('input', function(e) {
       if (e.target && e.target.classList && e.target.classList.contains('tussenstop-input')) {
-        // Alleen herberekenen als plausibel adres (minimaal 6 tekens en spatie)
+        // Verwijder eerst alle oude loaders
+        document.querySelectorAll('.tussenstop-loader').forEach(l => l.remove());
+        
+        // Alleen herberekenen als het een volledig adres lijkt
         const val = e.target.value.trim();
-        const wrapper = e.target.parentNode;
-        let loader = wrapper.querySelector('.tussenstop-loader');
-        if (val.length >= 6 && val.includes(' ')) {
+        
+        // Check of het een volledig adres lijkt (straatnaam + huisnummer + evt. plaatsnaam)
+        // Patroon: tekst + spatie + cijfer (evt. gevolgd door letter) + evt. komma en plaatsnaam
+        const isCompleteAddress = (
+          val.length > 8 && // Minimaal 8 tekens
+          /\s\d+/.test(val) && // Bevat spatie gevolgd door cijfer (huisnummer)
+          /^[^\d]+\s\d+[a-zA-Z]*(,\s*[^\d,]+)?$/.test(val) // Straat + nummer + evt. plaats
+        );
+        
+        if (isCompleteAddress) {
           // Loader tonen
-          if (!loader) {
-            loader = document.createElement('span');
-            loader.className = 'tussenstop-loader';
-            loader.style = 'display:inline-block;width:16px;height:16px;border:2px solid #ffd700;border-top:2px solid #232526;border-radius:50%;animation:spin 1s linear infinite;vertical-align:middle;margin-left:6px;';
-            e.target.after(loader);
-          }
-          autoBereken().then(()=>{
-            if (loader) loader.remove();
-          });
-        } else {
-          // Loader verwijderen als adres weer leeg of incompleet
-          if (loader) loader.remove();
+          const loader = document.createElement('span');
+          loader.className = 'tussenstop-loader';
+          loader.style = 'display:inline-block;width:16px;height:16px;border:2px solid #ffd700;border-top:2px solid #232526;border-radius:50%;animation:spin 1s linear infinite;vertical-align:middle;margin-left:6px;position:absolute;right:10px;top:50%;transform:translateY(-50%);';
+          e.target.parentNode.style.position = 'relative';
+          e.target.parentNode.appendChild(loader);
+          
+          // Vertraag de berekening om te voorkomen dat we bij elke toetsaanslag herberekenen
+          clearTimeout(tussenstopTimer);
+          tussenstopTimer = setTimeout(() => {
+            autoBereken().finally(() => {
+              // Verwijder alle loaders na berekening
+              document.querySelectorAll('.tussenstop-loader').forEach(l => l.remove());
+            });
+          }, 2000); // Wacht 2 seconden na laatste toetsaanslag voor een betrouwbare berekening
         }
       }
     });
