@@ -2149,41 +2149,148 @@ async function berekenRit() {
     return;
   }
 
-  // Segmenten bepalen: ophaaladres -> tussenstop1 -> tussenstop2 -> tussenstop3 -> afzetadres
+  // Verzamel tussenstops
   const tussenstops = [];
   for (let i = 1; i <= 3; i++) {
     const val = document.getElementById(`tussenstop${i}`)?.value?.trim();
     if (val) tussenstops.push(val);
   }
-  const segmenten = [ophalen, ...tussenstops, afzetten];
-  let totaalPrijs = 0;
-  let totaalAfstand = 0;
-  let totaalDuur = 0;
+  
+  // Bereken eerst de directe route (zonder tussenstops)
+  let basisPrijs = 0;
+  let basisAfstand = 0;
+  let basisDuur = 0;
   let weer = null;
   let trafficTot = 1;
   let segmentDetails = [];
-  for (let i = 0; i < segmenten.length - 1; i++) {
-    const start = segmenten[i];
-    const end = segmenten[i + 1];
-    const coordStart = await getCoordinates(start);
-    const coordEnd = await getCoordinates(end);
-    const routeURL = `https://api.openrouteservice.org/v2/directions/driving-car?api_key=5b3ce3597851110001cf6248b59dc263cab24bdabda48748cd9122b3&start=${coordStart[0]},${coordStart[1]}&end=${coordEnd[0]},${coordEnd[1]}`;
-    const res = await fetch(routeURL);
-    const data = await res.json();
-    const afstandKm = data.features[0].properties.summary.distance / 1000;
-    const duurMin = data.features[0].properties.summary.duration / 60;
-    if (i === 0) {
-      weer = await getWeer(coordStart[1], coordStart[0]);
+  let directeRouteDetails = {};
+  
+  try {
+    // Coördinaten ophalen en afzet
+    const coordOphaal = await getCoordinates(ophalen);
+    const coordAfzet = await getCoordinates(afzetten);
+    
+    if (!coordOphaal || !coordAfzet) {
+      showSubtleError("Kon één of meer adressen niet vinden", 'ritprijs');
+      return;
     }
-    let prijs = berekenRitprijs(afstandKm, duurMin, weer);
-    const trafficMul = await getTrafficToeslag(coordStart, coordEnd);
-    prijs *= trafficMul;
-    trafficTot *= trafficMul;
-    totaalPrijs += prijs;
-    totaalAfstand += afstandKm;
-    totaalDuur += duurMin;
-    segmentDetails.push(`Segment ${i + 1}: ${start} → ${end}: €${prijs.toFixed(2)}, ${afstandKm.toFixed(1)} km, ${duurMin.toFixed(0)} min`);
+    
+    // Weer ophalen (alleen nodig bij start)
+    weer = await getWeer(coordOphaal[1], coordOphaal[0]);
+    
+    // Directe route berekenen
+    const directeRouteURL = `https://api.openrouteservice.org/v2/directions/driving-car?api_key=5b3ce3597851110001cf6248b59dc263cab24bdabda48748cd9122b3&start=${coordOphaal[0]},${coordOphaal[1]}&end=${coordAfzet[0]},${coordAfzet[1]}`;
+    const directeRes = await fetch(directeRouteURL);
+    const directeData = await directeRes.json();
+    
+    if (!directeData.features || !directeData.features[0]) {
+      showSubtleError("Kon geen route berekenen tussen ophaal- en afzetadres", 'ritprijs');
+      return;
+    }
+    
+    // Basis afstand en duur
+    basisAfstand = directeData.features[0].properties.summary.distance / 1000;
+    basisDuur = directeData.features[0].properties.summary.duration / 60;
+    
+    // Verkeersfactor
+    const trafficMul = await getTrafficToeslag(coordOphaal, coordAfzet);
+    trafficTot = trafficMul;
+    
+    // Basis prijs berekenen
+    basisPrijs = berekenRitprijs(basisAfstand, basisDuur, weer) * trafficMul;
+    
+    directeRouteDetails = {
+      afstand: basisAfstand,
+      duur: basisDuur,
+      prijs: basisPrijs
+    };
+    
+    segmentDetails.push(`Directe route: ${ophalen} → ${afzetten}: €${basisPrijs.toFixed(2)}, ${basisAfstand.toFixed(1)} km, ${basisDuur.toFixed(0)} min`);
+  } catch (err) {
+    showSubtleError("Fout bij berekenen directe route", 'ritprijs');
+    return;
   }
+  
+  // Als er tussenstops zijn, bereken de extra kosten
+  let extraPrijs = 0;
+  let extraAfstand = 0;
+  let extraDuur = 0;
+  let metTussenstopsAfstand = 0;
+  let metTussenstopsDuur = 0;
+  
+  if (tussenstops.length > 0) {
+    try {
+      // Bereken route met tussenstops
+      const alleAdressen = [ophalen, ...tussenstops, afzetten];
+      let totaalAfstandMetTussenstops = 0;
+      let totaalDuurMetTussenstops = 0;
+      
+      // Per segment berekenen
+      for (let i = 0; i < alleAdressen.length - 1; i++) {
+        const start = alleAdressen[i];
+        const end = alleAdressen[i + 1];
+        const coordStart = await getCoordinates(start);
+        const coordEnd = await getCoordinates(end);
+        
+        if (!coordStart || !coordEnd) {
+          showSubtleError(`Kon adres niet vinden: ${!coordStart ? start : end}`, 'ritprijs');
+          continue;
+        }
+        
+        const routeURL = `https://api.openrouteservice.org/v2/directions/driving-car?api_key=5b3ce3597851110001cf6248b59dc263cab24bdabda48748cd9122b3&start=${coordStart[0]},${coordStart[1]}&end=${coordEnd[0]},${coordEnd[1]}`;
+        const res = await fetch(routeURL);
+        const data = await res.json();
+        
+        if (!data.features || !data.features[0]) {
+          showSubtleError(`Kon geen route berekenen voor segment ${i+1}`, 'ritprijs');
+          continue;
+        }
+        
+        const segmentAfstand = data.features[0].properties.summary.distance / 1000;
+        const segmentDuur = data.features[0].properties.summary.duration / 60;
+        
+        totaalAfstandMetTussenstops += segmentAfstand;
+        totaalDuurMetTussenstops += segmentDuur;
+        
+        // Alleen voor tussenstops details toevoegen
+        if (i > 0 || i < alleAdressen.length - 2) {
+          segmentDetails.push(`Segment ${i+1}: ${start} → ${end}: ${segmentAfstand.toFixed(1)} km, ${segmentDuur.toFixed(0)} min`);
+        }
+      }
+      
+      // Extra berekenen t.o.v. directe route
+      metTussenstopsAfstand = totaalAfstandMetTussenstops;
+      metTussenstopsDuur = totaalDuurMetTussenstops;
+      extraAfstand = totaalAfstandMetTussenstops - basisAfstand;
+      extraDuur = totaalDuurMetTussenstops - basisDuur;
+      
+      // Gebruik dezelfde tarieven als in berekenRitprijs functie
+      // Voor afstanden > 9km: basis = 2.5 + (afstand * 1.5) + (duur * 0.5)
+      const kmPrijs = 1.5;  // Uit de berekenRitprijs functie
+      const minuutPrijs = 0.5;  // Uit de berekenRitprijs functie
+      const basisToeslag = 2.5; // Uit de berekenRitprijs functie
+      
+      // Bereken extra kosten volgens dezelfde formule als de basis ritprijs
+      extraPrijs = (basisToeslag + (extraAfstand * kmPrijs) + (extraDuur * minuutPrijs)) * trafficTot;
+      
+      // Toeslag per tussenstop (vaste kosten voor stoppen/wachten)
+      const toeslagPerStop = 2.75; // Aangepast naar jouw tarief
+      const tussenstopToeslag = tussenstops.length * toeslagPerStop;
+      
+      extraPrijs += tussenstopToeslag;
+      
+      segmentDetails.push(`Extra door tussenstops: +${extraAfstand.toFixed(1)} km, +${extraDuur.toFixed(0)} min, €${extraPrijs.toFixed(2)}`);
+      segmentDetails.push(`Tussenstop toeslag: ${tussenstops.length} × €${toeslagPerStop.toFixed(2)} = €${tussenstopToeslag.toFixed(2)}`);
+    } catch (err) {
+      showSubtleError("Fout bij berekenen tussenstops", 'ritprijs');
+      // Ga door met alleen de basisprijs
+    }
+  }
+  
+  // Totalen berekenen
+  let totaalPrijs = basisPrijs + extraPrijs;
+  let totaalAfstand = tussenstops.length > 0 ? metTussenstopsAfstand : basisAfstand;
+  let totaalDuur = tussenstops.length > 0 ? metTussenstopsDuur : basisDuur;
   totaalPrijs = pasKortingscodeToe(totaalPrijs);
 
   // Pin bij chauffeur kosten 2.25%
