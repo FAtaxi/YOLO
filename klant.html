@@ -1462,7 +1462,42 @@ window.addEventListener('DOMContentLoaded', () => {
       maxZoom: 18,
     }).addTo(map);
   }
+  // Probeer automatisch de locatie op te halen
+  probeerAutoLocatie();
 });
+
+// Probeer automatisch de locatie op te halen en vul het ophaaladres in
+async function probeerAutoLocatie() {
+  if (!navigator.geolocation) return;
+  try {
+    navigator.geolocation.getCurrentPosition(async pos => {
+      try {
+        const lat = pos.coords.latitude, lon = pos.coords.longitude;
+        // Zoom en marker op kaart
+        if (map) {
+          map.setView([lat, lon], 14);
+          if (window.autoLocMarker) map.removeLayer(window.autoLocMarker);
+          window.autoLocMarker = L.marker([lat, lon], {title: 'Uw locatie', icon: L.icon({iconUrl:'https://cdn.jsdelivr.net/gh/pointhi/leaflet-color-markers@master/img/marker-icon-blue.png', shadowUrl:'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png', iconSize:[25,41], iconAnchor:[12,41], popupAnchor:[1,-34], shadowSize:[41,41]})}).addTo(map).bindPopup('Uw locatie').openPopup();
+        }
+        // Haal adres op via OpenCage
+        const url = `https://api.opencagedata.com/geocode/v1/json?q=${lat}+${lon}&key=22f9046cc2b242a3a5f08cfabc005f78`;
+        const res = await fetch(url);
+        const data = await res.json();
+        if (data.results && data.results[0]) {
+          const ophaalInput = document.getElementById("ophaaladres");
+          if (ophaalInput) ophaalInput.value = data.results[0].formatted;
+        }
+      } catch (err) {
+        // geen alert, fallback naar handmatige knop
+      }
+    }, err => {
+      // geen alert, fallback naar handmatige knop
+    });
+  } catch (err) {
+    // geen alert, fallback naar handmatige knop
+  }
+}
+
 
 async function showRouteOnMap(ophaaladres, afzetadres) {
   // Haal coordinaten op via bestaande functie
