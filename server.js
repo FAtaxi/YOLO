@@ -194,6 +194,31 @@ app.post('/api/webhook', express.json(), (req, res) => {
   res.status(200).send('ok');
 });
 
+// WhatsApp Cloud API Webhook (Meta)
+const META_VERIFY_TOKEN = process.env.META_VERIFY_TOKEN || 'my_verify_token';
+
+// Webhook verificatie (GET)
+app.get('/webhook', (req, res) => {
+  const verify_token = req.query['hub.verify_token'];
+  const challenge = req.query['hub.challenge'];
+  const mode = req.query['hub.mode'];
+
+  if (mode && verify_token === META_VERIFY_TOKEN) {
+    console.log('[META WEBHOOK] Verificatie geslaagd!');
+    res.status(200).send(challenge);
+  } else {
+    console.log('[META WEBHOOK] Verificatie mislukt!');
+    res.sendStatus(403);
+  }
+});
+
+// Webhook voor inkomende WhatsApp-berichten (POST)
+app.post('/webhook', express.json(), (req, res) => {
+  console.log('[META WEBHOOK] Berichten ontvangen:', JSON.stringify(req.body));
+  // Hier kun je inkomende berichten verwerken
+  res.sendStatus(200);
+});
+
 // WhatsApp endpoint
 app.post('/api/whatsapp', async (req, res) => {
   const { to, message } = req.body;
