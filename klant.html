@@ -1685,6 +1685,24 @@ async function showRouteOnMap(ophaaladres, afzetadres) {
 let tussenstopAantal = 0;
 const MAX_TUSSENSTOPS = 3;
 
+// Zorg dat verwijderen van een tussenstop ook autoBereken triggert
+window.verwijderTussenstop = function(idx) {
+  const el = document.getElementById(`tussenstop${idx}`);
+  if (el && el.parentNode) {
+    el.parentNode.remove();
+    tussenstopAantal--;
+    if (typeof autoBereken === 'function') autoBereken();
+    // Heractiveer knop als nodig
+    if (tussenstopAantal < MAX_TUSSENSTOPS) {
+      const btn = document.getElementById('tussenstopBtn');
+      if (btn) {
+        btn.disabled = false;
+        btn.innerText = '➕ Tussenstop toevoegen';
+      }
+    }
+  }
+};
+
 function toonTussenstopVeld() {
   const container = document.getElementById('tussenstopContainer');
   if (tussenstopAantal < MAX_TUSSENSTOPS) {
@@ -2074,18 +2092,25 @@ async function getTrafficToeslag(start, end) {
         console.warn('Fetch timeout:', err.message);
         return null;
       }
-    }
-    let ndwResp = null;
-    try {
-      ndwResp = await fetchWithTimeout(ndwUrl, { timeout: 3000 }); // Verhoogd naar 3 seconden
+      if (!ndwResp) {
+        // NDW niet bereikbaar, geen toeslag, geen error tonen
+        return 1;
+      }
+      if (ndwResp && ndwResp.ok) {
+        const ndwData = await ndwResp.json();
+        // ndwData is een lijst van files met locatie, lengte, etc.
+        // ...
+      } else {
+        // NDW incidenten niet beschikbaar, geen toeslag
+        if (ndwResp && ndwResp.status) {
+          console.warn('NDW incidenten niet beschikbaar', ndwResp.status);
+        }
+      }
     } catch (err) {
-      // Alleen een subtiele melding, geen error
-      showSubtleError('Verkeersinformatie niet beschikbaar', 'ritprijs');
-      ndwResp = null;
+      // Alleen loggen als het echt een error is, geen crash
+      console.warn('NDW incidenten ophalen mislukt', err);
     }
-    if (ndwResp && ndwResp.ok) {
-      const ndwData = await ndwResp.json();
-      // ndwData is een lijst van files met locatie, lengte, etc.
+    // ...
       // Zoek alleen files in de buurt van de route (tussen ophaal en afzet)
       const routeBufferKm = 10; // buffer rond de lijn in km
       const toRad = deg => deg * Math.PI / 180;
@@ -3037,9 +3062,9 @@ window.startIdealPay = async function() {
     const prijs = prijsEl ? prijsEl.innerText.replace(/[^0-9,.]/g, '').replace(',', '.') : '17.50';
     const amount = prijs || '17.50'; // fallback
     const description = 'Taxi rit via klant.html';
-    // Je kunt hier meer ritgegevens meesturen indien gewenst
-    
-    const response = await fetch('/api/pay', {
+    // Dynamisch API base kiezen
+    const apiBase = (window.location.hostname === 'fataxi.github.io') ? 'https://yolo-n9xa.onrender.com' : '';
+    const response = await fetch(`${apiBase}/api/pay`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ amount, description })
