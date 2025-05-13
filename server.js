@@ -138,6 +138,10 @@ app.post('/email-rit', (req, res) => {
 
 // Endpoint: Start iDEAL betaling
 app.post('/api/pay', async (req, res) => {
+  // Sta productie-frontend toe
+  res.header('Access-Control-Allow-Origin', 'https://fataxi.github.io');
+  res.header('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type');
   const { amount, description } = req.body;
   if (!amount || !description) return res.status(400).json({ error: 'Ongeldige aanvraag' });
   try {
