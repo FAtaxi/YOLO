@@ -1911,17 +1911,36 @@ async function gebruikLocatie() {
 
 async function getCoordinates(adres) {
   try {
-    const url = `https://api.tomtom.com/search/2/geocode/${encodeURIComponent(adres)}.json?key=fLy6nvAxRi3ACx2G69Q9fHabDwHz80fe`;
+    // Verwijder speciale tekens en vervang spaties
+    const cleanedAdres = adres.replace(/[^a-zA-Z0-9 ]/g, '').replace(/ /g, '%20');
+    const url = `https://api.tomtom.com/search/2/geocode/${cleanedAdres}.json?key=fLy6nvAxRi3ACx2G69Q9fHabDwHz80fe`;
+    console.log('TomTom Geocoding URL:', url);
+    
     const res = await fetch(url);
-    const data = await res.json();
-    if (!data.results || data.results.length === 0) {
-      showSubtleError(`Adres niet gevonden: ${adres}`, 'map');
+    console.log('Geocoding Response Status:', res.status);
+    
+    if (!res.ok) {
+      const errorText = await res.text();
+      console.error('Geocoding API Error:', errorText);
+      showSubtleError(`API-fout bij geocoding: ${errorText}`, 'map');
       return null;
     }
+    
+    const data = await res.json();
+    console.log('Geocoding Response Data:', data);
+    
+    if (!data.results || data.results.length === 0) {
+      showSubtleError(`Geen resultaten voor adres: ${adres}`, 'map');
+      return null;
+    }
+    
     const { position } = data.results[0];
+    console.log('Gevonden coördinaten:', position);
+    
     return [position.lon, position.lat];
   } catch (err) {
-    showSubtleError(`Locatie ophalen mislukt: ${adres}`, 'map');
+    console.error('Volledige fout bij geocoding:', err);
+    showSubtleError(`Locatie ophalen mislukt: ${adres}. Fout: ${err.message}`, 'map');
     return null;
   }
 }
@@ -2557,28 +2576,45 @@ async function zoekAdresSuggesties(inputElem, suggestieDivId) {
     return;
   }
   const apiKey = 'fLy6nvAxRi3ACx2G69Q9fHabDwHz80fe';
-  const url = `https://api.tomtom.com/search/2/geocode/${encodeURIComponent(waarde)}.json?key=${apiKey}&limit=5`;
+  const url = `https://api.tomtom.com/search/2/search/${encodeURIComponent(waarde)}.json?key=${apiKey}&limit=5&countrySet=NL`;
   try {
+    console.log('Suggestie URL:', url);
     const res = await fetch(url);
+    console.log('Suggestie Response Status:', res.status);
+    
+    if (!res.ok) {
+      const errorText = await res.text();
+      console.error('Suggestie API Error:', errorText);
+      suggestieDiv.innerHTML = '';
+      suggestieDiv.classList.remove('active');
+      return;
+    }
+    
     const data = await res.json();
+    console.log('Suggestie Response Data:', data);
+    
     if (!data.results || data.results.length === 0) {
       suggestieDiv.innerHTML = '';
       suggestieDiv.classList.remove('active');
       return;
     }
-    // Toon eerst alleen Nederlandse adressen
-    let nlResults = data.results.filter(r => r.components && r.components.country_code === 'nl');
-    let shownResults = nlResults.length > 0 ? nlResults : data.results;
-    // Helper om JS-string veilig te escapen voor HTML attribuut
-    function escapeHtmlAttr(str) {
-      return String(str)
-        .replace(/'/g, "&#39;")
-        .replace(/\\/g, "\\\\")
-        .replace(/\n/g, " ")
+    
+    const shownResults = data.results.map(r => ({
+      formatted: r.address.freeformAddress
+    })).filter(r => r.formatted);
+    
+    console.log('Suggestie Resultaten:', shownResults);
+    
+    const escapeHtmlAttr = (str) => str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;')
         .replace(/\r/g, " ")
         .replace(/"/g, '&quot;');
-    }
-    suggestieDiv.innerHTML = shownResults.map(r => `<div class='adres-suggestie-item' onclick="kiesAdresSuggestie('${inputElem.id}', '${suggestieDivId}', '${escapeHtmlAttr(r.formatted)}')">${r.formatted}</div>`).join('');
+    
+    suggestieDiv.innerHTML = shownResults.map(r => `<div class='adres-suggestie-item' onclick="kiesAdresSuggestie('${inputElem.id}', '${suggestieDivId}', '${escapeHtmlAttr(r.formatted)}')"}>${r.formatted}</div>`).join('');
     suggestieDiv.classList.add('active');
   } catch (error) {
     console.error('Fout bij ophalen adressuggesties:', error);
