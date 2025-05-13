@@ -1381,7 +1381,7 @@ button {
     <div id="map" style="height: 330px; width: 100%; border-radius: 13px; overflow: hidden; box-shadow: 0 2px 12px #0005;"></div>
   </div>
 
-  <button type="button" onclick="toggleDatum()" id="toggleDatumBtn" aria-controls="datumContainer" aria-expanded="false">📅 Reserveren? 📅</button>
+  <button type="button" onclick="toggleDatum()" id="toggleDatumBtn" aria-controls="datumContainer" aria-expanded="false">📅 Reserveren? €17.50,- 📅</button>
 
   <div id="datumContainer">
     <label for="tijdstip" id="labelTijdstip">🕒 Gewenst tijdstip 🕒</label>
@@ -3015,6 +3015,37 @@ window.addEventListener('DOMContentLoaded', function() {
   style.innerHTML = `@keyframes spin{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}`;
   document.head.appendChild(style);
 })();
+</script>
+<script>
+window.startIdealPay = async function() {
+  try {
+    // Haal prijs en omschrijving uit het formulier
+    const prijsEl = document.getElementById('ritprijs');
+    const prijs = prijsEl ? prijsEl.innerText.replace(/[^0-9,.]/g, '').replace(',', '.') : '17.50';
+    const amount = prijs || '17.50'; // fallback
+    const description = 'Taxi rit via klant.html';
+    // Je kunt hier meer ritgegevens meesturen indien gewenst
+    
+    const response = await fetch('/api/pay', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ amount, description })
+    });
+    if (!response.ok) {
+      alert('Betaling starten mislukt. Probeer het later opnieuw.');
+      return;
+    }
+    const data = await response.json();
+    if (data.checkoutUrl) {
+      window.location.href = data.checkoutUrl;
+    } else {
+      alert('Geen betaallink ontvangen van de server.');
+    }
+  } catch (err) {
+    alert('Er ging iets mis bij het starten van de betaling.');
+    console.error(err);
+  }
+};
 </script>
 </body>
 </html>
