@@ -1716,6 +1716,10 @@ function toonTussenstopVeld() {
       document.getElementById('tussenstopBtn').innerText = 'Maximaal 3 tussenstops bereikt';
     }
   }
+  // Na toevoegen van een tussenstop: prijs automatisch herberekenen
+  if (typeof autoBereken === 'function') {
+    autoBereken();
+  }
 }
 
 // --- Prijsberekening uitbreiden voor tussenstops ---
