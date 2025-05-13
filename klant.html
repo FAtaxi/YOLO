@@ -1552,11 +1552,16 @@ async function showRouteOnMap(ophaaladres, afzetadres) {
   let coordsArr = [];
   for (let adres of adressen) {
     const coord = await getCoordinates(adres);
-    if (!coord) {
-      showSubtleError(`Adres niet gevonden: ${adres}`, 'map');
-      return;
+    if (coord) {
+      coordsArr.push(coord);
+    } else {
+      // Sla fout adres over, maar ga door met de rest
+      continue;
     }
-    coordsArr.push(coord);
+  }
+  if (coordsArr.length < 2) {
+    showSubtleError('Te weinig geldige adressen voor een route.', 'map');
+    return;
   }
   // Initieer kaart indien nog niet gedaan
   if (!map) {
@@ -1887,14 +1892,18 @@ async function getCoordinates(adres) {
     const url = `https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(adres)}&key=22f9046cc2b242a3a5f08cfabc005f78`;
     const res = await fetch(url);
     const data = await res.json();
-    if (!data.results || data.results.length === 0) throw new Error("Geen locatie gevonden.");
+    if (!data.results || data.results.length === 0) {
+      showSubtleError(`Adres niet gevonden: ${adres}`, 'map');
+      return null;
+    }
     const { lat, lng } = data.results[0].geometry;
     return [lng, lat];
   } catch (err) {
-    alert("Locatie ophalen mislukt: " + err.message);
-    throw err;
+    showSubtleError(`Locatie ophalen mislukt: ${adres}`, 'map');
+    return null;
   }
 }
+
 
 async function getWeer(lat, lon) {
   try {
