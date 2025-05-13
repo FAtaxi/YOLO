@@ -1480,7 +1480,7 @@ async function probeerAutoLocatie() {
           window.autoLocMarker = L.marker([lat, lon], {title: 'Uw locatie', icon: L.icon({iconUrl:'https://cdn.jsdelivr.net/gh/pointhi/leaflet-color-markers@master/img/marker-icon-blue.png', shadowUrl:'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png', iconSize:[25,41], iconAnchor:[12,41], popupAnchor:[1,-34], shadowSize:[41,41]})}).addTo(map).bindPopup('Uw locatie').openPopup();
         }
         // Haal adres op via OpenCage
-        const url = `https://api.opencagedata.com/geocode/v1/json?q=${lat}+${lon}&key=22f9046cc2b242a3a5f08cfabc005f78`;
+        const url = `https://api.tomtom.com/search/2/reverseGeocode/${lat},${lon}.json?key=fLy6nvAxRi3ACx2G69Q9fHabDwHz80fe`;
         const res = await fetch(url);
         const data = await res.json();
         if (data.results && data.results[0]) {
@@ -1577,7 +1577,7 @@ async function showRouteOnMap(ophaaladres, afzetadres) {
     if (endMarker) map.removeLayer(endMarker);
   }
   // OpenRouteService API call (multi-waypoint)
-  const apiKey = '5b3ce3597851110001cf6248b59dc263cab24bdabda48748cd9122b3';
+  const apiKey = '';
   const url = 'https://api.openrouteservice.org/v2/directions/driving-car/geojson';
   const body = {
     coordinates: coordsArr.map(c => [c[0], c[1]])
@@ -1884,7 +1884,7 @@ async function gebruikLocatie() {
     navigator.geolocation.getCurrentPosition(async pos => {
       try {
         const lat = pos.coords.latitude, lon = pos.coords.longitude;
-        const url = `https://api.opencagedata.com/geocode/v1/json?q=${lat}+${lon}&key=22f9046cc2b242a3a5f08cfabc005f78`;
+        const url = `https://api.tomtom.com/search/2/reverseGeocode/${lat},${lon}.json?key=fLy6nvAxRi3ACx2G69Q9fHabDwHz80fe`;
         const res = await fetch(url);
         const data = await res.json();
         if (data.results && data.results[0]) {
@@ -1911,15 +1911,15 @@ async function gebruikLocatie() {
 
 async function getCoordinates(adres) {
   try {
-    const url = `https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(adres)}&key=22f9046cc2b242a3a5f08cfabc005f78`;
+    const url = `https://api.tomtom.com/search/2/geocode/${encodeURIComponent(adres)}.json?key=fLy6nvAxRi3ACx2G69Q9fHabDwHz80fe`;
     const res = await fetch(url);
     const data = await res.json();
     if (!data.results || data.results.length === 0) {
       showSubtleError(`Adres niet gevonden: ${adres}`, 'map');
       return null;
     }
-    const { lat, lng } = data.results[0].geometry;
-    return [lng, lat];
+    const { position } = data.results[0];
+    return [position.lon, position.lat];
   } catch (err) {
     showSubtleError(`Locatie ophalen mislukt: ${adres}`, 'map');
     return null;
@@ -2556,8 +2556,8 @@ async function zoekAdresSuggesties(inputElem, suggestieDivId) {
     suggestieDiv.classList.remove('active');
     return;
   }
-  const apiKey = '22f9046cc2b242a3a5f08cfabc005f78';
-  const url = `https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(waarde)}&key=${apiKey}&limit=5&language=nl`;
+  const apiKey = 'fLy6nvAxRi3ACx2G69Q9fHabDwHz80fe';
+  const url = `https://api.tomtom.com/search/2/geocode/${encodeURIComponent(waarde)}.json?key=${apiKey}&limit=5`;
   try {
     const res = await fetch(url);
     const data = await res.json();
