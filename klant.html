@@ -2076,95 +2076,60 @@ async function getTrafficToeslag(start, end) {
   // Incidenten via NDW Open Data (gratis, Nederland)
   // NDW fileinformatie: https://opendata.ndw.nu/files_ndw.csv.gz (CSV) of https://opendata.ndw.nu/trafficspeed.xml.gz (XML)
   // Voorbeeld: we gebruiken de NDW actuele files als JSON via een proxy (of backend), want CORS blokkeert directe fetch naar .gz
-  // DEMO: hieronder een fetch naar een NDW JSON-proxy (vervang door je eigen backend/proxy voor productie)
-  try {
-    // Haal NDW files op via eigen backend (proxy)
     const ndwUrl = 'http://localhost:3001/api/ndwfiles';
-    // Timeout wrapper voor fetch
-    async function fetchWithTimeout(resource, options = {}) {
-      const { timeout = 3000 } = options; // Verhoogd naar 3 seconden
-      try {
-        return Promise.race([
-          fetch(resource, options),
-          new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), timeout))
-        ]);
-      } catch (err) {
-        console.warn('Fetch timeout:', err.message);
-        return null;
-      }
-      if (!ndwResp) {
-        // NDW niet bereikbaar, geen toeslag, geen error tonen
-        return 1;
-      }
-      if (ndwResp && ndwResp.ok) {
-        const ndwData = await ndwResp.json();
-        // ndwData is een lijst van files met locatie, lengte, etc.
-        // ...
-      } else {
-        // NDW incidenten niet beschikbaar, geen toeslag
-        if (ndwResp && ndwResp.status) {
-          console.warn('NDW incidenten niet beschikbaar', ndwResp.status);
-        }
-      }
-    } catch (err) {
-      // Alleen loggen als het echt een error is, geen crash
-      console.warn('NDW incidenten ophalen mislukt', err);
-    }
-    // ...
-      // Zoek alleen files in de buurt van de route (tussen ophaal en afzet)
-      const routeBufferKm = 10; // buffer rond de lijn in km
-      const toRad = deg => deg * Math.PI / 180;
-      const toDeg = rad => rad * 180 / Math.PI;
-      // Haversine-afstand in km
-      function haversine(lat1, lon1, lat2, lon2) {
-        const R = 6371;
-        const dLat = toRad(lat2 - lat1);
-        const dLon = toRad(lon2 - lon1);
-        const a = Math.sin(dLat/2)**2 + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon/2)**2;
-        return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-      }
-      // Projecteer een file op het lijnstuk start-end en check afstand
-      function pointToSegmentDistance(lat, lon, lat1, lon1, lat2, lon2) {
-        // Bron: https://stackoverflow.com/a/1501725
-        function sqr(x) { return x*x; }
-        function dist2(x, y, x1, y1) { return sqr(x-x1) + sqr(y-y1); }
-        const t = Math.max(0, Math.min(1, ((lat-lat1)*(lat2-lat1)+(lon-lon1)*(lon2-lon1)) / (sqr(lat2-lat1)+sqr(lon2-lon1))));
-        const projLat = lat1 + t*(lat2-lat1);
-        const projLon = lon1 + t*(lon2-lon1);
-        return haversine(lat, lon, projLat, projLon);
-      }
-      const startLat = start[1], startLon = start[0];
-      const endLat = end[1], endLon = end[0];
-      const filesNearby = (ndwData || []).filter(f => {
-        if (!f.latitude || !f.longitude) return false;
-        const flat = parseFloat(f.latitude);
-        const flon = parseFloat(f.longitude);
-        // Afstand tot lijnstuk route
-        return pointToSegmentDistance(flat, flon, startLat, startLon, endLat, endLon) <= routeBufferKm;
-      });
-      console.log('Aantal NDW files dichtbij route:', filesNearby.length);
-      if (filesNearby.length > 0) {
-        surcharge *= 1 + (0.10 * filesNearby.length); // 10% per file dichtbij route
-      }
-    } else {
-      // NDW incidenten niet beschikbaar, geen toeslag
-      if (ndwResp && ndwResp.status) {
-        console.warn('NDW incidenten niet beschikbaar', ndwResp.status);
-      }
-    }
-  } catch (err) {
-    // Alleen loggen als het echt een error is, geen crash
-    //console.warn('NDW incidenten ophalen mislukt', err);
-  }
+    const ndwResp = await fetch(ndwUrl);
 
-  return surcharge;
+    if (!ndwResp || !ndwResp.ok) {
+      console.warn('NDW incidenten niet beschikbaar');
+      return surcharge;
+    }
+
+    // Haal NDW data op
+    const ndwData = await ndwResp.json();
+
+    // Hulpfuncties voor afstandsberekening
+    const toRad = deg => deg * Math.PI / 180;
+    const haversine = (lat1, lon1, lat2, lon2) => {
+      const R = 6371;
+      const dLat = toRad(lat2 - lat1);
+      const dLon = toRad(lon2 - lon1);
+      const a = Math.sin(dLat/2)**2 + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon/2)**2;
+      return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    };
+
+    const pointToSegmentDistance = (lat, lon, lat1, lon1, lat2, lon2) => {
+      const t = Math.max(0, Math.min(1, ((lat-lat1)*(lat2-lat1)+(lon-lon1)*(lon2-lon1)) / ((lat2-lat1)**2 + (lon2-lon1)**2)));
+      const projLat = lat1 + t*(lat2-lat1);
+      const projLon = lon1 + t*(lon2-lon1);
+      return haversine(lat, lon, projLat, projLon);
+    };
+
+    // Route buffer in kilometers
+    const routeBufferKm = 10;
+    const [startLon, startLat] = start;
+    const [endLon, endLat] = end;
+
+    // Zoek files nabij de route
+    const filesNearby = (ndwData || []).filter(f => {
+      if (!f.latitude || !f.longitude) return false;
+      const flat = parseFloat(f.latitude);
+      const flon = parseFloat(f.longitude);
+      return pointToSegmentDistance(flat, flon, startLat, startLon, endLat, endLon) <= routeBufferKm;
+    });
+
+    // Bereken toeslag op basis van aantal files
+    if (filesNearby.length > 0) {
+      surcharge *= 1 + (0.10 * filesNearby.length);
+      console.log(`Aantal NDW files dichtbij route: ${filesNearby.length}, Nieuwe toeslag: ${surcharge}`);
+    }
+
+    return surcharge;
   } catch (err) {
-    // Backend niet bereikbaar of andere error, nooit crashen
+    console.warn('Verkeersinformatie ophalen mislukt', err);
     alert('Let op: verkeersinformatie kon niet worden opgehaald. De ritprijs wordt zonder verkeersopslag berekend.');
     return 1;
   }
 }
-
 
 function pasKortingscodeToe(ritprijs) {
   const code = document.getElementById("kortingscode").value.trim();
@@ -2611,11 +2576,12 @@ async function zoekAdresSuggesties(inputElem, suggestieDivId) {
         .replace(/\\/g, "\\\\")
         .replace(/\n/g, " ")
         .replace(/\r/g, " ")
-        .replace(/\"/g, '&quot;');
+        .replace(/"/g, '&quot;');
     }
     suggestieDiv.innerHTML = shownResults.map(r => `<div class='adres-suggestie-item' onclick="kiesAdresSuggestie('${inputElem.id}', '${suggestieDivId}', '${escapeHtmlAttr(r.formatted)}')">${r.formatted}</div>`).join('');
     suggestieDiv.classList.add('active');
-  } catch {
+  } catch (error) {
+    console.error('Fout bij ophalen adressuggesties:', error);
     suggestieDiv.innerHTML = '';
     suggestieDiv.classList.remove('active');
   }
@@ -2635,7 +2601,72 @@ window.addEventListener('click', e => {
     }
   });
 });
+
+// Event listeners voor adres suggesties
+document.getElementById('ophaaladres').addEventListener('input', function() {
+  zoekAdresSuggesties(this, 'ophaaladres-suggesties');
+});
+
+document.getElementById('afzetadres').addEventListener('input', function() {
+  zoekAdresSuggesties(this, 'afzetadres-suggesties');
+});
 // Geen dubbele listeners meer.
+
+// Ontbrekende functies hersteld
+function toggleHuisdier() {
+  const huisdierBtn = document.getElementById('huisdierToggle');
+  const huisdierInput = document.getElementById('huisdieren');
+  
+  if (huisdierInput.value === 'nee') {
+    huisdierInput.value = 'ja';
+    huisdierBtn.textContent = '🐶 Huisdier: Ja';
+    huisdierBtn.classList.add('active');
+  } else {
+    huisdierInput.value = 'nee';
+    huisdierBtn.textContent = '🐶 Huisdier: Nee';
+    huisdierBtn.classList.remove('active');
+  }
+}
+
+function toggleSpoed() {
+  const spoedBtn = document.getElementById('spoedToggle');
+  const spoedInput = document.getElementById('spoed');
+  
+  if (spoedInput.value === 'nee') {
+    spoedInput.value = 'ja';
+    spoedBtn.textContent = '⚡ Spoed: Ja';
+    spoedBtn.classList.add('active');
+  } else {
+    spoedInput.value = 'nee';
+    spoedBtn.textContent = '⚡ Spoed: Nee';
+    spoedBtn.classList.remove('active');
+  }
+}
+
+function toggleAkkoord() {
+  const akkoordBtn = document.getElementById('akkoordToggle');
+  const akkoordInput = document.getElementById('akkoord');
+  
+  if (akkoordInput.value === 'nee') {
+    akkoordInput.value = 'ja';
+    akkoordBtn.textContent = '✅ Akkoord: Ja';
+    akkoordBtn.classList.add('active');
+  } else {
+    akkoordInput.value = 'nee';
+    akkoordBtn.textContent = '✅ Akkoord: Nee';
+    akkoordBtn.classList.remove('active');
+  }
+}
+
+function berekenRit() {
+  // Roep de bestaande berekenRit functie aan
+  if (typeof window.berekenRit === 'function') {
+    window.berekenRit();
+  } else {
+    console.error('berekenRit functie niet gevonden');
+    alert('Kan rit niet berekenen. Neem contact op met ondersteuning.');
+  }
+}
 </script>
 
 <script>
